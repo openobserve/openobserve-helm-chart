@@ -1,0 +1,632 @@
+---
+# Source: zinc-observe/charts/etcd/templates/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cloud2-etcd
+  namespace: "h1"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/managed-by: Helm
+spec:
+  minAvailable: 51%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etcd
+      app.kubernetes.io/instance: cloud2
+---
+# Source: zinc-observe/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloud2-zinc-observe
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::058694856476:role/zinc-s3-eks
+---
+# Source: zinc-observe/charts/etcd/templates/token-secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloud2-etcd-jwt-token
+  namespace: "h1"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  jwt-token.pem: "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlKS0FJQkFBS0NBZ0VBcGw1VTJvejRZZFl1dk1tVCtUM1FEajBiZTU2RnFZZzB1eEhENjFYb3REZFZJZzhnClZiOS9STWhGT2FadTVsdEZHKzNsL2Ftd0ZhS2FzN2o5U2FaT01yc05QaHJiVHUzMFpXTlpMd1B0VnVBQUM2V1UKVE5GUHUwSlNnSVJEeEVLL20vUTd3ckNONmErWXdPTlA1ejJWOW4xNjVYR1hoU2VMbjAyMlJqQ2d5N3AvaW5sNwo2UHhJNFRJNjA1blRNMkFzOUNaQWwvb3NkR1l6cWc2MGo5RktjSENNbzBKUTExcEp5eGVFUEVSMmdNckRXS2EwCjlYRGJad3pKa3YrQmNrdjRHdFRINEtIUW9lR2dCUGxNU2tISGdLMTRIMlJVWVp1NkZKdzc5S1lQdnlrTXhtcEwKTUdvL0dQRTVuL2RmZHNsY0UxbUR5NlQ4cjdUV3VQdzlIU1lpUlQvL0g3Nm9PQkRmSFRyYUlHSHJhbVRIWTdIWApNYmxDUW9YT0Frc0pzM3RtaG1Xb1BhSjJSUW50Yzl1aGJUVUgyVVI5MG51RmhiQndVTXlVM1NWWG9FdkNiTlZ6ClMwN1ZsZXdSTk1RWlhnY1o0TWcvVDdaS2lpZ2dGYk5zSjl1SU5iTmhDZ2xNdDZxNUQxMm5kb2ZDa0lDZjMyd3IKUWpPY2JjOElKRm41Y3NrZ01Cd2NwUGYwOGYrTkxZQUl4ZEtITElSQjhrUzN5N0hyRis4czQzTkYycG0wa2tSWAp4QitJSnpGVURxK1VxcHZUcmRmWHZaV25STk1hZUhKR0FoQW1KVTBMek1xOGViRlVEejMwQmVkS3Bxc2VWcTJ0Cng2b3hDelQ1QmhLejVFOEF6R21nbDBvb0VCUzZMMmhlY2hOMUxkR3BGckJuazBQNldnNUVld1JmTEU4Q0F3RUEKQVFLQ0FnQmNyQXNrT29aWktVK2JoY1hSZm1jWXAxMVp2UEhEZjhXdnRyT2xzWk1RWUFvaUVMNzRSTldGNFBEKwpyZ0QwZkQ3QTBnSGRETnF6RW9LT1BpdUpEUVJlS2VlMGdvMUxLQzJORkl3bkxrN1VwNjRlenJzUEYwRU1sR01VCmg1aWdDSFpuVHVMRERrbmV0QnVveG5aSjN2cGI5WVd4clZhenExV1JCVjdWTmwwN1hzV1F3eDhNcHd1SnRjc2kKOTNxNEVZaTQ3MTNueWtsZEJWa2VEMWJ4RGFvamUrNDdPc09CVWgvczYwcVRyNmM3RXJkQitJcXdkWThobGZQcQoyRHlwQ0R4SjVlRDQ5ZW9iWW0wYW1DdXc2WGRSN0U4UFhYbkxiVTE0RVpjc0xoeHpaVkJpYmU4NEp0YkM5QXdmCldWSnAvcncxWXhXUktIUkJBOERnQmxHY25STlZEZHZLd0REV1pIc0NWYzYwMStDMnUrMThsWkNlelBSMW1nQ08KVUJWVVArR1F0V1EyMFUwcHZKVS9Mb3ZCc3lYSUxDQXRMVWg3R0lOUFdrS2U1a0pXWUxJakoxU1FTVXVmYWQrbApZVkNzMzV4d0hZK3hTemlOMjlNcEpvb0VlT3E0dElnTGNWa3R6M0htK2Ztb3B6N2pramFXM1RCR3ppOFp1dC9JCjVlT09jQmtmcjNZL1FvMkJJRUZxT2hwbWxSbXhyeHFtbHFjc0RmRldrcjVGb2VBM2pQTXN0di9UUzNkbGNvWXcKWWY3SWFqSVVjVkVSbTdkWTkxUHlrN2JtYU9xQXlLWDZGVEVNb1RUMGtSbnN3WmNEMkgxTjdGM2d1M2k1SWZNTgp2M3V3TzFCcGRkY3M2U1Rpc2NhQjNRYUJvU1d0OG5SdW9lUTlJSy9TU0owT3hud3NzUUtDQVFFQXlpYUpIOG9MCnFmbmdMaEwzZVhTeTg1eEN3M3Y5enl0UEZiaFdQUnFhNWtxRnJnVjFKOGFXL2NBdFBPZzg5bkZCMGxVVFBBMCsKUmFHZHU4c0M0bytmT1dNdkowWjh4d3VlenpBempIQi9uMDIrQjlyazlNMUNqQmxRRkpXVWI2Ti9qUzBiTWlRZwpKZCtSZThRdVlGdnQ0THpoUHFGUGhFVnFheWsyNVpnZFlxUWdMMFpra28zWXRWMjZqOGhRczV2VkN0dHUwMXBNCjNYakxkS1VwaURUUEdzZ2I3dDhJVmloQm9wemlnc1FsVW5EcmR1YlI0bEN2elZtM1F1eGt1VGdoL3l1aUZaMTEKakszajhaTmQ3Uk9zVURLWmFndjdNWFRJYW5ZS290emJvREdHY0c3NXE1WHo0eG1YM09qaWNQcE5COUtWajQ2awpmRjQyblhhMFRoaGZiUUtDQVFFQTBxK3NRdXdZcFRhUWM0K0E4SURUQ2ZobGMwY1RBQ0RWci9mRXRNQThZVW00CmNIZFJZYTM5VlV2NmVxKzByVldCZ3VjV0l4ME9uMllQS0VmY0lsR0xOakJDQ0NsNHNxWjJlbXM2TGp3Qk14KzkKd2NFSVlKNS9ZblhZQmdNNWc1bjVkZnlCaUh6S1YyeWdRanhaemg3U01KL2dFVXhndkpEemxZSk90UFpyQS9LSQpudmhYYTNFeStLNkc1a29oU0VOcDdQY0FpWm90VW42R1p0VkJHdVNvMWNvK1RXcmNWRzIwZS9kdDNnY0U3Nm51Cm9jK0JwcnlxZlhxUFNUcmlmNk5mbS9uZXBDZ3BhNGpxRk02RUJUMTJKT05kQ2xPdmJpTGcxY2xaSW43Y004YnMKUi90NVBIQklZZDE5ejk3N3JDSlVld0FObWZLczk2NW9CVEdqbjl1Wkt3S0NBUUVBZ0gzNElUMnpKa3JQSlZvbQo5WXVwQjlIbVdnMWhLaUwwTlBFajE5a21ab1V0N1l4SWlJemhnczk1c2NKSXBia2R4bzBQR2RldEltTjFPRjMxCktuOXlETzh2bEw1b0o3a0tLOVlPbmhFUC9mbFRkZmk4R2FLeXp3eHo2M0djbFUyT2tQVC8yV0kvRVBQSHJLenAKY1pSZFlzR01SdHdRQ0JwN1p6d2VTZGZqcmNSM05MV0F6ZXJkdVlLblNDZGlySmU3MWhmZW5QZEQ3bTZPbkVregpXZ0YvTngzRks1T1czL1RjcTNrZlBWRmlDOEg4Mldva05MOW16NWRjTm15K0pVRTUwdEV3U0o3NmpmNGw2bkxxCmUveEtSZnV6cWtXTldFVkw4dWV2SVJCVGhjS1ZHcmhmZUtKckVJby9Ea3IxVEN5OWMrQjE4bmNQdElIS0kxTEYKanZKTkRRS0NBUUFMSTZDZTlTNmtaWXNqb1AyM09ZaHU2WVFyb1NGZkMxMWc3VitvRXRYZWF2Qm1lZGlDcXBsUApUaklURklFZi9QcFkrbkRRTUhRYWQySHJ4a2pjUTZWeG13R1N2dWFUdzN0V0k1OHkzSmRQcGFqNXVvUC8zOEZxCmFrS2Vwc0wrczBCZVBaaDNwK2xteitaMU9nMmhlVDJ4dG5JNVYrbHhidFNDSGg2ZE1MNGR1bEFBMzY1M2pzZWMKSUZZZmpPSFBtVWpiYjMvR3hyRUl3SW5JbkJQU0lTN1FCdDVlWjN6NHRjZ3FHYjNrVkVpdGh6V0h0cG5yUCtSZgp1QUFsWmdpZHFQeWdHWWpzOHZhbHFkcCtlU0MveWkwWjdDOTZJVXlRTFNYb0I3by91YWRZMFhhaW82Z1lTdk40CndTWXF2R1pnQm55aStEQy81L1cvTHFodlJkMlowUmw3QW9JQkFFRHhzQjQ0a2wwc3hmaEtOKzZ4bEFQMXFuNmgKUFNZYitYSU9hbkMrRHM4L1Y4K3lVclYwTWFTQUlHT0JPUzhWQ3pwZ1dGM1pScXZUSlpVS3pOZTJyd0FwdC8ycwpJaTVDZGNSNmNKY0hRRTc4NXkwY2lQa0pFaGRuU3pZaDJETGN0TmhPTjBaSTZaeDRCeVoxdjhlT01WSVFPanlzCmhXaHhweGQwKzFPYXBDMFhyd3RhalNHRlpNRHc5YUJNQ1FzY21rYkZ3K3ZFOVhHbys1dmVjSEVqbDNNaXNPWTAKK1pRYU5EUUFobGhzYUdiRHg0V1FLWTh6aGprTklVUmRKRVZNSEJTckVUTjV6UkdjbDNsNUJoTWRlcmpJVHN5VgpMc2o1V0l2ME5QNzRYZUt5UEMxQW9xb1g4OU4xdVFVT3dESWdBbVB0QkFLaW9HUFJLNjllMW9IaUhBMD0KLS0tLS1FTkQgUlNBIFBSSVZBVEUgS0VZLS0tLS0K"
+---
+# Source: zinc-observe/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloud2-zinc-observe
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+stringData:
+  ZIOX_USER_NAME: "hero"
+  ZIOX_USER_PASSWORD: "Complexpass#123"
+---
+# Source: zinc-observe/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud2-zinc-observe
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+data:
+  ZIOX_LOCAL_MODE: "false"
+  ZIOX_ETCD_ADDR: "cloud2-etcd-headless.h1.svc.cluster.local:2379"
+  ZIOX_ETCD_PREFIX: "/zinc/enl/"
+  ZIOX_ETCD_USER: ""
+  ZIOX_ETCD_PASSWORD: ""
+  ZIOX_ETCD_CLIENT_CERT_AUTH: "false"
+  ZIOX_ETCD_TRUSTED_CA_FILE: ""
+  ZIOX_ETCD_CERT_FILE: ""
+  ZIOX_ETCD_KEY_FILE: ""
+  ZIOX_ETCD_COMMAND_TIMEOUT: "5"
+  ZIOX_DATA_WAL_DIR: "./data/wal/"
+  ZIOX_DATA_STREAM_DIR: "./data/stream/"
+  ZIOX_S3_BUCKET_NAME: "ziox-data"
+  ZIOX_MAX_FILE_RETENTION_TIME: "600"
+  ZIOX_FILE_PUSH_INTERVAL: "10"
+  ZIOX_JSON_LIMIT: "209715200"
+  ZIOX_PAYLOAD_LIMIT: "209715200"
+  ZIOX_MAX_FILE_SIZE_ON_DISK: "32" # value in mb
+  ZIOX_FILE_EXT_JSON: ""
+  ZIOX_FILE_EXT_PARQUET: ""
+  ZIOX_TIME_STAMP_COL: "_timestamp"
+  ZIOX_TS_ALLOWED_UPTO: "5"
+  ZIOX_INGESTION_SCHEMA_CHK: "true"
+  ZIOX_UI_ENABLED: "true"
+  ZIOX_METRICS_DEDUP_ENABLED: "true"
+  ZIOX_USER_ZIOX_TRACING_ENABLEDNAME: "false"
+  OTEL_OTLP_HTTP_ENDPOINT: "https://otel.dev2.zinclabs.dev/v1/traces"
+  ZIOX_MEMORY_CACHE_MAX_SIZE: "1024"
+  RUST_LOG: "info"
+  RUST_BACKTRACE: "full"
+  MIMALLOC_VERBOSE: "1"
+  MIMALLOC_PAGE_RESET: "1"
+  MIMALLOC_DECOMMIT_DELAY: "25"
+---
+# Source: zinc-observe/charts/etcd/templates/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud2-etcd-headless
+  namespace: "h1"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: client
+      port: 2379
+      targetPort: client
+    - name: peer
+      port: 2380
+      targetPort: peer
+  selector:
+    app.kubernetes.io/name: etcd
+    app.kubernetes.io/instance: cloud2
+---
+# Source: zinc-observe/charts/etcd/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud2-etcd
+  namespace: "h1"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: "client"
+      port: 2379
+      targetPort: client
+      nodePort: null
+    - name: "peer"
+      port: 2380
+      targetPort: peer
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: etcd
+    app.kubernetes.io/instance: cloud2
+---
+# Source: zinc-observe/templates/ingester-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud2-zinc-observe-ingester
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    role: ingester
+---
+# Source: zinc-observe/templates/querier-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud2-zinc-observe-querier
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    role: querier
+---
+# Source: zinc-observe/templates/compactor-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud2-zinc-observe-compactor
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zinc-observe
+      app.kubernetes.io/instance: cloud2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zinc-observe
+        app.kubernetes.io/instance: cloud2
+    spec:
+      serviceAccountName: cloud2-zinc-observe
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zinc-observe
+          securityContext:
+            {}
+          image: "058694856476.dkr.ecr.us-west-2.amazonaws.com/ziox-dev:v0.0.4-fa2fbcb-dev"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: cloud2-zinc-observe
+            - configMapRef:
+                name: cloud2-zinc-observe
+          env:
+            - name: ZIOX_NODE_ROLE
+              value: "compactor"
+---
+# Source: zinc-observe/templates/querier-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud2-zinc-observe-querier
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zinc-observe
+      app.kubernetes.io/instance: cloud2
+      role: querier
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zinc-observe
+        app.kubernetes.io/instance: cloud2
+        role: querier
+    spec:
+      serviceAccountName: cloud2-zinc-observe
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zinc-observe
+          securityContext:
+            {}
+          image: "058694856476.dkr.ecr.us-west-2.amazonaws.com/ziox-dev:v0.0.4-fa2fbcb-dev"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: cloud2-zinc-observe
+            - configMapRef:
+                name: cloud2-zinc-observe
+          env:
+            - name: ZIOX_NODE_ROLE
+              value: "querier"
+---
+# Source: zinc-observe/charts/etcd/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cloud2-etcd
+  namespace: "h1"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etcd
+      app.kubernetes.io/instance: cloud2
+  serviceName: cloud2-etcd-headless
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: etcd
+        helm.sh/chart: etcd-8.5.11
+        app.kubernetes.io/instance: cloud2
+        app.kubernetes.io/managed-by: Helm
+      annotations:
+        checksum/token-secret: 3dfd3ee75f0a735aeb0c0fde81285c606e1f588fb439bfa7e5cbfd8d54f96e77
+    spec:
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: etcd
+                    app.kubernetes.io/instance: cloud2
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: "default"
+      containers:
+        - name: etcd
+          image: docker.io/bitnami/etcd:3.5.5-debian-11-r17
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_STS_NAME
+              value: "cloud2-etcd"
+            - name: ETCDCTL_API
+              value: "3"
+            - name: ETCD_ON_K8S
+              value: "yes"
+            - name: ETCD_START_FROM_SNAPSHOT
+              value: "no"
+            - name: ETCD_DISASTER_RECOVERY
+              value: "no"
+            - name: ETCD_NAME
+              value: "$(MY_POD_NAME)"
+            - name: ETCD_DATA_DIR
+              value: "/bitnami/etcd/data"
+            - name: ETCD_LOG_LEVEL
+              value: "info"
+            - name: ALLOW_NONE_AUTHENTICATION
+              value: "yes"
+            - name: ETCD_AUTH_TOKEN
+              value: "jwt,priv-key=/opt/bitnami/etcd/certs/token/jwt-token.pem,sign-method=RS256,ttl=10m"
+            - name: ETCD_ADVERTISE_CLIENT_URLS
+              value: "http://$(MY_POD_NAME).cloud2-etcd-headless.h1.svc.cluster.local:2379,http://cloud2-etcd.h1.svc.cluster.local:2379"
+            - name: ETCD_LISTEN_CLIENT_URLS
+              value: "http://0.0.0.0:2379"
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              value: "http://$(MY_POD_NAME).cloud2-etcd-headless.h1.svc.cluster.local:2380"
+            - name: ETCD_LISTEN_PEER_URLS
+              value: "http://0.0.0.0:2380"
+            - name: ETCD_CLUSTER_DOMAIN
+              value: "cloud2-etcd-headless.h1.svc.cluster.local"
+            - name: ETCD_QUOTA_BACKEND_BYTES
+              value: "17179869184"
+          envFrom:
+          ports:
+            - name: client
+              containerPort: 2379
+              protocol: TCP
+            - name: peer
+              containerPort: 2380
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          resources:
+            limits: {}
+            requests: {}
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/etcd
+            - name: etcd-jwt-token
+              mountPath: /opt/bitnami/etcd/certs/token/
+              readOnly: true
+      volumes:
+        - name: etcd-jwt-token
+          secret:
+            secretName: cloud2-etcd-jwt-token
+            defaultMode: 256
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "20Gi"
+---
+# Source: zinc-observe/templates/ingester-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cloud2-zinc-observe-ingester
+  namespace: "h1"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zinc-observe
+      app.kubernetes.io/instance: cloud2
+      role: ingester
+  serviceName: cloud2-zinc-observe
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zinc-observe
+        app.kubernetes.io/instance: cloud2
+        role: ingester
+    spec:
+      serviceAccountName: cloud2-zinc-observe
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zinc-observe
+          securityContext:
+            {}
+          image: "058694856476.dkr.ecr.us-west-2.amazonaws.com/ziox-dev:v0.0.4-fa2fbcb-dev"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: cloud2-zinc-observe
+            - configMapRef:
+                name: cloud2-zinc-observe
+          env:
+            - name: ZIOX_NODE_ROLE
+              value: "ingester"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+---
+# Source: zinc-observe/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cloud2-zinc-observe
+  namespace: h1
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    cert-manager.io/issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - "q1.dev2.zinclabs.dev"
+      secretName: q1.dev2.zinclabs.dev
+
+  rules:
+    - host: "q1.dev2.zinclabs.dev"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: cloud2-zinc-observe-querier
+                port:
+                  number: 5080
+---
+# Source: zinc-observe/templates/issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+  namespace: h1
+spec:
+  acme:
+    email: random-email-id@yahoo.com
+    privateKeySecretRef:
+      name: letsencrypt
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+---
+# Source: zinc-observe/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "cloud2-zinc-observe-test-connection"
+  labels:
+    helm.sh/chart: zinc-observe-0.1.0
+    app.kubernetes.io/name: zinc-observe
+    app.kubernetes.io/instance: cloud2
+    app.kubernetes.io/version: "v0.0.4-fa2fbcb-dev"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['cloud2-zinc-observe:5080']
+  restartPolicy: Never

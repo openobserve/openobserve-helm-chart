@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "zinc-observe.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "zinc-observe.labels" . | nindent 4 }}
+data:
+  ZIOX_LOCAL_MODE: "{{ .Values.config.ZIOX_LOCAL_MODE }}"
+  ZIOX_ETCD_ADDR: "{{ .Release.Name }}-etcd-headless.{{ .Release.Namespace }}.svc.cluster.local:2379"
+  ZIOX_ETCD_PREFIX: "{{ .Values.config.ZIOX_ETCD_PREFIX }}"
+  ZIOX_ETCD_USER: "{{ .Values.config.ZIOX_ETCD_USER }}"
+  ZIOX_ETCD_PASSWORD: "{{ .Values.config.ZIOX_ETCD_PASSWORD }}"
+  ZIOX_ETCD_CLIENT_CERT_AUTH: "{{ .Values.config.ZIOX_ETCD_CLIENT_CERT_AUTH }}"
+  ZIOX_ETCD_TRUSTED_CA_FILE: "{{ .Values.config.ZIOX_ETCD_TRUSTED_CA_FILE }}"
+  ZIOX_ETCD_CERT_FILE: "{{ .Values.config.ZIOX_ETCD_CERT_FILE }}"
+  ZIOX_ETCD_KEY_FILE: "{{ .Values.config.ZIOX_ETCD_KEY_FILE }}"
+  ZIOX_ETCD_COMMAND_TIMEOUT: "{{ .Values.config.ZIOX_ETCD_COMMAND_TIMEOUT }}"
+  ZIOX_DATA_WAL_DIR: "{{ .Values.config.ZIOX_DATA_WAL_DIR }}"
+  ZIOX_DATA_STREAM_DIR: "{{ .Values.config.ZIOX_DATA_STREAM_DIR }}"
+  ZIOX_S3_BUCKET_NAME: "{{ .Values.config.ZIOX_S3_BUCKET_NAME }}"
+  ZIOX_MAX_FILE_RETENTION_TIME: "{{ .Values.config.ZIOX_MAX_FILE_RETENTION_TIME }}"
+  ZIOX_FILE_PUSH_INTERVAL: "{{ .Values.config.ZIOX_FILE_PUSH_INTERVAL }}"
+  ZIOX_JSON_LIMIT: "{{ .Values.config.ZIOX_JSON_LIMIT }}"
+  ZIOX_PAYLOAD_LIMIT: "{{ .Values.config.ZIOX_PAYLOAD_LIMIT }}"
+  ZIOX_MAX_FILE_SIZE_ON_DISK: "{{ .Values.config.ZIOX_MAX_FILE_SIZE_ON_DISK }}" # value in mb
+  ZIOX_FILE_EXT_JSON: "{{ .Values.config.ZIOX_FILE_EXT_JSON }}"
+  ZIOX_FILE_EXT_PARQUET: "{{ .Values.config.ZIOX_FILE_EXT_PARQUET }}"
+  ZIOX_TIME_STAMP_COL: "{{ .Values.config.ZIOX_TIME_STAMP_COL }}"
+  ZIOX_TS_ALLOWED_UPTO: "{{ .Values.config.ZIOX_TS_ALLOWED_UPTO }}"
+  ZIOX_INGESTION_SCHEMA_CHK: "{{ .Values.config.ZIOX_INGESTION_SCHEMA_CHK }}"
+  ZIOX_UI_ENABLED: "{{ .Values.config.ZIOX_UI_ENABLED }}"
+  ZIOX_METRICS_DEDUP_ENABLED: "{{ .Values.config.ZIOX_METRICS_DEDUP_ENABLED }}"
+  ZIOX_USER_ZIOX_TRACING_ENABLEDNAME: "{{ .Values.config.ZIOX_USER_ZIOX_TRACING_ENABLEDNAME }}"
+  OTEL_OTLP_HTTP_ENDPOINT: "{{ .Values.config.OTEL_OTLP_HTTP_ENDPOINT }}"
+  ZIOX_MEMORY_CACHE_MAX_SIZE: "{{ .Values.config.ZIOX_MEMORY_CACHE_MAX_SIZE }}"
+  RUST_LOG: "{{ .Values.config.RUST_LOG }}"
+  RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
+  MIMALLOC_VERBOSE: "{{ .Values.config.MIMALLOC_VERBOSE }}"
+  MIMALLOC_PAGE_RESET: "{{ .Values.config.MIMALLOC_PAGE_RESET }}"
+  MIMALLOC_DECOMMIT_DELAY: "{{ .Values.config.MIMALLOC_DECOMMIT_DELAY }}"
+  
+
+
+
