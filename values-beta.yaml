@@ -4,8 +4,8 @@
 
 # Credentials for authentication
 auth:
-  ZO_ROOT_USER_EMAIL: "root@example.com"
-  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  ZO_USER_NAME: "admin"
+  ZO_USER_PASSWORD: "Complespass#123"
 
 config:
   ZO_LOCAL_MODE: "false"
@@ -40,13 +40,12 @@ replicaCount:
   compactor: 1
   ingester: 1
   querier: 1
-  router: 1
 
 image:
-  repository: public.ecr.aws/zinclabs/zincobserve
+  repository: 058694856476.dkr.ecr.us-west-2.amazonaws.com/ziox-dev
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.1.6"
+  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
@@ -128,9 +127,7 @@ tolerations: []
 affinity: {}
 
 etcd:
-  bundled: "true"
-  externalUrl: "etcd-headless.ziox-noderole.svc.cluster.local:2379"
-  replicaCount: 1
+  # replicaCount: 1
   image:
     registry: docker.io
     repository: bitnami/etcd

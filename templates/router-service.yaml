@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "zincobserve.fullname" . }}-ingester
+  name: {{ include "zincobserve.fullname" . }}-router
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "zincobserve.labels" . | nindent 4 }}
@@ -14,4 +14,4 @@ spec:
       name: http
   selector:
     {{- include "zincobserve.selectorLabels" . | nindent 4 }}
-    role: ingester
+    role: router

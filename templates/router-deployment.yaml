@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "zincobserve.fullname" . }}-querier
+  name: {{ include "zincobserve.fullname" . }}-router
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "zincobserve.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount.querier }}
+  replicas: {{ .Values.replicaCount.router }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "zincobserve.selectorLabels" . | nindent 6 }}
-      role: querier
+      role: router
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -21,7 +21,7 @@ spec:
       {{- end }}
       labels:
         {{- include "zincobserve.selectorLabels" . | nindent 8 }}
-        role: querier
+        role: router
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -58,7 +58,7 @@ spec:
                 name: {{ include "zincobserve.fullname" . }}
           env:
             - name: ZO_NODE_ROLE
-              value: "querier"
+              value: "router"
             {{- if not .Values.etcd.bundled }}
             - name: ZO_ETCD_ADDR
               value: {{ .Values.etcd.externalUrl }}

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "zinc-observe.fullname" . }}-querier
+  name: {{ include "zincobserve.fullname" . }}-querier
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "zinc-observe.labels" . | nindent 4 }}
+    {{- include "zincobserve.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -13,5 +13,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "zinc-observe.selectorLabels" . | nindent 4 }}
+    {{- include "zincobserve.selectorLabels" . | nindent 4 }}
     role: querier

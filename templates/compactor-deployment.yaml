@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "zinc-observe.fullname" . }}-compactor
+  name: {{ include "zincobserve.fullname" . }}-compactor
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "zinc-observe.labels" . | nindent 4 }}
+    {{- include "zincobserve.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount.compactor }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "zinc-observe.selectorLabels" . | nindent 6 }}
+      {{- include "zincobserve.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,13 +19,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "zinc-observe.selectorLabels" . | nindent 8 }}
+        {{- include "zincobserve.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "zinc-observe.serviceAccountName" . }}
+      serviceAccountName: {{ include "zincobserve.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -50,12 +50,20 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
             - secretRef:
-                name: {{ include "zinc-observe.fullname" . }}
+                name: {{ include "zincobserve.fullname" . }}
             - configMapRef:
-                name: {{ include "zinc-observe.fullname" . }}
+                name: {{ include "zincobserve.fullname" . }}
           env:
-            - name: ZIOX_NODE_ROLE
+            - name: ZO_NODE_ROLE
               value: "compactor"
+            {{- if not .Values.etcd.bundled }}
+            - name: ZO_ETCD_ADDR
+              value: {{ .Values.etcd.externalUrl }}
+            {{- else }}
+            - name: ZO_ETCD_ADDR
+              value: {{ .Release.Name }}-etcd.{{ .Release.Namespace }}.svc.cluster.local
+            {{- end }}
+            
             
       {{- with .Values.nodeSelector }}
       nodeSelector:
