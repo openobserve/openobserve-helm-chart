@@ -128,13 +128,13 @@ tolerations: []
 affinity: {}
 
 etcd:
-  bundled: "true"
-  externalUrl: "etcd-headless.ziox-noderole.svc.cluster.local:2379"
-  replicaCount: 1
+  bundled: true # if true then etcd will be deployed as part of zincobserve
+  externalUrl: "my_custom_host.com:2379" # if bundled is false then this is required
+  replicaCount: 3 # if bundled is true then this is required. should be odd number
   image:
     registry: docker.io
     repository: bitnami/etcd
-    tag: 3.5.5-debian-11-r17
+    tag: 3.5.7-debian-11-r10
     digest: ""
   auth:
     rbac:

@@ -27,7 +27,7 @@ dependencies:
 - name: etcd
   version: "8.5.11"
   repository: "https://charts.bitnami.com/bitnami"
-  condition: etcd.external
+  condition: etcd.bundled
 
 maintainers:
   - name: Zinc Labs Inc
