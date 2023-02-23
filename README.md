@@ -4,7 +4,7 @@ Clone the repo, update values.yaml file as per your requirements and run below c
 
 ## Amazon EKS
 
-ZincObserve uses IRSA on Amazon EKS to securely access s3.
+ZincObserve uses [IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) on Amazon EKS to securely access s3.
 
 You must set a minimum of 2 values:
 
