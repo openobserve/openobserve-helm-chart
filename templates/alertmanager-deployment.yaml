@@ -6,9 +6,7 @@ metadata:
   labels:
     {{- include "zincobserve.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount.alertmanager }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "zincobserve.selectorLabels" . | nindent 6 }}
