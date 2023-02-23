@@ -59,13 +59,6 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "router"
-            {{- if not .Values.etcd.bundled }}
-            - name: ZO_ETCD_ADDR
-              value: {{ .Values.etcd.externalUrl }}
-            {{- else }}
-            - name: ZO_ETCD_ADDR
-              value: {{ .Release.Name }}-etcd.{{ .Release.Namespace }}.svc.cluster.local
-            {{- end }}
             
       {{- with .Values.nodeSelector }}
       nodeSelector:
