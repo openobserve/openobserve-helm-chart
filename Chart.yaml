@@ -1,6 +1,6 @@
 apiVersion: v2
 name: zincobserve
-description: A Helm chart for Zinc Observe Observability platform (Logs, Metrics and Traces)
+description: A Helm chart for ZincObserve Observability platform (Logs, Metrics and Traces)
 
 # A chart can be either an 'application' or a 'library' chart.
 #
