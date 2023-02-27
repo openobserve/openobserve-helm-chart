@@ -1,0 +1,58 @@
+apiVersion: v1
+entries:
+  etcd:
+  - annotations:
+      category: Database
+    apiVersion: v2
+    appVersion: 3.5.6
+    created: "2023-02-28T05:21:21.722314+05:30"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: etcd is a distributed key-value store designed to securely store
+      data across a cluster. etcd is widely used in production on account of its reliability,
+      fault-tolerance and ease of use.
+    digest: b65de665a1503e01c0ac710153cedefb4a08f2b5901b01dbb96472c699e78189
+    home: https://github.com/bitnami/charts/tree/main/bitnami/etcd
+    icon: https://bitnami.com/assets/stacks/etcd/img/etcd-stack-220x234.png
+    keywords:
+    - etcd
+    - cluster
+    - database
+    - cache
+    - key-value
+    maintainers:
+    - name: Bitnami
+      url: https://github.com/bitnami/charts
+    name: etcd
+    sources:
+    - https://github.com/bitnami/containers/tree/main/bitnami/etcd
+    - https://coreos.com/etcd/
+    urls:
+    - https://charts.zinc.dev/charts/etcd-8.5.11.tgz
+    version: 8.5.11
+  zincobserve:
+  - apiVersion: v2
+    appVersion: v0.1.6
+    created: "2023-02-28T05:21:21.720846+05:30"
+    dependencies:
+    - condition: etcd.bundled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.5.11
+    description: A Helm chart for ZincObserve Observability platform (Logs, Metrics
+      and Traces)
+    digest: 5484bcec6f1dfed56e61be1968c211a2ed4ce304c6f18e9977f37564d09f2375
+    maintainers:
+    - email: hello@zinclabs.io
+      name: Zinc Labs Inc
+      url: https://zinc.dev
+    name: zincobserve
+    type: application
+    urls:
+    - https://charts.zinc.dev/zincobserve-0.1.6.tgz
+    version: 0.1.6
+generated: "2023-02-28T05:21:21.715479+05:30"

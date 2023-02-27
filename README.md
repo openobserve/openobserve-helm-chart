@@ -1,7 +1,5 @@
 # ZincObserve helm chart
 
-Clone the repo, update values.yaml file as per your requirements and run below commands to:
-
 ## Amazon EKS
 
 ZincObserve uses [IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) on Amazon EKS to securely access s3.
@@ -15,7 +13,12 @@ You must set a minimum of 2 values:
 
 ## Install
 
-helm install observe1 .
+helm repo add zinc https://charts.zinc.dev
+helm repo update
+
+kubectl create ns zincobserve
+
+helm --namespace zincobserve -f values.yaml install zo1 zinc/zincobserve
 
 
 ## Uninstall
