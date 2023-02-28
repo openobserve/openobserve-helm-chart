@@ -13,18 +13,21 @@ You must set a minimum of 2 values:
 
 ## Install
 
+```shell
 helm repo add zinc https://charts.zinc.dev
 helm repo update
 
 kubectl create ns zincobserve
 
-helm --namespace zincobserve -f values.yaml install zo1 zinc/zincobserve
 
+helm --namespace zincobserve -f values.yaml install zo1 zinc/zincobserve
+```
 
 ## Uninstall
 
+```shell
 helm delete observe1
-
+```
 
 
 
