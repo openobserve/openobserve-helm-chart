@@ -19,7 +19,6 @@ helm repo update
 
 kubectl create ns zincobserve
 
-
 helm --namespace zincobserve -f values.yaml install zo1 zinc/zincobserve
 ```
 
