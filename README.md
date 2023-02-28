@@ -26,7 +26,7 @@ helm --namespace zincobserve -f values.yaml install zo1 zinc/zincobserve
 ## Uninstall
 
 ```shell
-helm delete observe1
+helm delete zo1
 ```
 
 
