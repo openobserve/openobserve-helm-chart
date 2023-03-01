@@ -1,9 +1,13 @@
 #!/bin/sh
 
+rm -rf artifacts
+rm *.tgz
+
 helm package .
 
 helm repo index --url https://charts.zinc.dev .
 
+mkdir artifacts
 cp -r index.yaml artifacts/index.yaml
 cp -r *.tgz artifacts/
 aws s3 sync artifacts s3://zincsearch-releases/charts/

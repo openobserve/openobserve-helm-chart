@@ -5,7 +5,7 @@ entries:
       category: Database
     apiVersion: v2
     appVersion: 3.5.6
-    created: "2023-03-01T13:50:23.418049+05:30"
+    created: "2023-03-01T15:07:56.379053+05:30"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -37,7 +37,7 @@ entries:
   zincobserve:
   - apiVersion: v2
     appVersion: v0.1.8
-    created: "2023-03-01T13:50:23.416136+05:30"
+    created: "2023-03-01T15:07:56.377536+05:30"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -45,7 +45,7 @@ entries:
       version: 8.5.11
     description: A Helm chart for ZincObserve Observability platform (Logs, Metrics
       and Traces)
-    digest: cbfa8ae52d5883dbe9047bf93f1c9664a95e7161459e0731e9fa26a3b1ff7944
+    digest: 26c44cd1bd5827f3be17bced14079b3c160cacf5db7726fc5b76f601a4e594b3
     maintainers:
     - email: hello@zinclabs.io
       name: Zinc Labs Inc
@@ -55,24 +55,4 @@ entries:
     urls:
     - https://charts.zinc.dev/zincobserve-0.1.8.tgz
     version: 0.1.8
-  - apiVersion: v2
-    appVersion: v0.1.8
-    created: "2023-03-01T13:50:23.409778+05:30"
-    dependencies:
-    - condition: etcd.bundled
-      name: etcd
-      repository: https://charts.bitnami.com/bitnami
-      version: 8.5.11
-    description: A Helm chart for ZincObserve Observability platform (Logs, Metrics
-      and Traces)
-    digest: 3be0ab09ed5762c326a351600bfe8908ddea4905ead4a0e01d84407df301df76
-    maintainers:
-    - email: hello@zinclabs.io
-      name: Zinc Labs Inc
-      url: https://zinc.dev
-    name: zincobserve
-    type: application
-    urls:
-    - https://charts.zinc.dev/zincobserve-0.1.6.tgz
-    version: 0.1.6
-generated: "2023-03-01T13:50:23.404485+05:30"
+generated: "2023-03-01T15:07:56.3709+05:30"
