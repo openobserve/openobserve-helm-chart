@@ -118,6 +118,7 @@ config:
   ZO_S3_ACCESS_KEY: ""
   ZO_S3_SECRET_KEY: ""
   ZO_S3_BUCKET_NAME: "mysuperduperbucket"
+  ZO_DATA_LIFECYCLE: "0"
 
 service:
   type: ClusterIP

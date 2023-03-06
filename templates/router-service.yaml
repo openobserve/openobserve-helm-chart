@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "zincobserve.labels" . | nindent 4 }}
+    prometheus.io/scrape: "true"
 spec:
   type: {{ .Values.service.type }}
   ports:
