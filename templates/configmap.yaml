@@ -17,7 +17,6 @@ data:
   ZO_GRPC_ORG_HEADER_KEY: "{{ .Values.config.ZO_GRPC_ORG_HEADER_KEY }}"
   ZO_ROUTE_TIMEOUT: "{{ .Values.config.ZO_ROUTE_TIMEOUT }}"
   ZO_LOCAL_MODE_STORAGE: "{{ .Values.config.ZO_LOCAL_MODE_STORAGE }}"
-  ZO_NODE_ROLE: "{{ .Values.config.ZO_NODE_ROLE }}"
   ZO_INSTANCE_NAME: "{{ .Values.config.ZO_INSTANCE_NAME }}"
   ZO_DATA_DIR: "{{ .Values.config.ZO_DATA_DIR }}"
   ZO_DATA_WAL_DIR: "{{ .Values.config.ZO_DATA_WAL_DIR }}"
@@ -72,9 +71,33 @@ data:
   ZO_ETCD_LOAD_PAGE_SIZE: "{{ .Values.config.ZO_ETCD_LOAD_PAGE_SIZE }}"
   ZO_SLED_DATA_DIR: "{{ .Values.config.ZO_SLED_DATA_DIR }}"
   ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
+  ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
+  {{- if .Values.minio.bundled }}
+  ZO_S3_PROVIDER: "minio"
+  {{- end }}
+  {{- if not .Values.minio.bundled }}
   ZO_S3_SERVER_URL: "{{ .Values.config.ZO_S3_SERVER_URL }}"
+  {{- else }}
+  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio-svc.{{ .Release.Namespace }}.svc.cluster.local:9000"
+  {{- end }}
+  {{- if not .Values.minio.bundled }}
   ZO_S3_REGION_NAME: "{{ .Values.config.ZO_S3_REGION_NAME }}"
+  {{- else }}
+  ZO_S3_REGION_NAME: "us-east-1"
+  {{- end }}
+  {{- if not .Values.minio.bundled }}
   ZO_S3_ACCESS_KEY: "{{ .Values.config.ZO_S3_ACCESS_KEY }}"
+  {{- else }}
+  ZO_S3_ACCESS_KEY: "{{ .Values.minio.rootUser }}"
+  {{- end }}
+  {{- if not .Values.minio.bundled }}
   ZO_S3_SECRET_KEY: "{{ .Values.config.ZO_S3_SECRET_KEY }}"
+  {{- else }}
+  ZO_S3_SECRET_KEY: "{{ .Values.minio.rootPassword }}"
+  {{- end }}
+  {{- if not .Values.minio.bundled }}
   ZO_S3_BUCKET_NAME: "{{ .Values.config.ZO_S3_BUCKET_NAME }}"
+  {{- else }}
+  ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
+  {{- end }}
   ZO_DATA_LIFECYCLE: "{{ .Values.config.ZO_DATA_LIFECYCLE }}"

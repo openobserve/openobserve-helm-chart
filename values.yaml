@@ -16,7 +16,7 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: 
+  annotations: {}
     # eks.amazonaws.com/role-arn: arn:aws:iam::12345353456:role/zo-s3-eks
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
@@ -113,11 +113,12 @@ config:
   ZO_ETCD_LOAD_PAGE_SIZE: "10000"
   ZO_SLED_DATA_DIR: "" 
   ZO_SLED_PREFIX: "/zinc/observe/"
-  ZO_S3_SERVER_URL: ""
-  ZO_S3_REGION_NAME: ""
-  ZO_S3_ACCESS_KEY: ""
-  ZO_S3_SECRET_KEY: ""
-  ZO_S3_BUCKET_NAME: "mysuperduperbucket"
+  # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if bundled minio is being used.
+  ZO_S3_SERVER_URL: ""  # do not need to set this if bundled minio is being used. settings will be picked from minio section
+  ZO_S3_REGION_NAME: ""  # do not need to set this if bundled minio is being used. settings will be picked from minio section
+  ZO_S3_ACCESS_KEY: ""  # do not need to set this if bundled minio is being used. settings will be picked from minio section
+  ZO_S3_SECRET_KEY: ""  # do not need to set this if bundled minio is being used. settings will be picked from minio section
+  ZO_S3_BUCKET_NAME: "mysuperduperbucket"   # do not need to set this if bundled minio is being used. settings will be picked from minio section
   ZO_DATA_LIFECYCLE: "0"
 
 service:
@@ -191,3 +192,36 @@ etcd:
     accessModes:
       - ReadWriteOnce
     annotations: {}
+  
+minio:
+  bundled: false # if true then minio will be deployed as part of zincobserve
+  region: "us-east-1"
+  rootUser: rootuser
+  rootPassword: rootpass123
+  drivesPerNode: 1
+  replicas: 4
+  mode: distributed # or standalone
+  image:
+    repository: quay.io/minio/minio
+    tag: RELEASE.2023-02-10T18-48-39Z
+    pullPolicy: IfNotPresent
+  mcImage:
+    repository: quay.io/minio/mc
+    tag: RELEASE.2023-01-28T20-29-38Z
+    pullPolicy: IfNotPresent
+  buckets:
+    - name: mysuperduperbucket
+      policy: none
+      purge: false
+  resources:
+    requests:
+      memory: 256Mi
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    annotations: {}
+
+

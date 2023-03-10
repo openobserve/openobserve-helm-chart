@@ -29,6 +29,24 @@ helm delete zo1
 ```
 
 
+# Development
 
+If you are developing this chart then you should clone the repo and make any modifications. 
 
+You can generate output of the chart using to verify:
 
+```shell
+helm -n zincobserve template zo1 . > zo1.yaml
+```
+
+You can then install using:
+
+```shell
+helm -n zincobserve install zo1 .
+```
+
+To upgrade 
+
+```shell
+helm -n zincobserve upgrade zo1 .
+```

@@ -2,5 +2,8 @@ dependencies:
 - name: etcd
   repository: https://charts.bitnami.com/bitnami
   version: 8.5.11
-digest: sha256:d36004a7b251a4e50b25f47dffbea031a2ad7af175a75ee965cdcad3655a5fc5
-generated: "2022-12-25T06:22:52.675309-08:00"
+- name: minio
+  repository: https://charts.min.io
+  version: 5.0.7
+digest: sha256:9a65c0c91bccae69058be149572b9f61cac32fe0adc804c20dd716be6104e5d8
+generated: "2023-03-10T18:56:10.872911+05:30"
