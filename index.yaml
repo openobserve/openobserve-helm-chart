@@ -5,7 +5,7 @@ entries:
       category: Database
     apiVersion: v2
     appVersion: 3.5.6
-    created: "2023-03-06T16:34:13.876859+05:30"
+    created: "2023-03-11T03:33:50.154664+05:30"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -34,18 +34,45 @@ entries:
     urls:
     - https://charts.zinc.dev/charts/etcd-8.5.11.tgz
     version: 8.5.11
+  minio:
+  - apiVersion: v1
+    appVersion: RELEASE.2023-02-10T18-48-39Z
+    created: "2023-03-11T03:33:50.155459+05:30"
+    description: Multi-Cloud Object Storage
+    digest: 3f935a310e1b5b873052629b66005c160356ca7b2bd394cb07b34dbaf9905e3f
+    home: https://min.io
+    icon: https://min.io/resources/img/logo/MINIO_wordmark.png
+    keywords:
+    - minio
+    - storage
+    - object-storage
+    - s3
+    - cluster
+    maintainers:
+    - email: dev@minio.io
+      name: MinIO, Inc
+    name: minio
+    sources:
+    - https://github.com/minio/minio
+    urls:
+    - https://charts.zinc.dev/charts/minio-5.0.7.tgz
+    version: 5.0.7
   zincobserve:
   - apiVersion: v2
-    appVersion: v0.2.3
-    created: "2023-03-06T16:34:13.874616+05:30"
+    appVersion: v0.2.0
+    created: "2023-03-11T03:33:50.153195+05:30"
     dependencies:
     - condition: etcd.bundled
       name: etcd
       repository: https://charts.bitnami.com/bitnami
       version: 8.5.11
+    - condition: minio.bundled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
     description: A Helm chart for ZincObserve Observability platform (Logs, Metrics
       and Traces)
-    digest: e4f8a2f9be0b8b17a7a2fbf40e274dfb6c6b0498dabed0841974e40ccac99b38
+    digest: c1a96b6dd9ca974cd98fd4cae91c65637ec33dac4ab85d02a20802c73ae98623
     maintainers:
     - email: hello@zinclabs.io
       name: Zinc Labs Inc
@@ -53,6 +80,6 @@ entries:
     name: zincobserve
     type: application
     urls:
-    - https://charts.zinc.dev/zincobserve-0.2.3.tgz
-    version: 0.2.3
-generated: "2023-03-06T16:34:13.870155+05:30"
+    - https://charts.zinc.dev/zincobserve-0.2.4.tgz
+    version: 0.2.4
+generated: "2023-03-11T03:33:50.146172+05:30"
