@@ -31,6 +31,22 @@ spec:
       serviceAccountName: {{ include "zincobserve.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if and .Values.ingester.persistence.volumePermissions.enabled .Values.ingester.persistence.enabled }}
+      initContainers:
+        - name: volume-permissions
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /data
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -79,8 +95,11 @@ spec:
   - metadata:
       name: data
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes:
+      {{- range .Values.ingester.persistence.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      storageClassName: {{ .Values.ingester.persistence.storageClass }}
       resources:
         requests:
-          storage: 10Gi
-
+          storage: {{ .Values.ingester.persistence.size | quote }}

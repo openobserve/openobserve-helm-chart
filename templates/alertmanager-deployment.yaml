@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "zincobserve.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount.alertmanager }}
   selector:
     matchLabels:
       {{- include "zincobserve.selectorLabels" . | nindent 6 }}
@@ -54,8 +54,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "alertmanager"
-            
-            
+
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
