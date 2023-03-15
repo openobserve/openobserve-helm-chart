@@ -37,12 +37,13 @@ spec:
           image: busybox:latest
           imagePullPolicy: IfNotPresent
           command:
-            - /bin/bash
-            - -ec
+            - /bin/sh
+            - -c
             - |
               chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /data
           securityContext:
             runAsUser: 0
+            runAsNonRoot: false
           volumeMounts:
             - name: data
               mountPath: /data
