@@ -1,10 +1,16 @@
 #!/bin/sh
 
+# Any extra files will bloat the chart and make it fail to install.
 rm -rf artifacts
 rm *.tgz
 
+# build the chart.
 helm package .
 
+# copy all previous charts from s3 so we can update the index
+aws s3 sync s3://zincsearch-releases/charts/ .
+
+# update the index
 helm repo index --url https://charts.zinc.dev .
 
 mkdir artifacts

@@ -125,12 +125,12 @@ config:
   ZO_ETCD_LOAD_PAGE_SIZE: "10000"
   ZO_SLED_DATA_DIR: ""
   ZO_SLED_PREFIX: "/zinc/observe/"
-  # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if bundled minio is being used.
-  ZO_S3_SERVER_URL: "" # do not need to set this if bundled minio is being used. settings will be picked from minio section
-  ZO_S3_REGION_NAME: "" # do not need to set this if bundled minio is being used. settings will be picked from minio section
-  ZO_S3_ACCESS_KEY: "" # do not need to set this if bundled minio is being used. settings will be picked from minio section
-  ZO_S3_SECRET_KEY: "" # do not need to set this if bundled minio is being used. settings will be picked from minio section
-  ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if bundled minio is being used. settings will be picked from minio section
+  # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.
+  ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_ACCESS_KEY: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_SECRET_KEY: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_DATA_LIFECYCLE: "0"
 
 service:
@@ -187,9 +187,9 @@ tolerations: []
 affinity: {}
 
 etcd:
-  bundled: true # if true then etcd will be deployed as part of zincobserve
-  externalUrl: "my_custom_host.com:2379" # if bundled is false then this is required
-  replicaCount: 3 # if bundled is true then this is required. should be odd number
+  enabled: true # if true then etcd will be deployed as part of zincobserve
+  externalUrl: "my_custom_host.com:2379" # if enabled is false then this is required
+  replicaCount: 3 # if enabled is true then this is required. should be odd number
   image:
     registry: docker.io
     repository: bitnami/etcd
@@ -212,7 +212,7 @@ etcd:
     annotations: {}
 
 minio:
-  bundled: false # if true then minio will be deployed as part of zincobserve
+  enabled: false # if true then minio will be deployed as part of zincobserve
   region: "us-east-1"
   rootUser: rootuser
   rootPassword: rootpass123

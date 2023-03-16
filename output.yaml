@@ -1,0 +1,755 @@
+---
+# Source: zincobserve/charts/etcd/templates/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: zo1-etcd
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/managed-by: Helm
+spec:
+  minAvailable: 51%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etcd
+      app.kubernetes.io/instance: zo1
+---
+# Source: zincobserve/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: zo1-zincobserve
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: zincobserve/charts/etcd/templates/token-secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zo1-etcd-jwt-token
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  jwt-token.pem: "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlKS1FJQkFBS0NBZ0VBdERxcXoycDRpeEJIYm4wZE1qcm84RkpTanRLT0NtcVlzcFN6USswaVZCd29SVmFzCm1kdmlrb2VrcjFjaDJSSFo1SFJhcjBiVmVjVVlGSzJIS1pucmVRWGpBdG1XVDJ1dGhIaDJUTUxZZGJKbmdERlMKTit0UnlZK2pIdmdaZ1dRUy9mZDdiZHdlbXkzN055ejUzd2o0bnBqQ2tObmgrYU9yVGxXQ211VXFBWSsvVEd4UQpIWTB0RU5UVXk2VENRT3hBLzN2ZEJrN0tKemVlaXBzMVBtOXgvNEVjak44a2NFcGZwbzRHSUd1OFp6TXJqV243CmFuQnhLWW1OWjNqM1h0OVdrMEJoM0xYZVE0V0ZDMnJMY2NKN2Jjb0tUdUlYNEIrRWNlSG5RRzJmQXVOajU4MkIKZVhERUo2Z1pZUS83UlAzQkVFVzZMdVlsVVI4NTlOU05NN2VERm5vR3lxNjlMdzZaVG12anRqWGM4ZElDNExnUwpkd2dQb0R0OHloaWlEdU1jYWFEOXB0S0dRaUNVTFZxdnBzNXdjZDRjU3F3U20yZ3ZnYWRadmlwcU5tZzltR1k4CjlrWTYybzFHVkpFVEVqRkV1RjFJUVpNb1YzVGJhNm9xdzBoZEQ0RkFWRlZhczlhN0VpRE45SzlCVTUzNEZSMHEKeGNsQ2tidjRhSzNHcnkxOUtXTFo5b1FGbGVWL2xmclJqZjdqd0xhYVNleGgzemViaFBWMlJ2c0s1c1czaUxrdgo5Ry9SV2JDdEphRDgwNDc4SSs0UGs0bVppNW5wOE1ET0l5KzRpK1NHeWVJanRwUE5WaCtFNExtalJTYlRLSGJDCjR2RzlNWEN5TDlWVGJHMVZSM2Rub1Zrc010MUg0Q0hzcmlzQXhaU01EL1lDbGlMTkJ6UmxvSVpBUk5FQ0F3RUEKQVFLQ0FnRUFyWFA4Nmd2OUlWRTBmZ2laYmJzMmJmdThpc25uZSt6bE1wRmNDZGFTQUVMdEd2WjB2TXJiUHN5ZQoyVVZSUlJraUMvVlRSWGMxZ3JFR0lQaDBxYndCM0lLbTNScE54L2ZJa2tKaEVEVkJuOXhvTWY3RnN4MmRwQS9DCkhNOEh0UGg4TXNIWW4zMkdVekNvb294OW1vS0d6QlFXeE5OODRRWDhtekkrdFJZeUhEaWRFazczdDhra0F4dmkKQkc5M3FJWDNkQ3BnS0c3eHJWYWhGYUtVVnBkcExrNnpESHpCRS9Ud0kxcHlXUWQyMWhkd0pmUkd6RVNWRkRYVwp5aXVvWHowd2xCMFZVaFlTYUFkN2FPYUtEOXp0YjFkUUhtVUlOMkg5MUtCbU1DS1FNM1ptc3pPY0ZTVkxFeU43CjhXY3hHMC9nVytuUGFzMkNRcFY3OEw0VGV4OTFYekhNMzhQMXc4RnVVUm5BeE1tWHBnMFBNaE1FcXlwcitObnAKYjBBaXFVRzc3Zzhzc3VNN1NSb1BXZU41TTFiSmU0YmRZSW5kTFBSYmkxQWJsTmMzWUg3ckk2eHRkQkdXUmMyaAozZXVlZXc3bFBhNEN2ZXQzQTJkRkJRK1lLKzJkelZCK2FDaUtGN0Z3Z1Y2ZlllQlI2NEFGeWpMTkxrZFhKQ01pCkNLSW1wMlNEdlpURVJaR09nd2htK0w5aFQ5c1UrL1l1T25tN1daRFZrQTVDMzNtb3FZRXRqMnRpSW82WW5qbUMKcU5hK2NtY09WVTNreGlnRndaWE55NGFncEtCYmxKOXRmODkycHZlamdmU0h3NVFhV2FiMlVaamg4UlJQdDVaRgphTWduaUphdzBsR0RCcTJpZHFMVTRTNURuTEh5UmVWNXFJS0pJOERFMjA4WXc1RDhPU1VDZ2dFQkFOeXdyb0QyCnhmWVU1NTMyN01kTFN4RzlPNmh1aURUcTBuYzhDdkxMcW54Y1h0NWR3Ny96aE1pS2h5b3RYUW5qNEtuVm9nbloKZVNtTWRIeDcycTJrM1M2Mm9EU1o1TXlDS0FGdjBtZC8xVnBLYlJmK3ZsK1VNTUxLNkdjU2c0U3JIWlJ3VTFLagpnem8rUTJ3UkV0bUZ4U3lxMkIrVXIyVjBvazdhbHcxTkJEMG8zdHR3VnpSSEJTcHprbVdYTDBOUWJSMmwrRFlqCmEwSlFtRDZDM3RxdlRZSDFYNWlKczIzV1FKY0Fsd1p0WE1LMWZuZWEvUkFmUnhyNGhoYnRuRzRDKzA1QzZwcXcKOE9YelQ4aEh6VGk4aUwrZDJ4SUJhZ2FqWWZNcFlER2Z3V3pqVm02b0ZIMWM1dDhqY3ZlS0RCbGZiOFBkVEo0dgpNVVBTVGIwQVcrdUVnTjhDZ2dFQkFORVF1eHdISWhVWWFEL0JGR0ZLZHpsTTBmWnRueHNScWx5OWpzNG83Uk5QCkR2Qzh5UXMzelJVZFVvU3MrYWJCRmk5WldoUXkvbG5EaXhyZkdqZUg5L2lMSG9iZ0JuT2VwbzZWUDc0T1l2Mm8KSVM4ZHlJeVNia1oweDV3TzhiZ0Y2dWJ5M2NXOVIvdlMySytnK2RrUHlnaXhnR21ybUR1QzJZdFFMRkxrOTcwTwozNDY1R3EzWTJ4VitNd1ZIWEh5U1VkNGwySTZrbjZlRGVlbWEweUpidFNZeXNUVHY0NE8rWWlNK3dkeE5zdXN6CmNWZkhYZGpkRW45WDR6ZE5BamlSN2IrU0tEcFZIdmltTHZvcTZhUkhLM0pBbG1rT1RpeWFOZkUvRjFISEo3OXAKMnp5MEVqcE9UNzNyQUt4dUFwR0FvMlJPZzFPNlVWSDRkSTUwQ1FTemdFOENnZ0VBYWZTbUE2TDNUbnVnN0hXRwpIdlVtV0tEN0NKWHc3VDhreHp4Ym9WQnBUUVhvUW1qUU45T0tGK0p5bkt4azgvK2xlTVRwNUVLMmFsMVYvQUpXCjduR3VBK1NJckZpS3dpbG5YYkU3V3BmRWJuSTNTSUwxRWR5TFFLcTh3K2Zlbnc2c3gvelo5RjR1L2dLd3lpeTAKV1IxaG1sMTRJRWw1b0lOTC9nSHk3ZDdoUHgvbFI0UDdTazBpek12cUtMNWFZYjQyZFRxZkhoY0pRekNBdDlxTApkb0VkL0Z3N2huZnVYcmkwRUF1bmR0MkE0TGJVdmtYNlpBZ3dVbUdwdDA1amdXb0xEL3NPdWpCanFIT1dCWGw3CnJWYlBiUGcwR3NQMURMVGFyUzFiVXRmNXZQYTFJN0d0RExkUzNTVWU2SHd0N095bU0ycUhnNWJ5MXpZY1ByYnkKYXZRV0R3S0NBUUVBellmaU93cTBNZ0w5c2ZleWZuZER3SHhLU2phNDNWYS9vazdrenI2alc0RTBrZTAyeEtXRwpJOFRnOC9oTnN1ZE9WUnhGbDJnT2I5YnlzV2MyRWZQRkQzNU5jNUZZSm1DSkk5R01pZDhBNkpoYWowUjdmZDhUCk5JYm9HZjhER2NRUGpCNmxjaG5FWThpRUtCMWNvMDJIZElaMFZPNVNTZWM0MFdIdlFVdENWb1lCdUFFNFBrTGMKRjBRckNueCtheVU2QU9nNS92bk96MU5ORGlDY2dzR2YxRDZ2d2ZnNE5yTjdMV1VzRnRYNEdJeEpXRjl5WHBudgo3bXRMd0hrZnZ0ZVA0TzdpUjM2WlpSK1RQWFBrb0JFcm9EWG82TDBjazNMRHB6azhSclJBMmtoS05XSmVMUjRCCi9SYkVZY0FCSEdSWHZXd0daZERjMDNZcnVFUlEvV011dHdLQ0FRQm04ZzhQdStJV3lZOGxGcnd2cVRWbndCWUMKWWVNUnhHdHByVVpRTk9QMEZsbks5Sk43WURJUGJTR1lTMUZ3elBhSzRwVGc1a3B2QzRzK0E5clhEekFWaldJVgo2MURaVWplSE4rUTdrOE9xZnhhUUFPRHp5elVZM0packd6bEs5aTVuQkVPSTFnWmo0NldBYVNIL210NFRjOC9ZCmhwb1BiVlhCbGtBNVhNZVNmRVNNakN1WXZOdXpiUENqN0NWeEZ0ZHRLRElrdVFybWkxTG1qNE5weWo1T1lzY2sKSllEMVh5ZUZ4OUd4V1N4dmwwVkNsZXN4Q25lSG9NYUFqMTlrR2J3WXc4b2FNZVJJVHFuejh3S1gxQ1IwMW1wbQpJeElDQ3Y4andTWXRlelM1T0lKSFZYRm5ud1hyRWZ4NHhFQU1iYmpwV3VhWlFLQ1ZLaDZXekJZaC80UVoKLS0tLS1FTkQgUlNBIFBSSVZBVEUgS0VZLS0tLS0K"
+---
+# Source: zincobserve/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zo1-zincobserve
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+stringData:
+  ZO_ROOT_USER_EMAIL: "root@example.com"
+  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+---
+# Source: zincobserve/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zo1-zincobserve
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  ZO_LOCAL_MODE: "false"
+  ZO_ETCD_ADDR: "zo1-etcd-headless.default.svc.cluster.local:2379"
+  ZO_GRPC_PORT: "5081"
+  ZO_GRPC_TIMEOUT: "600"
+  ZO_GRPC_ORG_HEADER_KEY: "zinc-org-id"
+  ZO_ROUTE_TIMEOUT: "600"
+  ZO_LOCAL_MODE_STORAGE: "disk"
+  ZO_INSTANCE_NAME: ""
+  ZO_DATA_DIR: "./data/"
+  ZO_DATA_WAL_DIR: ""
+  ZO_DATA_STREAM_DIR: ""
+  ZO_WAL_MEMORY_MODE_ENABLED: "false"
+  ZO_FILE_EXT_JSON: ".json"
+  ZO_FILE_EXT_PARQUET: ".parquet"
+  ZO_PARQUET_COMPRESSION: "zstd"
+  ZO_TIME_STAMP_COL: "_timestamp"
+  ZO_WIDENING_SCHEMA_EVOLUTION: "false"
+  ZO_FEATURE_PER_THREAD_LOCK: "false"
+  ZO_FEATURE_FULLTEXT_ON_ALL_FIELDS: "false"
+  ZO_UI_ENABLED: "true"
+  ZO_METRICS_DEDUP_ENABLED: "true"
+  ZO_TRACING_ENABLED: "false"
+  OTEL_OTLP_HTTP_ENDPOINT: "http://127.0.0.1:5080/api/nexus/traces"
+  ZO_TRACING_HEADER_KEY: "Authorization"
+  ZO_TRACING_HEADER_VALUE: "Basic YWRtaW46Q29tcGxleHBhc3MjMTIz"
+  ZO_TELEMETRY: "true"
+  ZO_TELEMETRY_URL: "https://e1.zinclabs.dev"
+  ZO_JSON_LIMIT: "209715200"
+  ZO_PAYLOAD_LIMIT: "209715200"
+  ZO_MAX_FILE_SIZE_ON_DISK: "10"
+  ZO_MAX_FILE_RETENTION_TIME: "600"
+  ZO_FILE_PUSH_INTERVAL: "10"
+  ZO_FILE_MOVE_THREAD_NUM: "0"
+  ZO_QUERY_THREAD_NUM: "0"
+  ZO_TS_ALLOWED_UPTO: "5"
+  ZO_METRICS_LEADER_PUSH_INTERVAL: "15"
+  ZO_METRICS_LEADER_ELECTION_INTERVAL: "30"
+  ZO_HEARTBEAT_INTERVAL: "30"
+  ZO_COMPACT_ENABLED: "true"
+  ZO_COMPACT_INTERVAL: "600"
+  ZO_COMPACT_MAX_FILE_SIZE: "256"
+  ZO_MEMORY_CACHE_ENABLED: "true"
+  ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
+  ZO_MEMORY_CACHE_MAX_SIZE: "0"
+  ZO_MEMORY_CACHE_RELEASE_SIZE: "0"
+  RUST_LOG: "info"
+  ZO_COLS_PER_RECORD_LIMIT: "200"
+  ZO_ETCD_PREFIX: "/zinc/observe/"
+  ZO_ETCD_CONNECT_TIMEOUT: "2"
+  ZO_ETCD_COMMAND_TIMEOUT: "5"
+  ZO_ETCD_LOCK_WAIT_TIMEOUT: "600"
+  ZO_ETCD_USER: ""
+  ZO_ETCD_PASSWORD: ""
+  ZO_ETCD_CLIENT_CERT_AUTH: "false"
+  ZO_ETCD_TRUSTED_CA_FILE: ""
+  ZO_ETCD_CERT_FILE: ""
+  ZO_ETCD_KEY_FILE: ""
+  ZO_ETCD_DOMAIN_NAME: ""
+  ZO_ETCD_LOAD_PAGE_SIZE: "10000"
+  ZO_SLED_DATA_DIR: ""
+  ZO_SLED_PREFIX: "/zinc/observe/"
+  ZO_S3_PROVIDER: ""
+  ZO_S3_SERVER_URL: ""
+  ZO_S3_REGION_NAME: ""
+  ZO_S3_ACCESS_KEY: ""
+  ZO_S3_SECRET_KEY: ""
+  ZO_S3_BUCKET_NAME: "mysuperduperbucket"
+  ZO_DATA_LIFECYCLE: "0"
+---
+# Source: zincobserve/charts/etcd/templates/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zo1-etcd-headless
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: client
+      port: 2379
+      targetPort: client
+    - name: peer
+      port: 2380
+      targetPort: peer
+  selector:
+    app.kubernetes.io/name: etcd
+    app.kubernetes.io/instance: zo1
+---
+# Source: zincobserve/charts/etcd/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zo1-etcd
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: "client"
+      port: 2379
+      targetPort: client
+      nodePort: null
+    - name: "peer"
+      port: 2380
+      targetPort: peer
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: etcd
+    app.kubernetes.io/instance: zo1
+---
+# Source: zincobserve/templates/ingester-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zo1-zincobserve-ingester
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    role: ingester
+---
+# Source: zincobserve/templates/querier-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zo1-zincobserve-querier
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    role: querier
+---
+# Source: zincobserve/templates/router-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zo1-zincobserve-router
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    role: router
+---
+# Source: zincobserve/templates/alertmanager-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zo1-zincobserve-alertmanager
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zincobserve
+      app.kubernetes.io/instance: zo1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zincobserve
+        app.kubernetes.io/instance: zo1
+    spec:
+      serviceAccountName: zo1-zincobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zincobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/zincobserve:v0.2.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5080
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: zo1-zincobserve
+            - configMapRef:
+                name: zo1-zincobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "alertmanager"
+---
+# Source: zincobserve/templates/compactor-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zo1-zincobserve-compactor
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zincobserve
+      app.kubernetes.io/instance: zo1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zincobserve
+        app.kubernetes.io/instance: zo1
+    spec:
+      serviceAccountName: zo1-zincobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zincobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/zincobserve:v0.2.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5080
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: zo1-zincobserve
+            - configMapRef:
+                name: zo1-zincobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "compactor"
+---
+# Source: zincobserve/templates/querier-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zo1-zincobserve-querier
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zincobserve
+      app.kubernetes.io/instance: zo1
+      role: querier
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zincobserve
+        app.kubernetes.io/instance: zo1
+        role: querier
+    spec:
+      serviceAccountName: zo1-zincobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zincobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/zincobserve:v0.2.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: zo1-zincobserve
+            - configMapRef:
+                name: zo1-zincobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "querier"
+---
+# Source: zincobserve/templates/router-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zo1-zincobserve-router
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zincobserve
+      app.kubernetes.io/instance: zo1
+      role: router
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zincobserve
+        app.kubernetes.io/instance: zo1
+        role: router
+    spec:
+      serviceAccountName: zo1-zincobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zincobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/zincobserve:v0.2.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: zo1-zincobserve
+            - configMapRef:
+                name: zo1-zincobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "router"
+---
+# Source: zincobserve/charts/etcd/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zo1-etcd
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.5.11
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etcd
+      app.kubernetes.io/instance: zo1
+  serviceName: zo1-etcd-headless
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: etcd
+        helm.sh/chart: etcd-8.5.11
+        app.kubernetes.io/instance: zo1
+        app.kubernetes.io/managed-by: Helm
+      annotations:
+        checksum/token-secret: b0b39bea876acdb8011e9b518b449339fb2d5884ca2f226641368982fed173ea
+    spec:
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: etcd
+                    app.kubernetes.io/instance: zo1
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: "default"
+      containers:
+        - name: etcd
+          image: docker.io/bitnami/etcd:3.5.7-debian-11-r10
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_STS_NAME
+              value: "zo1-etcd"
+            - name: ETCDCTL_API
+              value: "3"
+            - name: ETCD_ON_K8S
+              value: "yes"
+            - name: ETCD_START_FROM_SNAPSHOT
+              value: "no"
+            - name: ETCD_DISASTER_RECOVERY
+              value: "no"
+            - name: ETCD_NAME
+              value: "$(MY_POD_NAME)"
+            - name: ETCD_DATA_DIR
+              value: "/bitnami/etcd/data"
+            - name: ETCD_LOG_LEVEL
+              value: "info"
+            - name: ALLOW_NONE_AUTHENTICATION
+              value: "yes"
+            - name: ETCD_AUTH_TOKEN
+              value: "jwt,priv-key=/opt/bitnami/etcd/certs/token/jwt-token.pem,sign-method=RS256,ttl=10m"
+            - name: ETCD_ADVERTISE_CLIENT_URLS
+              value: "http://$(MY_POD_NAME).zo1-etcd-headless.default.svc.cluster.local:2379,http://zo1-etcd.default.svc.cluster.local:2379"
+            - name: ETCD_LISTEN_CLIENT_URLS
+              value: "http://0.0.0.0:2379"
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              value: "http://$(MY_POD_NAME).zo1-etcd-headless.default.svc.cluster.local:2380"
+            - name: ETCD_LISTEN_PEER_URLS
+              value: "http://0.0.0.0:2380"
+            - name: ETCD_INITIAL_CLUSTER_TOKEN
+              value: "etcd-cluster-k8s"
+            - name: ETCD_INITIAL_CLUSTER_STATE
+              value: "new"
+            - name: ETCD_INITIAL_CLUSTER
+              value: "zo1-etcd-0=http://zo1-etcd-0.zo1-etcd-headless.default.svc.cluster.local:2380,zo1-etcd-1=http://zo1-etcd-1.zo1-etcd-headless.default.svc.cluster.local:2380,zo1-etcd-2=http://zo1-etcd-2.zo1-etcd-headless.default.svc.cluster.local:2380"
+            - name: ETCD_CLUSTER_DOMAIN
+              value: "zo1-etcd-headless.default.svc.cluster.local"
+            - name: ETCD_QUOTA_BACKEND_BYTES
+              value: "17179869184"
+          envFrom:
+          ports:
+            - name: client
+              containerPort: 2379
+              protocol: TCP
+            - name: peer
+              containerPort: 2380
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /opt/bitnami/scripts/etcd/prestop.sh
+          resources:
+            limits: {}
+            requests: {}
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/etcd
+            - name: etcd-jwt-token
+              mountPath: /opt/bitnami/etcd/certs/token/
+              readOnly: true
+      volumes:
+        - name: etcd-jwt-token
+          secret:
+            secretName: zo1-etcd-jwt-token
+            defaultMode: 256
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "20Gi"
+---
+# Source: zincobserve/templates/ingester-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zo1-zincobserve-ingester
+  namespace: "default"
+  labels:
+    helm.sh/chart: zincobserve-0.2.5
+    app.kubernetes.io/name: zincobserve
+    app.kubernetes.io/instance: zo1
+    app.kubernetes.io/version: "v0.2.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zincobserve
+      app.kubernetes.io/instance: zo1
+      role: ingester
+  serviceName: zo1-zincobserve
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zincobserve
+        app.kubernetes.io/instance: zo1
+        role: ingester
+    spec:
+      serviceAccountName: zo1-zincobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: zincobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/zincobserve:v0.2.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: zo1-zincobserve
+            - configMapRef:
+                name: zo1-zincobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "ingester"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      storageClassName: 
+      resources:
+        requests:
+          storage: "10Gi"

@@ -7,7 +7,7 @@ metadata:
     {{- include "zincobserve.labels" . | nindent 4 }}
 data:
   ZO_LOCAL_MODE: "{{ .Values.config.ZO_LOCAL_MODE }}"
-  {{- if not .Values.etcd.bundled }}
+  {{- if not .Values.etcd.enabled }}
   ZO_ETCD_ADDR: "{{ .Values.etcd.externalUrl }}"
   {{- else }}
   ZO_ETCD_ADDR: "{{ .Release.Name }}-etcd-headless.{{ .Release.Namespace }}.svc.cluster.local:2379"
@@ -72,30 +72,30 @@ data:
   ZO_SLED_DATA_DIR: "{{ .Values.config.ZO_SLED_DATA_DIR }}"
   ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
   ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
-  {{- if .Values.minio.bundled }}
+  {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
   {{- end }}
-  {{- if not .Values.minio.bundled }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_SERVER_URL: "{{ .Values.config.ZO_S3_SERVER_URL }}"
   {{- else }}
   ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio-svc.{{ .Release.Namespace }}.svc.cluster.local:9000"
   {{- end }}
-  {{- if not .Values.minio.bundled }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_REGION_NAME: "{{ .Values.config.ZO_S3_REGION_NAME }}"
   {{- else }}
   ZO_S3_REGION_NAME: "us-east-1"
   {{- end }}
-  {{- if not .Values.minio.bundled }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_ACCESS_KEY: "{{ .Values.config.ZO_S3_ACCESS_KEY }}"
   {{- else }}
   ZO_S3_ACCESS_KEY: "{{ .Values.minio.rootUser }}"
   {{- end }}
-  {{- if not .Values.minio.bundled }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_SECRET_KEY: "{{ .Values.config.ZO_S3_SECRET_KEY }}"
   {{- else }}
   ZO_S3_SECRET_KEY: "{{ .Values.minio.rootPassword }}"
   {{- end }}
-  {{- if not .Values.minio.bundled }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_BUCKET_NAME: "{{ .Values.config.ZO_S3_BUCKET_NAME }}"
   {{- else }}
   ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
