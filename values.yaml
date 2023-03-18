@@ -132,6 +132,7 @@ config:
   ZO_S3_SECRET_KEY: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_DATA_LIFECYCLE: "0"
+  RUST_BACKTRACE: "1"
 
 service:
   type: ClusterIP
