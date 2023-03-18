@@ -101,3 +101,4 @@ data:
   ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
   {{- end }}
   ZO_DATA_LIFECYCLE: "{{ .Values.config.ZO_DATA_LIFECYCLE }}"
+  RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
