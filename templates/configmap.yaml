@@ -86,16 +86,6 @@ data:
   ZO_S3_REGION_NAME: "us-east-1"
   {{- end }}
   {{- if not .Values.minio.enabled }}
-  ZO_S3_ACCESS_KEY: "{{ .Values.config.ZO_S3_ACCESS_KEY }}"
-  {{- else }}
-  ZO_S3_ACCESS_KEY: "{{ .Values.minio.rootUser }}"
-  {{- end }}
-  {{- if not .Values.minio.enabled }}
-  ZO_S3_SECRET_KEY: "{{ .Values.config.ZO_S3_SECRET_KEY }}"
-  {{- else }}
-  ZO_S3_SECRET_KEY: "{{ .Values.minio.rootPassword }}"
-  {{- end }}
-  {{- if not .Values.minio.enabled }}
   ZO_S3_BUCKET_NAME: "{{ .Values.config.ZO_S3_BUCKET_NAME }}"
   {{- else }}
   ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"

@@ -61,6 +61,8 @@ ingester:
 auth:
   ZO_ROOT_USER_EMAIL: "root@example.com"
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  ZO_S3_ACCESS_KEY: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_SECRET_KEY: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
 
 config:
   ZO_LOCAL_MODE: "false"
@@ -128,8 +130,6 @@ config:
   # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
-  ZO_S3_ACCESS_KEY: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
-  ZO_S3_SECRET_KEY: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_DATA_LIFECYCLE: "0"
   RUST_BACKTRACE: "1"
