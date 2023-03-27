@@ -22,3 +22,5 @@ aws s3 sync charts s3://zincsearch-releases/charts/charts/
 # invalidate cludfront cache
 aws cloudfront create-invalidation --distribution-id E1MZFY4I0CFJV9 --paths=/*
 
+rm -rf artifacts
+rm *.tgz
