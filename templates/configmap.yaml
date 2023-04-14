@@ -21,6 +21,7 @@ data:
   ZO_DATA_DIR: "{{ .Values.config.ZO_DATA_DIR }}"
   ZO_DATA_WAL_DIR: "{{ .Values.config.ZO_DATA_WAL_DIR }}"
   ZO_DATA_STREAM_DIR: "{{ .Values.config.ZO_DATA_STREAM_DIR }}"
+  ZO_BASE_URI: "{{ .Values.config.ZO_BASE_URI }}"
   ZO_WAL_MEMORY_MODE_ENABLED: "{{ .Values.config.ZO_WAL_MEMORY_MODE_ENABLED }}"
   ZO_FILE_EXT_JSON: "{{ .Values.config.ZO_FILE_EXT_JSON }}"
   ZO_FILE_EXT_PARQUET: "{{ .Values.config.ZO_FILE_EXT_PARQUET }}"
