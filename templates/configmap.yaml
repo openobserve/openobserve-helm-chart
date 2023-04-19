@@ -93,3 +93,4 @@ data:
   {{- end }}
   ZO_DATA_LIFECYCLE: "{{ .Values.config.ZO_DATA_LIFECYCLE }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
+  ZO_LUA_FN_ENABLED: "{{ .Values.config.ZO_LUA_FN_ENABLED }}"
