@@ -3,10 +3,10 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: public.ecr.aws/zinclabs/zincobserve-dev
+  repository: public.ecr.aws/zinclabs/zincobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.3.2-f23942e"
+  tag: "v0.3.2"
 
 imagePullSecrets: []
 nameOverride: ""
