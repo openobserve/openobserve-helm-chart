@@ -50,3 +50,9 @@ To upgrade
 ```shell
 helm -n zincobserve upgrade zo1 .
 ```
+
+To uninstall
+
+```shell
+helm -n zincobserve uninstall zo . 
+``` 
