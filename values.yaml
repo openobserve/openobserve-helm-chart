@@ -3,10 +3,10 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: public.ecr.aws/zinclabs/zincobserve
+  repository: public.ecr.aws/zinclabs/zincobserve-dev
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "v0.3.2-f23942e"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -16,7 +16,8 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: {}
+  annotations:
+    {}
     # eks.amazonaws.com/role-arn: arn:aws:iam::12345353456:role/zo-s3-eks
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
@@ -244,3 +245,35 @@ minio:
     accessModes:
       - ReadWriteOnce
     annotations: {}
+
+# zPlane enables elasticsearch compatibility for ZincObserve. Copyright (c) 2023 Zinc Labs Inc.
+# You can enable zPlane by setting enabled to true
+# zPlane is a commercial software and requires a license to be used.
+# Reach out to hello@zinclabs.io for commercial license if you continue to use zPlane
+zplane:
+  enabled: false # if true then zPlane will be deployed as part of ZincObserve
+  image:
+    repository: public.ecr.aws/zinclabs/zplane
+    tag: 0.1.3
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 9200
+  ingress: # if enabled is true then this is required
+    enabled: false
+    className: ""
+    annotations:
+      {}
+      # kubernetes.io/ingress.class: nginx
+      # cert-manager.io/issuer: letsencrypt
+      # kubernetes.io/tls-acme: true
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      []
+      # - secretName: chart-example-tls
+      #   hosts:
+      #     - chart-example.local
