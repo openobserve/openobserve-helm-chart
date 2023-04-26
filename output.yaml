@@ -623,6 +623,8 @@ spec:
               value: "zo1-etcd-headless.default.svc.cluster.local"
             - name: ETCD_QUOTA_BACKEND_BYTES
               value: "17179869184"
+            - name: ETCD_AUTO_COMPACTION_RETENTION
+              value: "24"
           envFrom:
           ports:
             - name: client
