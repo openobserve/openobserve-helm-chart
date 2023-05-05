@@ -21,11 +21,11 @@ version: 0.3.7
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v0.3.2"
+appVersion: "v0.4.2"
 
 dependencies:
 - name: etcd
-  version: "8.5.11"
+  version: "8.10.1"
   repository: "https://charts.bitnami.com/bitnami"
   condition: etcd.enabled
 - name: minio

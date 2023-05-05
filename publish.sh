@@ -4,6 +4,9 @@
 rm -rf artifacts
 rm *.tgz
 
+# Update dependencies
+helm dependency update
+
 # build the chart.
 helm package .
 
