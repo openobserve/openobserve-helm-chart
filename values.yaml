@@ -194,11 +194,6 @@ etcd:
   enabled: true # if true then etcd will be deployed as part of zincobserve
   externalUrl: "my_custom_host.com:2379" # if enabled is false then this is required
   replicaCount: 3 # if enabled is true then this is required. should be odd number
-  image:
-    registry: docker.io
-    repository: bitnami/etcd
-    tag: 3.5.8-debian-11-r4
-    digest: ""
   auth:
     token:
       enabled: false
