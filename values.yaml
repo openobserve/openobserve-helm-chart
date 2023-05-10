@@ -251,7 +251,7 @@ zplane:
   enabled: false # if true then zPlane will be deployed as part of ZincObserve
   image:
     repository: public.ecr.aws/zinclabs/zplane
-    tag: 0.1.3
+    tag: 0.1.5
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
