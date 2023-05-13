@@ -198,6 +198,7 @@ etcd:
     registry: docker.io
     repository: bitnami/etcd
     tag: 3.5.8-debian-11-r4
+    pullPolicy: IfNotPresent
     digest: ""
   auth:
     token:
