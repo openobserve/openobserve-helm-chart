@@ -6,7 +6,7 @@ image:
   repository: public.ecr.aws/zinclabs/zincobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.3.2"
+  tag: "v0.4.3"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -194,6 +194,11 @@ etcd:
   enabled: true # if true then etcd will be deployed as part of zincobserve
   externalUrl: "my_custom_host.com:2379" # if enabled is false then this is required
   replicaCount: 3 # if enabled is true then this is required. should be odd number
+  image:
+    registry: docker.io
+    repository: bitnami/etcd
+    tag: 3.5.8-debian-11-r4
+    digest: ""
   auth:
     token:
       enabled: false
@@ -251,7 +256,7 @@ zplane:
   enabled: false # if true then zPlane will be deployed as part of ZincObserve
   image:
     repository: public.ecr.aws/zinclabs/zplane
-    tag: 0.1.5
+    tag: 0.1.6
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
