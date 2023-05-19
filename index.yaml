@@ -6,7 +6,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.8
-    created: "2023-05-13T10:56:34.713301+08:00"
+    created: "2023-05-19T12:22:57.981584+08:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -39,7 +39,7 @@ entries:
       category: Database
     apiVersion: v2
     appVersion: 3.5.6
-    created: "2023-05-13T10:56:34.715218+08:00"
+    created: "2023-05-19T12:22:57.983121+08:00"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -71,7 +71,7 @@ entries:
   minio:
   - apiVersion: v1
     appVersion: RELEASE.2023-02-10T18-48-39Z
-    created: "2023-05-13T10:56:34.716046+08:00"
+    created: "2023-05-19T12:22:57.983993+08:00"
     description: Multi-Cloud Object Storage
     digest: 3f935a310e1b5b873052629b66005c160356ca7b2bd394cb07b34dbaf9905e3f
     home: https://min.io
@@ -94,7 +94,31 @@ entries:
   zincobserve:
   - apiVersion: v2
     appVersion: v0.4.3
-    created: "2023-05-13T10:56:34.711866+08:00"
+    created: "2023-05-19T12:22:57.980079+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.10.1
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: A Helm chart for ZincObserve Observability platform (Logs, Metrics
+      and Traces). Now with zplane for ES compatibility.
+    digest: 6791a0f4c3c09dcce4190a6a74c61fdf2c2bb4185a2c6d6d80f588ad2d745b39
+    maintainers:
+    - email: hello@zinclabs.io
+      name: Zinc Labs Inc
+      url: https://zinc.dev
+    name: zincobserve
+    type: application
+    urls:
+    - https://charts.zinc.dev/zincobserve-0.4.1.tgz
+    version: 0.4.1
+  - apiVersion: v2
+    appVersion: v0.4.3
+    created: "2023-05-19T12:22:57.974487+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -118,7 +142,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: v0.4.3
-    created: "2023-05-13T10:56:34.706836+08:00"
+    created: "2023-05-19T12:22:57.968756+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -142,7 +166,7 @@ entries:
     version: 0.3.9
   - apiVersion: v2
     appVersion: v0.4.2
-    created: "2023-05-13T10:56:34.701425+08:00"
+    created: "2023-05-19T12:22:57.963777+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -166,7 +190,7 @@ entries:
     version: 0.3.8
   - apiVersion: v2
     appVersion: v0.3.2
-    created: "2023-05-13T10:56:34.696273+08:00"
+    created: "2023-05-19T12:22:57.957826+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -190,7 +214,7 @@ entries:
     version: 0.3.7
   - apiVersion: v2
     appVersion: v0.3.2
-    created: "2023-05-13T10:56:34.691191+08:00"
+    created: "2023-05-19T12:22:57.953124+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -214,7 +238,7 @@ entries:
     version: 0.3.6
   - apiVersion: v2
     appVersion: v0.3.2
-    created: "2023-05-13T10:56:34.686374+08:00"
+    created: "2023-05-19T12:22:57.947585+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -238,7 +262,7 @@ entries:
     version: 0.3.5
   - apiVersion: v2
     appVersion: v0.3.2
-    created: "2023-05-13T10:56:34.681013+08:00"
+    created: "2023-05-19T12:22:57.941605+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -262,7 +286,7 @@ entries:
     version: 0.3.4
   - apiVersion: v2
     appVersion: v0.3.1
-    created: "2023-05-13T10:56:34.676736+08:00"
+    created: "2023-05-19T12:22:57.937711+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -286,7 +310,7 @@ entries:
     version: 0.3.3
   - apiVersion: v2
     appVersion: v0.3.1
-    created: "2023-05-13T10:56:34.672995+08:00"
+    created: "2023-05-19T12:22:57.933552+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -310,7 +334,7 @@ entries:
     version: 0.3.2
   - apiVersion: v2
     appVersion: v0.3.1
-    created: "2023-05-13T10:56:34.667207+08:00"
+    created: "2023-05-19T12:22:57.927706+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -334,7 +358,7 @@ entries:
     version: 0.3.1
   - apiVersion: v2
     appVersion: v0.3.1
-    created: "2023-05-13T10:56:34.661676+08:00"
+    created: "2023-05-19T12:22:57.922274+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -358,7 +382,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: v0.3.1
-    created: "2023-05-13T10:56:34.655667+08:00"
+    created: "2023-05-19T12:22:57.916251+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -382,7 +406,7 @@ entries:
     version: 0.2.9
   - apiVersion: v2
     appVersion: v0.3.1
-    created: "2023-05-13T10:56:34.649823+08:00"
+    created: "2023-05-19T12:22:57.910142+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -406,7 +430,7 @@ entries:
     version: 0.2.8
   - apiVersion: v2
     appVersion: v0.3.1
-    created: "2023-05-13T10:56:34.644377+08:00"
+    created: "2023-05-19T12:22:57.904278+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -430,7 +454,7 @@ entries:
     version: 0.2.7
   - apiVersion: v2
     appVersion: v0.2.0
-    created: "2023-05-13T10:56:34.638553+08:00"
+    created: "2023-05-19T12:22:57.898507+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -454,7 +478,7 @@ entries:
     version: 0.2.6
   - apiVersion: v2
     appVersion: v0.2.0
-    created: "2023-05-13T10:56:34.633196+08:00"
+    created: "2023-05-19T12:22:57.892779+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -478,7 +502,7 @@ entries:
     version: 0.2.5
   - apiVersion: v2
     appVersion: v0.2.0
-    created: "2023-05-13T10:56:34.628259+08:00"
+    created: "2023-05-19T12:22:57.887651+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -502,7 +526,7 @@ entries:
     version: 0.2.4
   - apiVersion: v2
     appVersion: v0.2.3
-    created: "2023-05-13T10:56:34.622978+08:00"
+    created: "2023-05-19T12:22:57.88225+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -522,7 +546,7 @@ entries:
     version: 0.2.3
   - apiVersion: v2
     appVersion: v0.2.2
-    created: "2023-05-13T10:56:34.619167+08:00"
+    created: "2023-05-19T12:22:57.878138+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -542,7 +566,7 @@ entries:
     version: 0.2.2
   - apiVersion: v2
     appVersion: v0.2.1
-    created: "2023-05-13T10:56:34.615578+08:00"
+    created: "2023-05-19T12:22:57.874571+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -562,7 +586,7 @@ entries:
     version: 0.2.1
   - apiVersion: v2
     appVersion: v0.2.0
-    created: "2023-05-13T10:56:34.611515+08:00"
+    created: "2023-05-19T12:22:57.870585+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -582,7 +606,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: v0.1.9
-    created: "2023-05-13T10:56:34.60787+08:00"
+    created: "2023-05-19T12:22:57.866833+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -602,7 +626,7 @@ entries:
     version: 0.1.9
   - apiVersion: v2
     appVersion: v0.1.8
-    created: "2023-05-13T10:56:34.604237+08:00"
+    created: "2023-05-19T12:22:57.862972+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -622,7 +646,7 @@ entries:
     version: 0.1.8
   - apiVersion: v2
     appVersion: v0.1.6
-    created: "2023-05-13T10:56:34.600184+08:00"
+    created: "2023-05-19T12:22:57.858752+08:00"
     dependencies:
     - condition: etcd.bundled
       name: etcd
@@ -640,4 +664,4 @@ entries:
     urls:
     - https://charts.zinc.dev/zincobserve-0.1.6.tgz
     version: 0.1.6
-generated: "2023-05-13T10:56:34.59614+08:00"
+generated: "2023-05-19T12:22:57.854541+08:00"

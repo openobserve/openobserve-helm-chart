@@ -136,6 +136,8 @@ config:
   ZO_DATA_LIFECYCLE: "0"
   RUST_BACKTRACE: "1"
   ZO_LUA_FN_ENABLED: "false"
+  ZO_PROMETHEUS_HA_CLUSTER: "cluster"
+  ZO_PROMETHEUS_HA_REPLICA: "__replica__"
 
 service:
   type: ClusterIP
