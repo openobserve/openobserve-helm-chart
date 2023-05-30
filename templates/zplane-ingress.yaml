@@ -1,5 +1,5 @@
 {{- if .Values.zplane.ingress.enabled -}}
-{{- $fullName := include "zincobserve.fullname" . -}}
+{{- $fullName := include "openobserve.fullname" . -}}
 {{- $svcPort := .Values.zplane.service.port -}}
 {{- if and .Values.zplane.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.zplane.ingress.annotations "kubernetes.io/ingress.class") }}
@@ -18,7 +18,7 @@ metadata:
   name: {{ $fullName }}-zplane
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "zincobserve.labels" . | nindent 4 }}
+    {{- include "openobserve.labels" . | nindent 4 }}
   {{- with .Values.zplane.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

@@ -2,15 +2,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "zincobserve.fullname" . }}-zplane
+  name: {{ include "openobserve.fullname" . }}-zplane
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "zincobserve.labels" . | nindent 4 }}
+    {{- include "openobserve.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount.zplane }}
   selector:
     matchLabels:
-      {{- include "zincobserve.selectorLabels" . | nindent 6 }}
+      {{- include "openobserve.selectorLabels" . | nindent 6 }}
       role: zplane
   template:
     metadata:
@@ -19,14 +19,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "zincobserve.selectorLabels" . | nindent 8 }}
+        {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: zplane
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "zincobserve.serviceAccountName" . }}
+      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -55,7 +55,7 @@ spec:
             - name: ZPLANE_ZO_PASSWORD
               value: "{{ .Values.auth.ZO_ROOT_USER_PASSWORD }}"
             - name: ZPLANE_ZO_ENDPOINT
-              value: "http://{{ include "zincobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.cluster.local:5080"
+              value: "http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.cluster.local:5080"
 
       {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "zincobserve.fullname" . }}-alertmanager
+  name: {{ include "openobserve.fullname" . }}-alertmanager
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "zincobserve.labels" . | nindent 4 }}
+    {{- include "openobserve.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount.alertmanager }}
   selector:
     matchLabels:
-      {{- include "zincobserve.selectorLabels" . | nindent 6 }}
+      {{- include "openobserve.selectorLabels" . | nindent 6 }}
       role: alertmanager
   template:
     metadata:
@@ -18,14 +18,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "zincobserve.selectorLabels" . | nindent 8 }}
+        {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: alertmanager
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "zincobserve.serviceAccountName" . }}
+      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -50,9 +50,9 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
             - secretRef:
-                name: {{ include "zincobserve.fullname" . }}
+                name: {{ include "openobserve.fullname" . }}
             - configMapRef:
-                name: {{ include "zincobserve.fullname" . }}
+                name: {{ include "openobserve.fullname" . }}
           env:
             - name: ZO_NODE_ROLE
               value: "alertmanager"
