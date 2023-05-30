@@ -1,9 +1,9 @@
-# Default values for zincobserve.
+# Default values for openobserve.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 image:
-  repository: public.ecr.aws/zinclabs/zincobserve
+  repository: public.ecr.aws/zinclabs/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "v0.4.4"
@@ -62,9 +62,9 @@ ingester:
 auth:
   ZO_ROOT_USER_EMAIL: "root@example.com"
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
-  
+
   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
-  ZO_S3_ACCESS_KEY: "" 
+  ZO_S3_ACCESS_KEY: ""
   ZO_S3_SECRET_KEY: ""
 
 config:
@@ -196,7 +196,7 @@ tolerations: []
 affinity: {}
 
 etcd:
-  enabled: true # if true then etcd will be deployed as part of zincobserve
+  enabled: true # if true then etcd will be deployed as part of openobserve
   externalUrl: "my_custom_host.com:2379" # if enabled is false then this is required
   replicaCount: 3 # if enabled is true then this is required. should be odd number
   image:
@@ -224,7 +224,7 @@ etcd:
     annotations: {}
 
 minio:
-  enabled: false # if true then minio will be deployed as part of zincobserve
+  enabled: false # if true then minio will be deployed as part of openobserve
   region: "us-east-1"
   rootUser: rootuser
   rootPassword: rootpass123
@@ -254,12 +254,12 @@ minio:
       - ReadWriteOnce
     annotations: {}
 
-# zPlane enables elasticsearch compatibility for ZincObserve. Copyright (c) 2023 Zinc Labs Inc.
+# zPlane enables elasticsearch compatibility for openobserve. Copyright (c) 2023 Zinc Labs Inc.
 # You can enable zPlane by setting enabled to true
 # zPlane is a commercial software and requires a license to be used.
 # Reach out to hello@zinclabs.io for commercial license if you continue to use zPlane
 zplane:
-  enabled: false # if true then zPlane will be deployed as part of ZincObserve
+  enabled: false # if true then zPlane will be deployed as part of openobserve
   image:
     repository: public.ecr.aws/zinclabs/zplane
     tag: 0.1.6

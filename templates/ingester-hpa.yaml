@@ -2,15 +2,15 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "zincobserve.fullname" . }}-ingester
+  name: {{ include "openobserve.fullname" . }}-ingester
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "zincobserve.labels" . | nindent 4 }}
+    {{- include "openobserve.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Statefulset
-    name: {{ include "zincobserve.fullname" . }}-ingester
+    name: {{ include "openobserve.fullname" . }}-ingester
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
