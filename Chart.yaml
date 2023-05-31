@@ -1,6 +1,6 @@
 apiVersion: v2
 name: openobserve
-description: A Helm chart for openobserve Observability platform (Logs, Metrics and Traces). Now with zplane for ES compatibility.
+description: A Helm chart for OpenObserve Observability platform (Logs, Metrics and Traces). Now with zplane for ES compatibility.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -15,17 +15,17 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.4.2
+version: 0.4.3
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v0.4.3"
+appVersion: "v0.4.6"
 
 dependencies:
   - name: etcd
-    version: "8.10.1"
+    version: "8.11.4"
     repository: "https://charts.bitnami.com/bitnami"
     condition: etcd.enabled
   - name: minio
@@ -34,6 +34,6 @@ dependencies:
     condition: minio.enabled
 
 maintainers:
-  - name: Zinc Labs Inc
+  - name: OpenObserve
     email: hello@zinclabs.io
     url: https://zinc.dev
