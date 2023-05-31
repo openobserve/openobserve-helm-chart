@@ -14,18 +14,18 @@ You must set a minimum of 2 values:
 ## Install
 
 ```shell
-helm repo add zinc https://charts.zinc.dev
+helm repo add openobserve https://charts.openobserve.ai
 helm repo update
 
 kubectl create ns openobserve
 
-helm --namespace openobserve -f values.yaml install zo1 zinc/openobserve
+helm --namespace openobserve -f values.yaml install o1 openobserve/openobserve
 ```
 
 ## Uninstall
 
 ```shell
-helm delete zo1
+helm delete o1
 ```
 
 # Development
@@ -35,23 +35,23 @@ If you are developing this chart then you should clone the repo and make any mod
 You can generate output of the chart using to verify:
 
 ```shell
-helm -n openobserve template zo1 . > zo1.yaml
+helm -n openobserve template o1 . > o1.yaml
 ```
 
 You can then install using:
 
 ```shell
-helm -n openobserve install zo1 .
+helm -n openobserve install o1 .
 ```
 
 To upgrade
 
 ```shell
-helm -n openobserve upgrade zo1 .
+helm -n openobserve upgrade o1 .
 ```
 
 To uninstall
 
 ```shell
-helm -n openobserve uninstall zo .
+helm -n openobserve uninstall o1 .
 ```
