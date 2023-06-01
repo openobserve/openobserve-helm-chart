@@ -112,6 +112,7 @@ config:
   ZO_COMPACT_FAKE_MODE: "false"
   ZO_COMPACT_INTERVAL: "60"
   ZO_COMPACT_MAX_FILE_SIZE: "256"
+  ZO_COMPACT_DATA_RETENTION_DAYS: "0"
   ZO_MEMORY_CACHE_ENABLED: "true"
   ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
   ZO_MEMORY_CACHE_MAX_SIZE: "0"
@@ -136,7 +137,6 @@ config:
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
-  ZO_DATA_LIFECYCLE: "0"
   RUST_BACKTRACE: "1"
   ZO_LUA_FN_ENABLED: "false"
   ZO_PROMETHEUS_HA_CLUSTER: "cluster"

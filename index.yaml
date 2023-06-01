@@ -6,7 +6,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.9
-    created: "2023-05-31T19:47:19.343758+05:30"
+    created: "2023-06-01T15:30:50.074436+08:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -39,7 +39,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.8
-    created: "2023-05-31T19:47:19.342044+05:30"
+    created: "2023-06-01T15:30:50.072585+08:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -71,7 +71,7 @@ entries:
   minio:
   - apiVersion: v1
     appVersion: RELEASE.2023-02-10T18-48-39Z
-    created: "2023-05-31T19:47:19.344596+05:30"
+    created: "2023-06-01T15:30:50.075436+08:00"
     description: Multi-Cloud Object Storage
     digest: 3f935a310e1b5b873052629b66005c160356ca7b2bd394cb07b34dbaf9905e3f
     home: https://min.io
@@ -94,7 +94,31 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-05-31T19:47:19.340412+05:30"
+    created: "2023-06-01T15:30:50.071167+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: A Helm chart for OpenObserve Observability platform (Logs, Metrics
+      and Traces). Now with zplane for ES compatibility.
+    digest: 4d7bb5d93a2d1e19f4d27eb85e1dc26db758fc8dc6843a9bab0da33b643859ec
+    maintainers:
+    - email: hello@zinclabs.io
+      name: OpenObserve
+      url: https://zinc.dev
+    name: openobserve
+    type: application
+    urls:
+    - https://charts.openobserve.ai/openobserve-0.4.4.tgz
+    version: 0.4.4
+  - apiVersion: v2
+    appVersion: v0.4.6
+    created: "2023-06-01T15:30:50.064917+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -118,7 +142,7 @@ entries:
     version: 0.4.3
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-05-31T19:47:19.33375+05:30"
+    created: "2023-06-01T15:30:50.057358+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -140,4 +164,4 @@ entries:
     urls:
     - https://charts.openobserve.ai/openobserve-0.4.2.tgz
     version: 0.4.2
-generated: "2023-05-31T19:47:19.325285+05:30"
+generated: "2023-06-01T15:30:50.049558+08:00"

@@ -53,6 +53,7 @@ data:
   ZO_COMPACT_FAKE_MODE: "{{ .Values.config.ZO_COMPACT_FAKE_MODE }}"
   ZO_COMPACT_INTERVAL: "{{ .Values.config.ZO_COMPACT_INTERVAL }}"
   ZO_COMPACT_MAX_FILE_SIZE: "{{ .Values.config.ZO_COMPACT_MAX_FILE_SIZE }}"
+  ZO_COMPACT_DATA_RETENTION_DAYS: "{{ .Values.config.ZO_COMPACT_DATA_RETENTION_DAYS }}"
   ZO_MEMORY_CACHE_ENABLED: "{{ .Values.config.ZO_MEMORY_CACHE_ENABLED }}"
   ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "{{ .Values.config.ZO_MEMORY_CACHE_CACHE_LATEST_FILES }}"
   ZO_MEMORY_CACHE_MAX_SIZE: "{{ .Values.config.ZO_MEMORY_CACHE_MAX_SIZE }}"
@@ -92,7 +93,6 @@ data:
   {{- else }}
   ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
   {{- end }}
-  ZO_DATA_LIFECYCLE: "{{ .Values.config.ZO_DATA_LIFECYCLE }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   ZO_LUA_FN_ENABLED: "{{ .Values.config.ZO_LUA_FN_ENABLED }}"
   ZO_PROMETHEUS_HA_CLUSTER: "{{ .Values.config.ZO_PROMETHEUS_HA_CLUSTER }}"
