@@ -218,6 +218,8 @@ etcd:
   extraEnvVars:
     - name: ETCD_QUOTA_BACKEND_BYTES
       value: "17179869184"
+    - name: ETCD_AUTO_COMPACTION_RETENTION
+      value: "2"
   persistence:
     size: 20Gi
     storageClass: ""
