@@ -12,6 +12,8 @@ data:
   {{- else }}
   ZO_ETCD_ADDR: "{{ .Release.Name }}-etcd-headless.{{ .Release.Namespace }}.svc.cluster.local:2379"
   {{- end }}
+  ZO_HTTP_PORT: "{{ .Values.config.ZO_HTTP_PORT }}"
+  ZO_HTTP_IPV6_ENABLED: "{{ .Values.config.ZO_HTTP_IPV6_ENABLED }}"
   ZO_GRPC_PORT: "{{ .Values.config.ZO_GRPC_PORT }}"
   ZO_GRPC_TIMEOUT: "{{ .Values.config.ZO_GRPC_TIMEOUT }}"
   ZO_GRPC_ORG_HEADER_KEY: "{{ .Values.config.ZO_GRPC_ORG_HEADER_KEY }}"

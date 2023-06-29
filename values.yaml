@@ -6,7 +6,7 @@ image:
   repository: public.ecr.aws/zinclabs/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.4.6"
+  tag: "v0.5.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -70,6 +70,7 @@ auth:
 config:
   ZO_LOCAL_MODE: "false"
   ZO_HTTP_PORT: "5080"
+  ZO_HTTP_IPV6_ENABLED: "false"
   ZO_GRPC_PORT: "5081"
   ZO_GRPC_TIMEOUT: "600"
   ZO_GRPC_ORG_HEADER_KEY: "zinc-org-id"
