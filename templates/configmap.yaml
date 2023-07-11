@@ -81,6 +81,7 @@ data:
   ZO_SLED_DATA_DIR: "{{ .Values.config.ZO_SLED_DATA_DIR }}"
   ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
   ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
+  ZO_S3_FEATURE_FORCE_PATH_STYLE: "{{ .Values.config.ZO_S3_FEATURE_FORCE_PATH_STYLE }}"
   {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
   {{- end }}
