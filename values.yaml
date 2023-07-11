@@ -137,11 +137,13 @@ config:
   ZO_ETCD_LOAD_PAGE_SIZE: "10000"
   ZO_SLED_DATA_DIR: ""
   ZO_SLED_PREFIX: "/zinc/observe/"
-  ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
   # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
+  ZO_S3_FEATURE_HTTP1_ONLY: "false"
+  ZO_S3_FEATURE_HTTP2_ONLY: "false"
   RUST_BACKTRACE: "1"
   ZO_LUA_FN_ENABLED: "false"
   ZO_PROMETHEUS_HA_CLUSTER: "cluster"

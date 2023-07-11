@@ -81,7 +81,6 @@ data:
   ZO_SLED_DATA_DIR: "{{ .Values.config.ZO_SLED_DATA_DIR }}"
   ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
   ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
-  ZO_S3_FEATURE_FORCE_PATH_STYLE: "{{ .Values.config.ZO_S3_FEATURE_FORCE_PATH_STYLE }}"
   {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
   {{- end }}
@@ -100,6 +99,9 @@ data:
   {{- else }}
   ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
   {{- end }}
+  ZO_S3_FEATURE_FORCE_PATH_STYLE: "{{ .Values.config.ZO_S3_FEATURE_FORCE_PATH_STYLE }}"
+  ZO_S3_FEATURE_HTTP1_ONLY: "{{ .Values.config.ZO_S3_FEATURE_HTTP1_ONLY }}"
+  ZO_S3_FEATURE_HTTP2_ONLY: "{{ .Values.config.ZO_S3_FEATURE_HTTP2_ONLY }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   ZO_LUA_FN_ENABLED: "{{ .Values.config.ZO_LUA_FN_ENABLED }}"
   ZO_PROMETHEUS_HA_CLUSTER: "{{ .Values.config.ZO_PROMETHEUS_HA_CLUSTER }}"
