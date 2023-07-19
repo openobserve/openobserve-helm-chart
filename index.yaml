@@ -6,7 +6,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.9
-    created: "2023-07-19T15:53:21.000354+05:30"
+    created: "2023-07-19T16:15:58.163206+05:30"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -39,7 +39,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.8
-    created: "2023-07-19T15:53:20.998945+05:30"
+    created: "2023-07-19T16:15:58.161846+05:30"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -71,7 +71,7 @@ entries:
   minio:
   - apiVersion: v1
     appVersion: RELEASE.2023-02-10T18-48-39Z
-    created: "2023-07-19T15:53:21.001133+05:30"
+    created: "2023-07-19T16:15:58.164348+05:30"
     description: Multi-Cloud Object Storage
     digest: 3f935a310e1b5b873052629b66005c160356ca7b2bd394cb07b34dbaf9905e3f
     home: https://min.io
@@ -94,7 +94,55 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-07-19T15:53:20.997487+05:30"
+    created: "2023-07-19T16:15:58.160477+05:30"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: A Helm chart for OpenObserve Observability platform (Logs, Metrics
+      and Traces). Now with zplane for ES compatibility.
+    digest: a3cb922b6d3bc6fb6964bb278c722641040b94eac55bcb730ff03ff79233bf1e
+    maintainers:
+    - email: hello@zinclabs.io
+      name: OpenObserve
+      url: https://zinc.dev
+    name: openobserve
+    type: application
+    urls:
+    - https://charts.openobserve.ai/openobserve-0.5.7.tgz
+    version: 0.5.7
+  - apiVersion: v2
+    appVersion: v0.5.0
+    created: "2023-07-19T16:15:58.15274+05:30"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: A Helm chart for OpenObserve Observability platform (Logs, Metrics
+      and Traces). Now with zplane for ES compatibility.
+    digest: 8b9de8b64d8bafd7463f12d94326bb9efa1cd61e8c9ae7a2c75aedf8fed361fc
+    maintainers:
+    - email: hello@zinclabs.io
+      name: OpenObserve
+      url: https://zinc.dev
+    name: openobserve
+    type: application
+    urls:
+    - https://charts.openobserve.ai/openobserve-0.5.6.tgz
+    version: 0.5.6
+  - apiVersion: v2
+    appVersion: v0.5.0
+    created: "2023-07-19T16:15:58.144894+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -118,7 +166,7 @@ entries:
     version: 0.5.5
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-07-19T15:53:20.98939+05:30"
+    created: "2023-07-19T16:15:58.136807+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -142,7 +190,7 @@ entries:
     version: 0.5.4
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-07-19T15:53:20.982434+05:30"
+    created: "2023-07-19T16:15:58.130236+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -166,7 +214,7 @@ entries:
     version: 0.5.3
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-07-19T15:53:20.975318+05:30"
+    created: "2023-07-19T16:15:58.122437+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -190,7 +238,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-07-19T15:53:20.968963+05:30"
+    created: "2023-07-19T16:15:58.116347+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -214,7 +262,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-07-19T15:53:20.960536+05:30"
+    created: "2023-07-19T16:15:58.108965+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -238,7 +286,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: v0.4.7
-    created: "2023-07-19T15:53:20.953906+05:30"
+    created: "2023-07-19T16:15:58.102176+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -262,7 +310,7 @@ entries:
     version: 0.4.9
   - apiVersion: v2
     appVersion: v0.4.7
-    created: "2023-07-19T15:53:20.947158+05:30"
+    created: "2023-07-19T16:15:58.095841+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -286,7 +334,7 @@ entries:
     version: 0.4.8
   - apiVersion: v2
     appVersion: v0.4.7
-    created: "2023-07-19T15:53:20.940493+05:30"
+    created: "2023-07-19T16:15:58.089142+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -310,7 +358,7 @@ entries:
     version: 0.4.7
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-07-19T15:53:20.934128+05:30"
+    created: "2023-07-19T16:15:58.083128+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -334,7 +382,7 @@ entries:
     version: 0.4.6
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-07-19T15:53:20.928125+05:30"
+    created: "2023-07-19T16:15:58.076388+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -358,7 +406,7 @@ entries:
     version: 0.4.5
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-07-19T15:53:20.921758+05:30"
+    created: "2023-07-19T16:15:58.069665+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -382,7 +430,7 @@ entries:
     version: 0.4.4
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-07-19T15:53:20.915469+05:30"
+    created: "2023-07-19T16:15:58.063818+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -406,7 +454,7 @@ entries:
     version: 0.4.3
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-07-19T15:53:20.90839+05:30"
+    created: "2023-07-19T16:15:58.056288+05:30"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -428,4 +476,4 @@ entries:
     urls:
     - https://charts.openobserve.ai/openobserve-0.4.2.tgz
     version: 0.4.2
-generated: "2023-07-19T15:53:20.901539+05:30"
+generated: "2023-07-19T16:15:58.049669+05:30"
