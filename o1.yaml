@@ -1,0 +1,801 @@
+---
+# Source: openobserve/charts/etcd/templates/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: o1-etcd
+  namespace: "openobserve"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.11.4
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/managed-by: Helm
+spec:
+  minAvailable: 51%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etcd
+      app.kubernetes.io/instance: o1
+---
+# Source: openobserve/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: o1-openobserve
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: openobserve/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: o1-openobserve
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+stringData:
+  ZO_ROOT_USER_EMAIL: "root@example.com"
+  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  ZO_S3_ACCESS_KEY: ""
+  ZO_S3_SECRET_KEY: ""
+---
+# Source: openobserve/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: o1-openobserve
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  ZO_LOCAL_MODE: "false"
+  ZO_ETCD_ADDR: "o1-etcd-headless.openobserve.svc.cluster.local:2379"
+  ZO_HTTP_PORT: "5080"
+  ZO_HTTP_IPV6_ENABLED: "false"
+  ZO_GRPC_PORT: "5081"
+  ZO_GRPC_TIMEOUT: "600"
+  ZO_GRPC_ORG_HEADER_KEY: "zinc-org-id"
+  ZO_ROUTE_TIMEOUT: "600"
+  ZO_LOCAL_MODE_STORAGE: "disk"
+  ZO_INSTANCE_NAME: ""
+  ZO_DATA_DIR: "./data/"
+  ZO_DATA_WAL_DIR: ""
+  ZO_DATA_STREAM_DIR: ""
+  ZO_BASE_URI: ""
+  ZO_WAL_MEMORY_MODE_ENABLED: "false"
+  ZO_WAL_LINE_MODE_ENABLED: "true"
+  ZO_FILE_EXT_JSON: ".json"
+  ZO_FILE_EXT_PARQUET: ".parquet"
+  ZO_PARQUET_COMPRESSION: "zstd"
+  ZO_TIME_STAMP_COL: "_timestamp"
+  ZO_WIDENING_SCHEMA_EVOLUTION: "false"
+  ZO_SKIP_SCHEMA_VALIDATION: "false"
+  ZO_FEATURE_PER_THREAD_LOCK: "false"
+  ZO_FEATURE_FULLTEXT_ON_ALL_FIELDS: "false"
+  ZO_UI_ENABLED: "true"
+  ZO_METRICS_DEDUP_ENABLED: "true"
+  ZO_TRACING_ENABLED: "false"
+  OTEL_OTLP_HTTP_ENDPOINT: "http://127.0.0.1:5080/api/nexus/traces"
+  ZO_TRACING_HEADER_KEY: "Authorization"
+  ZO_TRACING_HEADER_VALUE: "Basic YWRtaW46Q29tcGxleHBhc3MjMTIz"
+  ZO_TELEMETRY: "true"
+  ZO_TELEMETRY_URL: "https://e1.zinclabs.dev"
+  ZO_JSON_LIMIT: "209715200"
+  ZO_PAYLOAD_LIMIT: "209715200"
+  ZO_MAX_FILE_SIZE_ON_DISK: "32"
+  ZO_MAX_FILE_RETENTION_TIME: "600"
+  ZO_FILE_PUSH_INTERVAL: "10"
+  ZO_FILE_MOVE_THREAD_NUM: "0"
+  ZO_QUERY_THREAD_NUM: "0"
+  ZO_HTTP_WORKER_NUM: "0"
+  ZO_TS_ALLOWED_UPTO: "5"
+  ZO_METRICS_LEADER_PUSH_INTERVAL: "15"
+  ZO_METRICS_LEADER_ELECTION_INTERVAL: "30"
+  ZO_HEARTBEAT_INTERVAL: "30"
+  ZO_COMPACT_ENABLED: "true"
+  ZO_COMPACT_FAKE_MODE: "false"
+  ZO_COMPACT_INTERVAL: "60"
+  ZO_COMPACT_MAX_FILE_SIZE: "256"
+  ZO_COMPACT_DATA_RETENTION_DAYS: "0"
+  ZO_COMPACT_BLOCKED_ORGS: ""
+  ZO_MEMORY_CACHE_ENABLED: "true"
+  ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
+  ZO_MEMORY_CACHE_MAX_SIZE: "0"
+  ZO_MEMORY_CACHE_RELEASE_SIZE: "0"
+  RUST_LOG: "info"
+  ZO_COLS_PER_RECORD_LIMIT: "200"
+  ZO_ETCD_PREFIX: "/zinc/observe/"
+  ZO_ETCD_CONNECT_TIMEOUT: "2"
+  ZO_ETCD_COMMAND_TIMEOUT: "5"
+  ZO_ETCD_LOCK_WAIT_TIMEOUT: "600"
+  ZO_ETCD_USER: ""
+  ZO_ETCD_PASSWORD: ""
+  ZO_ETCD_CLIENT_CERT_AUTH: "false"
+  ZO_ETCD_TRUSTED_CA_FILE: ""
+  ZO_ETCD_CERT_FILE: ""
+  ZO_ETCD_KEY_FILE: ""
+  ZO_ETCD_DOMAIN_NAME: ""
+  ZO_ETCD_LOAD_PAGE_SIZE: "10000"
+  ZO_SLED_DATA_DIR: ""
+  ZO_SLED_PREFIX: "/zinc/observe/"
+  ZO_S3_PROVIDER: ""
+  ZO_S3_SERVER_URL: ""
+  ZO_S3_REGION_NAME: ""
+  ZO_S3_BUCKET_NAME: "mysuperduperbucket"
+  ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
+  ZO_S3_FEATURE_HTTP1_ONLY: "false"
+  ZO_S3_FEATURE_HTTP2_ONLY: "false"
+  RUST_BACKTRACE: "1"
+  ZO_LUA_FN_ENABLED: "false"
+  ZO_PROMETHEUS_HA_CLUSTER: "cluster"
+  ZO_PROMETHEUS_HA_REPLICA: "__replica__"
+---
+# Source: openobserve/charts/etcd/templates/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: o1-etcd-headless
+  namespace: "openobserve"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.11.4
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: client
+      port: 2379
+      targetPort: client
+    - name: peer
+      port: 2380
+      targetPort: peer
+  selector:
+    app.kubernetes.io/name: etcd
+    app.kubernetes.io/instance: o1
+---
+# Source: openobserve/charts/etcd/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: o1-etcd
+  namespace: "openobserve"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.11.4
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: "client"
+      port: 2379
+      targetPort: client
+      nodePort: null
+    - name: "peer"
+      port: 2380
+      targetPort: peer
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: etcd
+    app.kubernetes.io/instance: o1
+---
+# Source: openobserve/templates/alertmanager-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: o1-openobserve-alertmanager
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    role: alertmanager
+---
+# Source: openobserve/templates/compactor-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: o1-openobserve-compactor
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    role: compactor
+---
+# Source: openobserve/templates/ingester-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: o1-openobserve-ingester
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    role: ingester
+---
+# Source: openobserve/templates/querier-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: o1-openobserve-querier
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    role: querier
+---
+# Source: openobserve/templates/router-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: o1-openobserve-router
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    role: router
+---
+# Source: openobserve/templates/alertmanager-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: o1-openobserve-alertmanager
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openobserve
+      app.kubernetes.io/instance: o1
+      role: alertmanager
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openobserve
+        app.kubernetes.io/instance: o1
+        role: alertmanager
+    spec:
+      serviceAccountName: o1-openobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: openobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/openobserve:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5080
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: o1-openobserve
+            - configMapRef:
+                name: o1-openobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "alertmanager"
+---
+# Source: openobserve/templates/compactor-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: o1-openobserve-compactor
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openobserve
+      app.kubernetes.io/instance: o1
+      role: compactor
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openobserve
+        app.kubernetes.io/instance: o1
+        role: compactor
+    spec:
+      serviceAccountName: o1-openobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: openobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/openobserve:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5080
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: o1-openobserve
+            - configMapRef:
+                name: o1-openobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "compactor"
+---
+# Source: openobserve/templates/querier-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: o1-openobserve-querier
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openobserve
+      app.kubernetes.io/instance: o1
+      role: querier
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openobserve
+        app.kubernetes.io/instance: o1
+        role: querier
+    spec:
+      serviceAccountName: o1-openobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: openobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/openobserve:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: o1-openobserve
+            - configMapRef:
+                name: o1-openobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "querier"
+---
+# Source: openobserve/templates/router-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: o1-openobserve-router
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openobserve
+      app.kubernetes.io/instance: o1
+      role: router
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openobserve
+        app.kubernetes.io/instance: o1
+        role: router
+    spec:
+      serviceAccountName: o1-openobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: openobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/openobserve:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: o1-openobserve
+            - configMapRef:
+                name: o1-openobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "router"
+---
+# Source: openobserve/charts/etcd/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: o1-etcd
+  namespace: "openobserve"
+  labels:
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-8.11.4
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: etcd
+      app.kubernetes.io/instance: o1
+  serviceName: o1-etcd-headless
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: etcd
+        helm.sh/chart: etcd-8.11.4
+        app.kubernetes.io/instance: o1
+        app.kubernetes.io/managed-by: Helm
+      annotations:
+    spec:
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: etcd
+                    app.kubernetes.io/instance: o1
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: "default"
+      containers:
+        - name: etcd
+          image: docker.io/bitnami/etcd:3.5.8-debian-11-r4
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_STS_NAME
+              value: "o1-etcd"
+            - name: ETCDCTL_API
+              value: "3"
+            - name: ETCD_ON_K8S
+              value: "yes"
+            - name: ETCD_START_FROM_SNAPSHOT
+              value: "no"
+            - name: ETCD_DISASTER_RECOVERY
+              value: "no"
+            - name: ETCD_NAME
+              value: "$(MY_POD_NAME)"
+            - name: ETCD_DATA_DIR
+              value: "/bitnami/etcd/data"
+            - name: ETCD_LOG_LEVEL
+              value: "info"
+            - name: ALLOW_NONE_AUTHENTICATION
+              value: "yes"
+            - name: ETCD_ADVERTISE_CLIENT_URLS
+              value: "http://$(MY_POD_NAME).o1-etcd-headless.openobserve.svc.cluster.local:2379,http://o1-etcd.openobserve.svc.cluster.local:2379"
+            - name: ETCD_LISTEN_CLIENT_URLS
+              value: "http://0.0.0.0:2379"
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              value: "http://$(MY_POD_NAME).o1-etcd-headless.openobserve.svc.cluster.local:2380"
+            - name: ETCD_LISTEN_PEER_URLS
+              value: "http://0.0.0.0:2380"
+            - name: ETCD_INITIAL_CLUSTER_TOKEN
+              value: "etcd-cluster-k8s"
+            - name: ETCD_INITIAL_CLUSTER_STATE
+              value: "new"
+            - name: ETCD_INITIAL_CLUSTER
+              value: "o1-etcd-0=http://o1-etcd-0.o1-etcd-headless.openobserve.svc.cluster.local:2380,o1-etcd-1=http://o1-etcd-1.o1-etcd-headless.openobserve.svc.cluster.local:2380,o1-etcd-2=http://o1-etcd-2.o1-etcd-headless.openobserve.svc.cluster.local:2380"
+            - name: ETCD_CLUSTER_DOMAIN
+              value: "o1-etcd-headless.openobserve.svc.cluster.local"
+            - name: ETCD_QUOTA_BACKEND_BYTES
+              value: "17179869184"
+            - name: ETCD_AUTO_COMPACTION_RETENTION
+              value: "2"
+          envFrom:
+          ports:
+            - name: client
+              containerPort: 2379
+              protocol: TCP
+            - name: peer
+              containerPort: 2380
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /opt/bitnami/scripts/etcd/prestop.sh
+          resources:
+            limits: {}
+            requests: {}
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/etcd
+      volumes:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "20Gi"
+---
+# Source: openobserve/templates/ingester-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: o1-openobserve-ingester
+  namespace: "openobserve"
+  labels:
+    helm.sh/chart: openobserve-0.5.5
+    app.kubernetes.io/name: openobserve
+    app.kubernetes.io/instance: o1
+    app.kubernetes.io/version: "v0.5.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openobserve
+      app.kubernetes.io/instance: o1
+      role: ingester
+  serviceName: o1-openobserve
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openobserve
+        app.kubernetes.io/instance: o1
+        role: ingester
+    spec:
+      serviceAccountName: o1-openobserve
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 10000
+      containers:
+        - name: openobserve
+          securityContext:
+            {}
+          image: "public.ecr.aws/zinclabs/openobserve:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5080
+              name: http
+            - containerPort: 5081
+              name: grpc
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {}
+          envFrom:
+            - secretRef:
+                name: o1-openobserve
+            - configMapRef:
+                name: o1-openobserve
+          env:
+            - name: ZO_NODE_ROLE
+              value: "ingester"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+        - "ReadWriteOnce"
+      storageClassName: 
+      resources:
+        requests:
+          storage: "10Gi"
