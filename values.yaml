@@ -155,7 +155,7 @@ config:
   ZO_USAGE_REPORTING_ENABLED : "false"
   ZO_USAGE_ENDPOINT : ""
   ZO_USAGE_AUTH : ""
-  ZO_USAGE_BATCH_SIZE : ""
+  ZO_USAGE_BATCH_SIZE : "20"
 
 service:
   type: ClusterIP
