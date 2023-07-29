@@ -11,7 +11,7 @@ helm dependency update
 helm package .
 
 # copy all previous charts from s3 so we can update the index
-aws s3 sync s3://zincsearch-releases/charts-openobserve/ .
+aws s3 sync s3://zincsearch-releases/charts-openobserve/ . --profile=dev
 
 # update the index
 helm repo index --url https://charts.openobserve.ai .
@@ -19,11 +19,11 @@ helm repo index --url https://charts.openobserve.ai .
 mkdir artifacts
 cp -r index.yaml artifacts/index.yaml
 cp -r *.tgz artifacts/
-aws s3 sync artifacts s3://zincsearch-releases/charts-openobserve/
-aws s3 sync charts s3://zincsearch-releases/charts-openobserve/charts/
+aws s3 sync artifacts s3://zincsearch-releases/charts-openobserve/ --profile=dev
+aws s3 sync charts s3://zincsearch-releases/charts-openobserve/charts/ --profile=dev
 
 # invalidate cludfront cache
-aws cloudfront create-invalidation --distribution-id E1KAOPVKDAGD4X --paths=/*
+aws cloudfront create-invalidation --distribution-id E1KAOPVKDAGD4X --paths=/* --profile=dev
 
 rm -rf artifacts
 rm *.tgz
