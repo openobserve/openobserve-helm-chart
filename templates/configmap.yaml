@@ -90,7 +90,7 @@ data:
   {{- if not .Values.minio.enabled }}
   ZO_S3_SERVER_URL: "{{ .Values.config.ZO_S3_SERVER_URL }}"
   {{- else }}
-  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio-svc.{{ .Release.Namespace }}.svc.cluster.local:9000"
+  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000"
   {{- end }}
   {{- if not .Values.minio.enabled }}
   ZO_S3_REGION_NAME: "{{ .Values.config.ZO_S3_REGION_NAME }}"
