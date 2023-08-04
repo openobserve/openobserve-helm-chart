@@ -6,7 +6,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.9
-    created: "2023-08-03T09:39:44.338706-07:00"
+    created: "2023-08-04T12:25:02.870349+08:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -39,7 +39,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 3.5.8
-    created: "2023-08-03T09:39:44.337053-07:00"
+    created: "2023-08-04T12:25:02.868799+08:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -71,7 +71,7 @@ entries:
   minio:
   - apiVersion: v1
     appVersion: RELEASE.2023-02-10T18-48-39Z
-    created: "2023-08-03T09:39:44.339497-07:00"
+    created: "2023-08-04T12:25:02.871145+08:00"
     description: Multi-Cloud Object Storage
     digest: 3f935a310e1b5b873052629b66005c160356ca7b2bd394cb07b34dbaf9905e3f
     home: https://min.io
@@ -94,7 +94,31 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.5.1
-    created: "2023-08-03T09:39:44.275948-07:00"
+    created: "2023-08-04T12:25:02.802105+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: A Helm chart for OpenObserve Observability platform (Logs, Metrics
+      and Traces). Now with zplane for ES compatibility.
+    digest: 9098d16a14b22eb2b14e79b82f722fca35c580c8c60156a699f98517aa4e454b
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - https://charts.openobserve.ai/openobserve-0.5.19.tgz
+    version: 0.5.19
+  - apiVersion: v2
+    appVersion: v0.5.1
+    created: "2023-08-04T12:25:02.792865+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -118,7 +142,7 @@ entries:
     version: 0.5.18
   - apiVersion: v2
     appVersion: v0.5.1
-    created: "2023-08-03T09:39:44.266025-07:00"
+    created: "2023-08-04T12:25:02.783268+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -142,7 +166,7 @@ entries:
     version: 0.5.17
   - apiVersion: v2
     appVersion: v0.5.1
-    created: "2023-08-03T09:39:44.257975-07:00"
+    created: "2023-08-04T12:25:02.774972+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -166,7 +190,7 @@ entries:
     version: 0.5.16
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.249944-07:00"
+    created: "2023-08-04T12:25:02.766331+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -190,7 +214,7 @@ entries:
     version: 0.5.15
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.24111-07:00"
+    created: "2023-08-04T12:25:02.757022+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -214,7 +238,7 @@ entries:
     version: 0.5.14
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.231993-07:00"
+    created: "2023-08-04T12:25:02.74726+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -238,7 +262,7 @@ entries:
     version: 0.5.13
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.223134-07:00"
+    created: "2023-08-04T12:25:02.737993+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -262,7 +286,7 @@ entries:
     version: 0.5.12
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.215703-07:00"
+    created: "2023-08-04T12:25:02.729826+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -286,7 +310,7 @@ entries:
     version: 0.5.11
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.208561-07:00"
+    created: "2023-08-04T12:25:02.721946+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -310,7 +334,7 @@ entries:
     version: 0.5.10
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.335623-07:00"
+    created: "2023-08-04T12:25:02.867239+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -334,7 +358,7 @@ entries:
     version: 0.5.9
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.328362-07:00"
+    created: "2023-08-04T12:25:02.859144+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -358,7 +382,7 @@ entries:
     version: 0.5.8
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.320034-07:00"
+    created: "2023-08-04T12:25:02.850177+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -382,7 +406,7 @@ entries:
     version: 0.5.7
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.312206-07:00"
+    created: "2023-08-04T12:25:02.841303+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -406,7 +430,7 @@ entries:
     version: 0.5.6
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.304105-07:00"
+    created: "2023-08-04T12:25:02.832588+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -430,7 +454,7 @@ entries:
     version: 0.5.5
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.29604-07:00"
+    created: "2023-08-04T12:25:02.824256+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -454,7 +478,7 @@ entries:
     version: 0.5.4
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.289039-07:00"
+    created: "2023-08-04T12:25:02.816935+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -478,7 +502,7 @@ entries:
     version: 0.5.3
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.282355-07:00"
+    created: "2023-08-04T12:25:02.809363+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -502,7 +526,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.201125-07:00"
+    created: "2023-08-04T12:25:02.71373+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -526,7 +550,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: v0.5.0
-    created: "2023-08-03T09:39:44.193573-07:00"
+    created: "2023-08-04T12:25:02.705046+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -550,7 +574,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: v0.4.7
-    created: "2023-08-03T09:39:44.187162-07:00"
+    created: "2023-08-04T12:25:02.69813+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -574,7 +598,7 @@ entries:
     version: 0.4.9
   - apiVersion: v2
     appVersion: v0.4.7
-    created: "2023-08-03T09:39:44.180708-07:00"
+    created: "2023-08-04T12:25:02.689644+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -598,7 +622,7 @@ entries:
     version: 0.4.8
   - apiVersion: v2
     appVersion: v0.4.7
-    created: "2023-08-03T09:39:44.172392-07:00"
+    created: "2023-08-04T12:25:02.681982+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -622,7 +646,7 @@ entries:
     version: 0.4.7
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-08-03T09:39:44.163953-07:00"
+    created: "2023-08-04T12:25:02.673454+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -646,7 +670,7 @@ entries:
     version: 0.4.6
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-08-03T09:39:44.157697-07:00"
+    created: "2023-08-04T12:25:02.66724+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -670,7 +694,7 @@ entries:
     version: 0.4.5
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-08-03T09:39:44.151392-07:00"
+    created: "2023-08-04T12:25:02.660579+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -694,7 +718,7 @@ entries:
     version: 0.4.4
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-08-03T09:39:44.144978-07:00"
+    created: "2023-08-04T12:25:02.653757+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -718,7 +742,7 @@ entries:
     version: 0.4.3
   - apiVersion: v2
     appVersion: v0.4.6
-    created: "2023-08-03T09:39:44.138495-07:00"
+    created: "2023-08-04T12:25:02.647093+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -740,4 +764,4 @@ entries:
     urls:
     - https://charts.openobserve.ai/openobserve-0.4.2.tgz
     version: 0.4.2
-generated: "2023-08-03T09:39:44.131391-07:00"
+generated: "2023-08-04T12:25:02.639081+08:00"
