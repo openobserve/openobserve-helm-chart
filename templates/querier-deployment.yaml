@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
+  {{- if not .Values.autoscaling.querier.enabled }}
   replicas: {{ .Values.replicaCount.querier }}
   {{- end }}
   selector:
