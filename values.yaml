@@ -147,17 +147,18 @@ config:
   ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
   ZO_S3_FEATURE_HTTP1_ONLY: "false"
   ZO_S3_FEATURE_HTTP2_ONLY: "false"
+  ZO_S3_SYNC_TO_CACHE_INTERVAL: "600"
   RUST_BACKTRACE: "1"
   ZO_LUA_FN_ENABLED: "false"
   ZO_PROMETHEUS_HA_CLUSTER: "cluster"
   ZO_PROMETHEUS_HA_REPLICA: "__replica__"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_DYNAMO_META_STORE_ENABLED: "false"
-  ZO_METRIC_FILE_MAX_RETENTION: "hourly"
-  ZO_USAGE_REPORTING_ENABLED : "false"
-  ZO_USAGE_ORG : "_meta"
-  ZO_REPORT_COMPRESSED_SIZE : "false"
-  ZO_USAGE_BATCH_SIZE : "2000"
+  ZO_METRIC_FILE_MAX_RETENTION: "daily"
+  ZO_USAGE_REPORTING_ENABLED: "false"
+  ZO_USAGE_REPORTING_COMPRESSED_SIZE: "false"
+  ZO_USAGE_ORG: "_meta"
+  ZO_USAGE_BATCH_SIZE: "2000"
 
 service:
   type: ClusterIP
@@ -175,36 +176,73 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # cert-manager.io/issuer: letsencrypt
     # kubernetes.io/tls-acme: true
+    # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    # nginx.ingress.kubernetes.io/proxy-connect-timeout: '600'
+    # nginx.ingress.kubernetes.io/proxy-send-timeout: '600'
+    # nginx.ingress.kubernetes.io/proxy-read-timeout: '600'
+    # nginx.ingress.kubernetes.io/proxy-body-size: 32m
   hosts:
-    - host: chart-example.local
+    - host: demo.openobserve.ai
       paths:
         - path: /
           pathType: ImplementationSpecific
   tls:
     []
-    # - secretName: chart-example-tls
+    # - secretName: demo.openobserve.ai
     #   hosts:
-    #     - chart-example.local
+    #     - demo.openobserve.ai
 
+# You can specify resources for each deployment independently.
+# For example, to configure resources for the ingester, use
+# the code below:
+# resources:
+#   ingester:
+#     limits:
+#       cpu: 150m
+#       memory: 512Mi
+#     requests:
+#       cpu: 100m
+#       memory: 128Mi
 resources:
-  {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  ingester: {}
+  querier: {}
+  compactor: {}
+  router: {}
+  alertmanager: {}
+
+# autoscaling:
+#   enabled: false
+#   minReplicas: 1
+#   maxReplicas: 100
+#   targetCPUUtilizationPercentage: 80
+#   # targetMemoryUtilizationPercentage: 80
 
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+  ingester:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  querier:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  router:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  compactor:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 

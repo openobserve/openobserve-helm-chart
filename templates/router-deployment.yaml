@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
+  {{- if not .Values.autoscaling.router.enabled }}
   replicas: {{ .Values.replicaCount.router }}
   {{- end }}
   selector:
@@ -50,7 +50,7 @@ spec:
           #     path: /
           #     port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.resources.router | nindent 12 }}
           envFrom:
             - secretRef:
                 name: {{ include "openobserve.fullname" . }}

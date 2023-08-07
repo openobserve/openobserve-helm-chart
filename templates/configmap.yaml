@@ -90,7 +90,7 @@ data:
   {{- if not .Values.minio.enabled }}
   ZO_S3_SERVER_URL: "{{ .Values.config.ZO_S3_SERVER_URL }}"
   {{- else }}
-  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio-svc.{{ .Release.Namespace }}.svc.cluster.local:9000"
+  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000"
   {{- end }}
   {{- if not .Values.minio.enabled }}
   ZO_S3_REGION_NAME: "{{ .Values.config.ZO_S3_REGION_NAME }}"
@@ -105,6 +105,7 @@ data:
   ZO_S3_FEATURE_FORCE_PATH_STYLE: "{{ .Values.config.ZO_S3_FEATURE_FORCE_PATH_STYLE }}"
   ZO_S3_FEATURE_HTTP1_ONLY: "{{ .Values.config.ZO_S3_FEATURE_HTTP1_ONLY }}"
   ZO_S3_FEATURE_HTTP2_ONLY: "{{ .Values.config.ZO_S3_FEATURE_HTTP2_ONLY }}"
+  ZO_S3_SYNC_TO_CACHE_INTERVAL: "{{ .Values.config.ZO_S3_SYNC_TO_CACHE_INTERVAL }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   ZO_LUA_FN_ENABLED: "{{ .Values.config.ZO_LUA_FN_ENABLED }}"
   ZO_PROMETHEUS_HA_CLUSTER: "{{ .Values.config.ZO_PROMETHEUS_HA_CLUSTER }}"
@@ -112,6 +113,6 @@ data:
   ZO_DYNAMO_META_STORE_ENABLED: "{{ .Values.config.ZO_DYNAMO_META_STORE_ENABLED }}"
   ZO_METRIC_FILE_MAX_RETENTION: "{{ .Values.config.ZO_METRIC_FILE_MAX_RETENTION }}"
   ZO_USAGE_REPORTING_ENABLED: "{{ .Values.config.ZO_USAGE_REPORTING_ENABLED }}"
+  ZO_USAGE_REPORTING_COMPRESSED_SIZE: "{{ .Values.config.ZO_USAGE_REPORTING_COMPRESSED_SIZE }}"
   ZO_USAGE_ORG: "{{ .Values.config.ZO_USAGE_ORG }}"
-  ZO_REPORT_COMPRESSED_SIZE: "{{ .Values.config.ZO_REPORT_COMPRESSED_SIZE }}"
   ZO_USAGE_BATCH_SIZE: "{{ .Values.config.ZO_USAGE_BATCH_SIZE }}"
