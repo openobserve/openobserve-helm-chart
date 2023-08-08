@@ -157,8 +157,8 @@ config:
   ZO_METRIC_FILE_MAX_RETENTION: "daily"
   ZO_USAGE_REPORTING_ENABLED: "false"
   ZO_USAGE_REPORTING_COMPRESSED_SIZE: "false"
-  ZO_USAGE_ORG: "_meta"
-  ZO_USAGE_BATCH_SIZE: "2000"
+  ZO_USAGE_ORG : "_meta"
+  ZO_USAGE_BATCH_SIZE : "2000"
 
 service:
   type: ClusterIP
@@ -237,11 +237,11 @@ autoscaling:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  compactor:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
+  # compactor:
+  #   enabled: false
+  #   minReplicas: 1
+  #   maxReplicas: 100
+  #   targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
