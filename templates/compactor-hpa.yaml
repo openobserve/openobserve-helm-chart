@@ -10,7 +10,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "openobserve.fullname" . }}
+    name: {{ include "openobserve.fullname" . }}-compactor
   minReplicas: {{ .Values.autoscaling.compactor.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.compactor.maxReplicas }}
   metrics:
