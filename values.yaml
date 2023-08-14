@@ -250,6 +250,7 @@ tolerations:
   compactor: []
   router: []
   alertmanager: []
+  zplane: []
 
 affinity: {}
 
