@@ -25,6 +25,8 @@ serviceAccount:
 
 podAnnotations: {}
 
+labels: {}
+
 podSecurityContext:
   fsGroup: 2000
   runAsUser: 10000
