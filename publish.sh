@@ -1,8 +1,19 @@
 #!/bin/sh
 
-# Any extra files will bloat the chart and make it fail to install.
-rm -rf artifacts
-rm *.tgz
+mkdir package
+mkdir package/charts
+mkdir package/templates
+
+cp -r charts/* ./package/charts/
+cp -r templates/* ./package/templates/
+cp Chart.yaml ./package/
+cp Chart.lock ./package/
+cp index.yaml ./package/
+cp values.yaml ./package/
+cp .helmignore ./package/
+
+
+cd package
 
 # Update dependencies
 helm dependency update
@@ -22,8 +33,14 @@ cp -r *.tgz artifacts/
 aws s3 sync artifacts s3://zincsearch-releases/charts-openobserve/ --profile=dev
 aws s3 sync charts s3://zincsearch-releases/charts-openobserve/charts/ --profile=dev
 
-# invalidate cludfront cache
-aws cloudfront create-invalidation --distribution-id E1KAOPVKDAGD4X --paths=/* --profile=dev
+# copy manifests back to parent
+cp -r Chart.lock ../Chart.lock
+cp -r index.yaml ../index.yaml
 
-rm -rf artifacts
-rm *.tgz
+# invalidate cludfront cache
+aws cloudfront create-invalidation --distribution-id E1KAOPVKDAGD4X --paths="/*" --profile=dev
+
+cd ..
+rm -rf package
+# rm -rf artifacts
+# rm *.tgz
