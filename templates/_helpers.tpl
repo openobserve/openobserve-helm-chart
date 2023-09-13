@@ -40,6 +40,14 @@ helm.sh/chart: {{ include "openobserve.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+
+{{- $custom := .Values.labels | default dict -}}
+{{- range $key, $value := $custom }}
+{{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
 {{- end }}
 
 {{/*
