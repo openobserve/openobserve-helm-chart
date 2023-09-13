@@ -132,3 +132,4 @@ data:
   ZO_USAGE_BATCH_SIZE: "{{ .Values.config.ZO_USAGE_BATCH_SIZE }}"
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
+  ZO_DYNAMO_META_STORE_ENABLED: "{{ .Values.config.ZO_DYNAMO_META_STORE_ENABLED }}"

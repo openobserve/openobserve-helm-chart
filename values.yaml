@@ -177,6 +177,7 @@ config:
   ZO_USAGE_BATCH_SIZE: "2000"
   RUST_LOG: "info"
   RUST_BACKTRACE: "1"
+  ZO_DYNAMO_META_STORE_ENABLED: "false"
 
 service:
   type: ClusterIP
