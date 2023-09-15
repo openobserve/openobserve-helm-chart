@@ -9,7 +9,7 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Statefulset
+    kind: StatefulSet
     name: {{ include "openobserve.fullname" . }}-ingester
   minReplicas: {{ .Values.autoscaling.ingester.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.ingester.maxReplicas }}
