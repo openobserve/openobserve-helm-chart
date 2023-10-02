@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.5.2
-    created: "2023-09-15T06:04:53.877663-07:00"
+    created: "2023-10-02T15:42:36.219422-07:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -72,7 +72,7 @@ entries:
       version: 5.0.7
     description: A Helm chart for OpenObserve Observability platform (Logs, Metrics
       and Traces). Now with zplane for ES compatibility.
-    digest: f2cead35b1f4315fde6f88fb0bc2d11027d211b7ecc0f1740e2c05b8b74c125a
+    digest: c62ae4e24458fc7e2142634a3cb30a25e185320b9fe524b98f41670c0cbb83ff
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -80,7 +80,7 @@ entries:
     name: openobserve
     type: application
     urls:
-    - https://charts.openobserve.ai/openobserve-0.5.38.tgz
+    - openobserve-0.5.38.tgz
     version: 0.5.38
   - apiVersion: v2
     appVersion: v0.5.2
@@ -994,4 +994,15 @@ entries:
     urls:
     - https://charts.openobserve.ai/openobserve-0.5.0.tgz
     version: 0.5.0
-generated: "2023-09-15T06:04:53.648903-07:00"
+  openobserve-collector:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-10-02T15:42:36.22036-07:00"
+    description: A Helm chart for Kubernetes
+    digest: 51d9817211a2fb701c98c11c9beab8e924a000ed86b682cc8c85719cca20fea3
+    name: openobserve-collector
+    type: application
+    urls:
+    - openobserve-collector-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-10-02T15:42:36.215677-07:00"
