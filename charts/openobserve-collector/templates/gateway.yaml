@@ -1,0 +1,44 @@
+---
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: {{ include "openobserve-collector.fullname" . }}-gateway
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve-collector.labels" . | nindent 4 }}
+spec:
+  mode: statefulset
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+  serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
+  {{- with .Values.gateway.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.gateway.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.gateway.affinity }}
+  affinity:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  env:
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+  # targetAllocator:
+  #   enabled: true
+  #   prometheusCR:
+  # enabled: true
+  # namespace: openobserve-collector
+  # name: prometheus
+  # port: 8888
+  config: |
+    receivers: {{ .Values.gateway.receivers | toYaml | nindent 6 }}
+    connectors: {{ .Values.gateway.connectors | toYaml | nindent 6 }}
+    processors: {{ .Values.gateway.processors | toYaml | nindent 6 }}
+    extensions: {{ .Values.gateway.extensions | toYaml | nindent 6 }}
+    exporters: {{ .Values.exporters | toYaml | nindent 6 }}
+    service: {{ .Values.gateway.service | toYaml | nindent 6 }}
+  
