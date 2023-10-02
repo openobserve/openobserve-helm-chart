@@ -33,5 +33,36 @@ Official documentation can be found at https://opentelemetry.io/docs/kubernetes/
 ## Installing the Chart
 
 ```bash
-helm install o1 . --namespace openobserve-collector --create-namespace --wait
+kubectl create ns openobserve-collector
+helm --namespace openobserve-collector -f values.yaml install o1c openobserve/openobserve-collector
 ```
+
+
+## Development
+
+If you are developing this chart then you should clone the repo and make any modifications.
+
+You can generate output of the chart using below command to verify:
+
+```shell
+helm -n openobserve-collector template o1c . > o1.yaml
+```
+
+You can then install using:
+
+```shell
+helm -n openobserve-collector install o1c .
+```
+
+To upgrade
+
+```shell
+helm -n openobserve-collector upgrade o1c .
+```
+
+To uninstall
+
+```shell
+helm -n openobserve-collector uninstall o1c .
+```
+

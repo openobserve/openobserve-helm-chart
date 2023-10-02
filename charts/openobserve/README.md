@@ -32,7 +32,7 @@ helm delete o1
 
 If you are developing this chart then you should clone the repo and make any modifications.
 
-You can generate output of the chart using to verify:
+You can generate output of the chart using below command to verify:
 
 ```shell
 helm -n openobserve template o1 . > o1.yaml
