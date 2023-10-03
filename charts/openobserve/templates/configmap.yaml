@@ -20,6 +20,7 @@ data:
   ZO_GRPC_ADDR: "{{ .Values.config.ZO_GRPC_ADDR }}"
   ZO_GRPC_TIMEOUT: "{{ .Values.config.ZO_GRPC_TIMEOUT }}"
   ZO_GRPC_ORG_HEADER_KEY: "{{ .Values.config.ZO_GRPC_ORG_HEADER_KEY }}"
+  ZO_GRPC_STREAM_HEADER_KEY: "{{ .Values.config.ZO_GRPC_STREAM_HEADER_KEY }}"
   ZO_ROUTE_TIMEOUT: "{{ .Values.config.ZO_ROUTE_TIMEOUT }}"
   ZO_INSTANCE_NAME: "{{ .Values.config.ZO_INSTANCE_NAME }}"
   ZO_DATA_DIR: "{{ .Values.config.ZO_DATA_DIR }}"
