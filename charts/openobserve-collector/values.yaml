@@ -84,7 +84,19 @@ securityContext:
 
 agent:
   enabled: true
-  tolerations: []
+  tolerations:
+    - key: "openobserve"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+    - key: "querier"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+    - key: "etcd"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
   resources:
     {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -100,8 +112,8 @@ agent:
   receivers:
     otlp:
       protocols:
-        grpc:
-        http:
+        grpc: {}
+        http: {}
     filelog/std:
       include: [/var/log/pods/*/*/*.log]
       exclude:
@@ -349,8 +361,8 @@ gateway:
   receivers:
     otlp:
       protocols:
-        grpc:
-        http:
+        grpc: {}
+        http: {}
     k8s_cluster:
       collection_interval: 30s
       node_conditions_to_report:
