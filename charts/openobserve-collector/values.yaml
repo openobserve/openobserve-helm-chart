@@ -118,8 +118,9 @@ agent:
       include: [/var/log/pods/*/*/*.log]
       exclude:
         # Exclude logs from all containers named otel-collector or otc-container (otel-contrib)
-        - /var/log/pods/*/otel-collector/*.log
-        - /var/log/pods/*/otc-container/*.log
+        - /var/log/pods/*/otel-collector/*.log  # named otel-collector
+        - /var/log/pods/*/otc-container/*.log   # named otc-container (for otel-contrib containers)
+        - /var/log/pods/*/openobserve/*.log     # named openobserve. Would want to avoid cyclical logs
       start_at: end
       include_file_path: true
       include_file_name: false
@@ -385,6 +386,35 @@ gateway:
     prometheus:
       config:
         scrape_configs:
+          - job_name: "kubeApiServer"
+            sample_limit: 10000
+            # Default to scraping over https. If required, just disable this or change to `http`.
+            scheme: https
+            scrape_interval: 15s
+            scrape_timeout: 10s
+            metrics_path: /metrics
+
+            kubernetes_sd_configs:
+              - role: endpoints
+                follow_redirects: true
+            tls_config:
+              ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              insecure_skip_verify: true
+            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+            metric_relabel_configs:
+              - action: keep
+                regex: default;kubernetes;https
+                source_labels:
+                - __meta_kubernetes_namespace
+                - __meta_kubernetes_service_name
+                - __meta_kubernetes_endpoint_port_name
+              # Drop excessively noisy apiserver buckets.
+              - action: drop
+                regex: apiserver_request_duration_seconds_bucket;(0.15|0.2|0.3|0.35|0.4|0.45|0.6|0.7|0.8|0.9|1.25|1.5|1.75|2|3|3.5|4|4.5|6|7|8|9|15|25|40|50)
+                source_labels:
+                  - __name__
+                  - le
           - job_name: "kubelet"
             sample_limit: 10000
             # Default to scraping over https. If required, just disable this or change to `http`.
@@ -404,36 +434,42 @@ gateway:
             metric_relabel_configs:
               - action: labeldrop
                 regex: name # dropping id results in error - inconsistent timestamps on metric points for metric container_fs_reads_total, container_fs_writes_bytes_total, etc
+              # Drop less useful container CPU metrics.
               - action: drop
-                regex: container_cpu_(load_average_10s|system_seconds_total|user_seconds_total)
+                regex: container_cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)
                 replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __name__
+              # Drop less useful container / always zero filesystem metrics.
               - action: drop
                 regex: container_fs_(io_current|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)
                 replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __name__
+              # Drop less useful / always zero container memory metrics.
               - action: drop
                 regex: container_memory_(mapped_file|swap)
                 replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __name__
+              # Drop less useful container process metrics.
               - action: drop
                 regex: container_(file_descriptors|tasks_state|threads_max)
                 replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __name__
+              # Drop container spec metrics that overlap with kube-state-metrics.
               - action: drop
                 regex: container_spec.*
                 replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __name__
+              # Drop cgroup metrics with no pod.
               - action: drop
                 regex: ".+;"
                 replacement: "$1"
