@@ -13,6 +13,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 5083
+      targetPort: grpc-insearcher
+      protocol: TCP
+      name: grpc-insearcher
   selector:
     {{- include "openobserve.selectorLabels" . | nindent 4 }}
     role: ingester

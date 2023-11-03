@@ -49,7 +49,7 @@ spec:
               mountPath: /data
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name }}-ingester
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -77,6 +77,45 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "ingester"
+            - name: ZO_HTTP_PORT
+              value: "5080"
+            - name: ZO_GRPC_PORT
+              value: "5081"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+        - name: {{ .Chart.Name }}-insearcher
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5082
+              name: http-insearcher
+            - containerPort: 5083
+              name: grpc-insearcher
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {{- toYaml .Values.resources.ingester | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "openobserve.fullname" . }}
+            - configMapRef:
+                name: {{ include "openobserve.fullname" . }}
+          env:
+            - name: ZO_NODE_ROLE
+              value: "ingester"
+            - name: ZO_HTTP_PORT
+              value: "5082"
+            - name: ZO_GRPC_PORT
+              value: "5083"
           volumeMounts:
             - name: data
               mountPath: /data
