@@ -13,6 +13,7 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - endpoints
   - events
   - namespaces
   - namespaces/status
