@@ -370,3 +370,15 @@ zplane:
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
+
+probes:
+  alertmanager:
+    enabled: false
+  compactor:
+    enabled: false
+  ingester:
+    enabled: false
+  querier:
+    enabled: false
+  router:
+    enabled: false

@@ -41,14 +41,20 @@ spec:
               name: http
             - containerPort: 5081
               name: grpc
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+          {{- if .Values.probes.router.enabled }}
+          livenessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.router.initialDelaySeconds | default 10 }}
+           failureThreshold: {{ .Values.probes.router.failureThreshold | default 3 }}
+          readinessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.router.initialDelaySeconds | default 10 }}
+           failureThreshold: {{ .Values.probes.router.failureThreshold | default 3 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources.router | nindent 12 }}
           envFrom:
