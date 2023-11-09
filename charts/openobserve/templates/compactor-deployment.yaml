@@ -38,14 +38,20 @@ spec:
             - name: http
               containerPort: 5080
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+          {{- if .Values.probes.compactor.enabled }}
+          livenessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.compactor.initialDelaySeconds | default 60 }}
+           failureThreshold: {{ .Values.probes.compactor.failureThreshold | default 3 }}
+          readinessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.compactor.initialDelaySeconds | default 60 }}
+           failureThreshold: {{ .Values.probes.compactor.failureThreshold | default 3 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources.compactor | nindent 12 }}
           envFrom:
