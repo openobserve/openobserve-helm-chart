@@ -68,9 +68,12 @@ auth:
   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
   ZO_S3_ACCESS_KEY: ""
   ZO_S3_SECRET_KEY: ""
+  # auth header
+  ZO_TRACING_HEADER_VALUE: "Basic YWRtaW46Q29tcGxleHBhc3MjMTIz"
+  ZO_EVENTS_AUTH: "cm9vdEBleGFtcGxlLmNvbTpUZ0ZzZFpzTUZQdzg2SzRK"
+  ZO_META_POSTGRES_DSN: ""
 
 config:
-  ZO_NODE_ROLE: "all"
   ZO_LOCAL_MODE: "false"
   ZO_LOCAL_MODE_STORAGE: "disk"
   ZO_HTTP_PORT: "5080"
@@ -81,6 +84,13 @@ config:
   ZO_GRPC_TIMEOUT: "600"
   ZO_GRPC_ORG_HEADER_KEY: "organization"
   ZO_GRPC_STREAM_HEADER_KEY: "stream-name"
+  ZO_INTERNAL_GRPC_TOKEN: ""
+  ZO_TCP_PORT: 5514
+  ZO_UDP_PORT: 5514
+  ZO_INGESTER_SERVICE_URL: ""
+  ZO_CLUSTER_NAME: zo1
+  ZO_INGESTER_SIDECAR_ENABLED: false
+  ZO_INGESTER_SIDECAR_QUERIER: false
   ZO_ROUTE_TIMEOUT: "600"
   ZO_INSTANCE_NAME: ""
   ZO_DATA_DIR: "./data/"
@@ -92,7 +102,6 @@ config:
   ZO_BASE_URI: ""
   ZO_META_STORE: ""
   ZO_META_DYNAMO_PREFIX: ""
-  ZO_META_POSTGRES_DSN: ""
   ZO_WAL_MEMORY_MODE_ENABLED: "false"
   ZO_WAL_LINE_MODE_ENABLED: "true"
   ZO_PARQUET_COMPRESSION: "zstd"
@@ -104,10 +113,13 @@ config:
   ZO_FEATURE_FULLTEXT_ON_ALL_FIELDS: "false"
   ZO_FEATURE_FULLTEXT_EXTRA_FIELDS: ""
   ZO_FEATURE_FILELIST_DEDUP_ENABLED: "false"
+  ZO_FEATURE_DISTINCT_EXTRA_FIELDS: ""
+  ZO_FEATURE_QUERY_QUEUE_ENABLED: "true"
+  ZO_UI_SQL_BASE64_ENABLED: "false"
+  ZO_PROMETHEUS_ENABLED: "true"
   ZO_TRACES_BLOOM_FILTER_ENABLED: "false"
   ZO_TRACING_ENABLED: "false"
   ZO_TRACING_HEADER_KEY: "Authorization"
-  ZO_TRACING_HEADER_VALUE: "Basic YWRtaW46Q29tcGxleHBhc3MjMTIz"
   OTEL_OTLP_HTTP_ENDPOINT: ""
   ZO_TELEMETRY: "true"
   ZO_TELEMETRY_URL: "https://e1.zinclabs.dev"
@@ -138,6 +150,7 @@ config:
   ZO_COMPACT_MAX_FILE_SIZE: "256"
   ZO_COMPACT_DATA_RETENTION_DAYS: "0"
   ZO_COMPACT_BLOCKED_ORGS: ""
+  ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
   ZO_MEMORY_CACHE_ENABLED: "true"
   ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
   ZO_MEMORY_CACHE_MAX_SIZE: "0"
@@ -167,18 +180,37 @@ config:
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_BUCKET_PREFIX: ""
   ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
+  ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "false"
   ZO_S3_FEATURE_HTTP1_ONLY: "false"
   ZO_S3_FEATURE_HTTP2_ONLY: "false"
   ZO_S3_SYNC_TO_CACHE_INTERVAL: "600"
+  ZO_S3_CONNECT_TIMEOUT: "10"
+  ZO_S3_REQUEST_TIMEOUT: "3600"
+  ZO_S3_ALLOW_INVALID_CERTIFICATES: "false"
   ZO_USAGE_REPORTING_ENABLED: "false"
   ZO_USAGE_REPORTING_COMPRESSED_SIZE: "false"
   ZO_USAGE_ORG: "_meta"
   ZO_USAGE_BATCH_SIZE: "2000"
+  ZO_MMDB_DATA_DIR: ""
+  ZO_MMDB_DISABLE_DOWNLOAD: false
+  ZO_MMDB_UPDATE_DURATION: 86400
+  ZO_MMDB_GEOLITE_CITYDB_URL: ""
+  ZO_MMDB_GEOLITE_CITYDB_SHA256_URL: ""
+  ZO_DEFAULT_SCRAPE_INTERVAL: 15
+  ZO_CALCULATE_STATS_INTERVAL: 600
+  ZO_ENRICHMENT_TABLE_LIMIT: 10
+  ZO_ACTIX_REQ_TIMEOUT: 30
+  ZO_ACTIX_KEEP_ALIVE: 30
   ZO_PRINT_KEY_CONFIG: "false"
   ZO_PRINT_KEY_EVENT: "false"
   ZO_PRINT_KEY_SQL: "false"
   RUST_LOG: "info"
+  ZO_LOG_FILE: ""
+  ZO_EVENTS_ENABLED: "false"
+  ZO_EVENTS_EP: "https://api.openobserve.ai/api/debug/events/_json"
+  ZO_EVENTS_BATCH_SIZE: "10"
   RUST_BACKTRACE: "1"
   ZO_DYNAMO_META_STORE_ENABLED: "false"
 
