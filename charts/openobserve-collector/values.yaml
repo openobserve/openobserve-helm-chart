@@ -193,8 +193,8 @@ agent:
       root_path: /hostfs
       collection_interval: 15s
       scrapers:
-        cpu:
-        disk:
+        cpu: {}
+        disk: {}
         filesystem:
           exclude_mount_points:
             match_type: regexp
@@ -232,12 +232,12 @@ agent:
               - squashfs
               - sysfs
               - tracefs
-        load:
-        memory:
-        network:
-        paging:
-        processes:
-        # process: # a bug in the process scraper causes the collector to throw errors so disabling it for now
+        load: {}
+        memory: {}
+        network: {}
+        paging: {}
+        processes: {}
+        # process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 15s
       auth_type: "serviceAccount"
