@@ -45,7 +45,7 @@ opentelemetry-operator:
       autoGenerateCert: true
   manager:
     # auto-instrumentation can be enabled for go which is disabled by default. go auto-instrumentation uses eBPF and requires privileged mode.
-    featureGates: "--operator.autoinstrumentation.go=false"
+    featureGates: "--operator.autoinstrumentation.go=true"
 
 ## Auto-Instrumentation resource to be installed in the cluster
 ## Can be used by setting the following to the pod/namespace annotations:
@@ -189,54 +189,54 @@ agent:
         - type: move
           from: attributes.uid
           to: resource["k8s.pod.uid"]
-    hostmetrics:
-      root_path: /hostfs
-      collection_interval: 15s
-      scrapers:
-        cpu: {}
-        disk: {}
-        filesystem:
-          exclude_mount_points:
-            match_type: regexp
-            mount_points:
-              - /dev/.*
-              - /proc/.*
-              - /sys/.*
-              - /run/k3s/containerd/.*
-              - /var/lib/docker/.*
-              - /var/lib/kubelet/.*
-              - /snap/.*
-          exclude_fs_types:
-            match_type: strict
-            fs_types:
-              - autofs
-              - binfmt_misc
-              - bpf
-              - cgroup2
-              - configfs
-              - debugfs
-              - devpts
-              - devtmpfs
-              - fusectl
-              - hugetlbfs
-              - iso9660
-              - mqueue
-              - nsfs
-              - overlay
-              - proc
-              - procfs
-              - pstore
-              - rpc_pipefs
-              - securityfs
-              - selinuxfs
-              - squashfs
-              - sysfs
-              - tracefs
-        load: {}
-        memory: {}
-        network: {}
-        paging: {}
-        processes: {}
+    # hostmetrics:
+    #   root_path: /hostfs
+    #   collection_interval: 15s
+    #   scrapers:
+    #     cpu: {}
+    #     disk: {}
+    #     filesystem:
+    #       exclude_mount_points:
+    #         match_type: regexp
+    #         mount_points:
+    #           - /dev/.*
+    #           - /proc/.*
+    #           - /sys/.*
+    #           - /run/k3s/containerd/.*
+    #           - /var/lib/docker/.*
+    #           - /var/lib/kubelet/.*
+    #           - /snap/.*
+    #       exclude_fs_types:
+    #         match_type: strict
+    #         fs_types:
+    #           - autofs
+    #           - binfmt_misc
+    #           - bpf
+    #           - cgroup2
+    #           - configfs
+    #           - debugfs
+    #           - devpts
+    #           - devtmpfs
+    #           - fusectl
+    #           - hugetlbfs
+    #           - iso9660
+    #           - mqueue
+    #           - nsfs
+    #           - overlay
+    #           - proc
+    #           - procfs
+    #           - pstore
+    #           - rpc_pipefs
+    #           - securityfs
+    #           - selinuxfs
+    #           - squashfs
+    #           - sysfs
+    #           - tracefs
+    #     load: {}
+    #     memory: {}
+    #     network: {}
+    #     paging: {}
+    #     processes: {}
         # process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 15s
@@ -328,7 +328,7 @@ agent:
         processors: [batch, k8sattributes]
         exporters: [otlphttp/openobserve]
       metrics:
-        receivers: [hostmetrics, kubeletstats]
+        receivers: [kubeletstats]
         processors: [batch, k8sattributes]
         exporters: [otlphttp/openobserve]
       traces:

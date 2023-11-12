@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.6.4
-    created: "2023-11-06T19:52:24.605515-08:00"
+    created: "2023-11-11T16:22:39.41069-08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -72,7 +72,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 8805a23d7d068a996d02521a60dfa0f802b24c0381cb95f23df47b50ae2e90ba
+    digest: ae09ae7d4092bf2442785b9a06bf200ac088b39ffecb83ac62edcea1e7f262e3
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1021,6 +1021,34 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.88.0
+    created: "2023-11-11T16:22:39.412144-08:00"
+    description: An opinionated installation of OTEL Collector for OpenObserve
+    digest: 72d273b3173c3784dd0710e15afb2bc2a8a8cdcd0249ecc01da54c80385df458
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-collector
+    type: application
+    urls:
+    - openobserve-collector-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 0.88.0
+    created: "2023-11-10T01:45:30.854758-08:00"
+    description: An opinionated installation of OTEL Collector for OpenObserve
+    digest: 94c611463bb4ad1ae28f8f4172afa0327c6a1cc35d723d2c93a756240577d1f8
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-collector
+    type: application
+    urls:
+    - openobserve-collector-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 0.88.0
     created: "2023-11-06T19:52:24.606632-08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
     digest: 50785b4ecab7724102ca106b89982211d4612fe0e75dac628ed4c08f794a7248
@@ -1075,4 +1103,4 @@ entries:
     urls:
     - openobserve-collector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-06T19:52:24.601499-08:00"
+generated: "2023-11-11T16:22:39.407728-08:00"
