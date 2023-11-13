@@ -3,3 +3,8 @@ zinc*.tgz
 charts/etcd-8.10.1.tgz
 
 artifacts/
+
+# test files
+install.sh
+uninstall.sh
+values_testing.yaml

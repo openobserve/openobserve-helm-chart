@@ -2,7 +2,7 @@
 apiVersion: opentelemetry.io/v1alpha1
 kind: Instrumentation
 metadata:
-  name: openobserve
+  name: openobserve-python
   namespace: {{ .Release.Namespace | quote }}
 spec:
   exporter:
@@ -23,29 +23,5 @@ spec:
         value: otlp_proto_http
       - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
         value: "false" # set to true to enable auto instrumentation for logs
-  dotnet:
-    env:
-      - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
-        value: http/protobuf
-      - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
-        value: http/protobuf
-  java:
-    env:
-      - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
-        value: http/protobuf
-      - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
-        value: http/protobuf
-  go:
-    env:
-      - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
-        value: http/protobuf
-      - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
-        value: http/protobuf
-  nodejs:
-    env:
-      - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
-        value: http/protobuf
-      - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
-        value: http/protobuf
-
+  
 {{- end }}
