@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.6.4
-    created: "2023-11-13T13:41:53.006847-08:00"
+    created: "2023-11-13T18:35:08.392257-08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -72,7 +72,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: af83a43b8fd260c954315578c7f94f6bb0f7b1e59798a9b1dc971d1631fdf029
+    digest: 8ee27dc3d2f033c7a9385a52ef376e8d24bd7b8588433caed05642b3833084ff
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1021,6 +1021,20 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.88.0
+    created: "2023-11-13T18:35:08.393241-08:00"
+    description: An opinionated installation of OTEL Collector for OpenObserve
+    digest: fe9e106211a92ebf359ec668676e45b0188dacf08d86c9930aebfb7288982c5e
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-collector
+    type: application
+    urls:
+    - openobserve-collector-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: 0.88.0
     created: "2023-11-13T13:41:53.007884-08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
     digest: 9cf06eb0ea24d4e35e4fde95435d9b05afa3de59fd8bbd448db293f16eaab788
@@ -1117,4 +1131,4 @@ entries:
     urls:
     - openobserve-collector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-13T13:41:53.003815-08:00"
+generated: "2023-11-13T18:35:08.389329-08:00"

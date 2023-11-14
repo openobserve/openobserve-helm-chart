@@ -5,6 +5,8 @@ metadata:
   name: openobserve-go
   namespace: {{ .Release.Namespace | quote }}
 spec:
+  go:
+    image: ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.3.0-alpha
   exporter:
     endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.cluster.local:4317
   propagators:
