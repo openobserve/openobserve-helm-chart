@@ -389,7 +389,7 @@ gateway:
           - job_name: "kubeApiServer"
             sample_limit: 10000
             # Default to scraping over https. If required, just disable this or change to `http`.
-            scheme: https
+            scheme: http
             scrape_interval: 15s
             scrape_timeout: 10s
             metrics_path: /metrics
