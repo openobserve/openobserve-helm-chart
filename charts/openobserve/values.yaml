@@ -93,6 +93,7 @@ config:
   ZO_META_STORE: ""
   ZO_META_DYNAMO_PREFIX: ""
   ZO_META_POSTGRES_DSN: ""
+  ZO_META_MYSQL_DSN: ""
   ZO_WAL_MEMORY_MODE_ENABLED: "false"
   ZO_WAL_LINE_MODE_ENABLED: "true"
   ZO_PARQUET_COMPRESSION: "zstd"
@@ -184,8 +185,7 @@ config:
   ZO_PRINT_KEY_EVENT: "false"
   ZO_PRINT_KEY_SQL: "false"
   RUST_LOG: "info"
-  RUST_BACKTRACE: "1"
-  ZO_DYNAMO_META_STORE_ENABLED: "false"
+  RUST_BACKTRACE: "0"
 
 service:
   type: ClusterIP
