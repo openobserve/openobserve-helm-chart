@@ -19,7 +19,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.88.0"
+  tag: "0.90.1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -84,16 +84,8 @@ securityContext:
 
 agent:
   enabled: true
-  tolerations:
-    - key: "openobserve"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
-    - key: "querier"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
-    - key: "etcd"
+  tolerations: 
+    - key: "exampleKey1"
       operator: "Equal"
       value: "true"
       effect: "NoSchedule"
