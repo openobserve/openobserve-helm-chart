@@ -68,6 +68,8 @@ auth:
   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
   ZO_S3_ACCESS_KEY: ""
   ZO_S3_SECRET_KEY: ""
+  
+  AZURE_STORAGE_ACCOUNT_KEY: ""
 
 config:
   ZO_NODE_ROLE: "all"
