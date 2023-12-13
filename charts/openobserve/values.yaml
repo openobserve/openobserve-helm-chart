@@ -51,7 +51,7 @@ replicaCount:
 
 ingester:
   sidecar:
-    enabled: false
+    enabled: true
   persistence:
     enabled: true
     size: 10Gi
