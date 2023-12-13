@@ -50,6 +50,8 @@ replicaCount:
   compactor: 1
 
 ingester:
+  sidecar:
+    enabled: true
   persistence:
     enabled: true
     size: 10Gi
