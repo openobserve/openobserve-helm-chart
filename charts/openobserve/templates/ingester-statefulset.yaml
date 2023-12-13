@@ -75,21 +75,26 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "ingester"
+            {{- if and .Values.ingester.sidecar.enabled }}
             - name: ZO_INGESTER_SIDECAR_ENABLED
               value: "true"
             - name: ZO_INGESTER_SIDECAR_QUERIER
               value: "false"
+            {{- end }}
           volumeMounts:
             - name: data
               mountPath: /data
+        {{- if and .Values.ingester.sidecar.enabled }}
         - name: {{ .Chart.Name }}-querier
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 5081
-              name: grpc
+            - containerPort: 50800
+              name: http-q
+            - containerPort: 50810
+              name: grpc-q
           {{- if .Values.probes.ingester.enabled }}
           livenessProbe:
            httpGet:
@@ -118,9 +123,14 @@ spec:
               value: "true"
             - name: ZO_INGESTER_SIDECAR_QUERIER
               value: "true"
+            - name: ZO_HTTP_PORT
+              value: "50800"
+            - name: ZO_GRPC_PORT
+              value: "50810"
           volumeMounts:
             - name: data
               mountPath: /data
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

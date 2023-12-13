@@ -19,13 +19,13 @@ helm repo update
 
 kubectl create ns openobserve
 
-helm --namespace openobserve -f values.yaml install o1 openobserve/openobserve
+helm --namespace openobserve -f values.yaml install o2 openobserve/openobserve
 ```
 
 ## Uninstall
 
 ```shell
-helm delete o1
+helm delete o2
 ```
 
 # Development
@@ -35,23 +35,23 @@ If you are developing this chart then you should clone the repo and make any mod
 You can generate output of the chart using below command to verify:
 
 ```shell
-helm -n openobserve template o1 . > o1.yaml
+helm -n openobserve template o2 . > o2.yaml
 ```
 
 You can then install using:
 
 ```shell
-helm -n openobserve install o1 .
+helm -n openobserve install o2 .
 ```
 
 To upgrade
 
 ```shell
-helm -n openobserve upgrade o1 .
+helm -n openobserve upgrade o2 .
 ```
 
 To uninstall
 
 ```shell
-helm -n openobserve uninstall o1 .
+helm -n openobserve uninstall o2 .
 ```
