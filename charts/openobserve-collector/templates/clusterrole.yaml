@@ -6,13 +6,11 @@ metadata:
   labels:
     app: openobserve-collector
 rules:
-- nonResourceURLs:
-    - "/metrics"
-  verbs:
-    - get
-- apiGroups:
-  - ""
+- nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
+  verbs: ["get"]
+- apiGroups: [ ""]
   resources:
+  - endpoints
   - events
   - namespaces
   - namespaces/status
@@ -21,52 +19,46 @@ rules:
   - nodes/stats
   - nodes/metrics
   - nodes/proxy
+  - persistentvolumes
+  - persistentvolumeclaims
   - pods
   - pods/status
   - replicationcontrollers
   - replicationcontrollers/status
   - resourcequotas
   - services
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - apps
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["monitoring.coreos.com"]
+  resources:
+  - servicemonitors
+  - podmonitors
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
   resources:
   - daemonsets
   - deployments
   - replicasets
   - statefulsets
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - extensions
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions"]
   resources:
-  - daemonsets
-  - deployments
-  - replicasets
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - batch
+  - ingresses
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
   resources:
   - jobs
   - cronjobs
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-    - autoscaling
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["autoscaling"]
   resources:
     - horizontalpodautoscalers
-  verbs:
-    - get
-    - list
-    - watch
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources:
+  - ingresses
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["discovery.k8s.io"]
+  resources:
+  - endpointslices
+  verbs: ["get", "list", "watch"]
 {{- end }}

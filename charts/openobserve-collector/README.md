@@ -34,7 +34,7 @@ Official documentation can be found at https://opentelemetry.io/docs/kubernetes/
 
 ```bash
 kubectl create ns openobserve-collector
-helm --namespace openobserve-collector -f values.yaml install o1c openobserve/openobserve-collector
+helm --namespace openobserve-collector -f values.yaml install o2c openobserve/openobserve-collector
 ```
 
 
@@ -45,24 +45,35 @@ If you are developing this chart then you should clone the repo and make any mod
 You can generate output of the chart using below command to verify:
 
 ```shell
-helm -n openobserve-collector template o1c . > o1.yaml
+helm -n openobserve-collector template o2c . > o1.yaml
 ```
 
-You can then install using:
+You can install using:
 
 ```shell
-helm -n openobserve-collector install o1c .
+helm -n openobserve-collector install o2c .
+```
+
+or
+  
+```shell
+helm --namespace openobserve-collector \
+  install o2c . \
+  --set exporters."otlphttp/openobserve".endpoint=URL  \
+  --set exporters."otlphttp/openobserve".headers.Authorization="Basic base64 encoded auth"  \
+  --set exporters."otlphttp/openobserve_k8s_events".endpoint=URL  \
+  --set exporters."otlphttp/openobserve_k8s_events".headers.Authorization="Basic base64 encoded auth"
 ```
 
 To upgrade
 
 ```shell
-helm -n openobserve-collector upgrade o1c .
+helm -n openobserve-collector upgrade o2c .
 ```
 
 To uninstall
 
 ```shell
-helm -n openobserve-collector uninstall o1c .
+helm -n openobserve-collector uninstall o2c .
 ```
 

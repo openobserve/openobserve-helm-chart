@@ -68,6 +68,8 @@ auth:
   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
   ZO_S3_ACCESS_KEY: ""
   ZO_S3_SECRET_KEY: ""
+  
+  AZURE_STORAGE_ACCOUNT_KEY: ""
 
 config:
   ZO_NODE_ROLE: "all"
@@ -93,6 +95,7 @@ config:
   ZO_META_STORE: ""
   ZO_META_DYNAMO_PREFIX: ""
   ZO_META_POSTGRES_DSN: ""
+  ZO_META_MYSQL_DSN: ""
   ZO_WAL_MEMORY_MODE_ENABLED: "false"
   ZO_WAL_LINE_MODE_ENABLED: "true"
   ZO_PARQUET_COMPRESSION: "zstd"
@@ -103,8 +106,11 @@ config:
   ZO_FEATURE_PER_THREAD_LOCK: "false"
   ZO_FEATURE_FULLTEXT_ON_ALL_FIELDS: "false"
   ZO_FEATURE_FULLTEXT_EXTRA_FIELDS: ""
+  ZO_FEATURE_DISTINCT_EXTRA_FIELDS: ""
   ZO_FEATURE_FILELIST_DEDUP_ENABLED: "false"
-  ZO_TRACES_BLOOM_FILTER_ENABLED: "false"
+  ZO_FEATURE_QUERY_QUEUE_ENABLED: "true"
+  ZO_BLOOM_FILTER_ENABLED: "false"
+  ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
   ZO_TRACING_ENABLED: "false"
   ZO_TRACING_HEADER_KEY: "Authorization"
   ZO_TRACING_HEADER_VALUE: "Basic YWRtaW46Q29tcGxleHBhc3MjMTIz"
@@ -132,11 +138,12 @@ config:
   ZO_PROMETHEUS_HA_CLUSTER: "cluster"
   ZO_PROMETHEUS_HA_REPLICA: "__replica__"
   ZO_COMPACT_ENABLED: "true"
-  ZO_COMPACT_FAKE_MODE: "false"
+  ZO_COMPACT_STEP_SECS: "3600"
   ZO_COMPACT_INTERVAL: "60"
   ZO_COMPACT_SYNC_TO_DB_INTERVAL: "1800"
   ZO_COMPACT_MAX_FILE_SIZE: "256"
   ZO_COMPACT_DATA_RETENTION_DAYS: "0"
+  ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
   ZO_COMPACT_BLOCKED_ORGS: ""
   ZO_MEMORY_CACHE_ENABLED: "true"
   ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
@@ -168,6 +175,7 @@ config:
   ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
+  ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "false"
   ZO_S3_FEATURE_HTTP1_ONLY: "false"
   ZO_S3_FEATURE_HTTP2_ONLY: "false"
   ZO_S3_SYNC_TO_CACHE_INTERVAL: "600"
@@ -179,8 +187,7 @@ config:
   ZO_PRINT_KEY_EVENT: "false"
   ZO_PRINT_KEY_SQL: "false"
   RUST_LOG: "info"
-  RUST_BACKTRACE: "1"
-  ZO_DYNAMO_META_STORE_ENABLED: "false"
+  RUST_BACKTRACE: "0"
 
 service:
   type: ClusterIP
@@ -370,3 +377,15 @@ zplane:
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
+
+probes:
+  alertmanager:
+    enabled: false
+  compactor:
+    enabled: false
+  ingester:
+    enabled: false
+  querier:
+    enabled: false
+  router:
+    enabled: false

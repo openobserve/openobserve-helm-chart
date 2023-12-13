@@ -19,7 +19,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.86.0"
+  tag: "0.90.1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -45,7 +45,7 @@ opentelemetry-operator:
       autoGenerateCert: true
   manager:
     # auto-instrumentation can be enabled for go which is disabled by default. go auto-instrumentation uses eBPF and requires privileged mode.
-    featureGates: "--operator.autoinstrumentation.go=false"
+    featureGates: "--operator.autoinstrumentation.go=true"
 
 ## Auto-Instrumentation resource to be installed in the cluster
 ## Can be used by setting the following to the pod/namespace annotations:
@@ -84,16 +84,8 @@ securityContext:
 
 agent:
   enabled: true
-  tolerations:
-    - key: "openobserve"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
-    - key: "querier"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
-    - key: "etcd"
+  tolerations: 
+    - key: "exampleKey1"
       operator: "Equal"
       value: "true"
       effect: "NoSchedule"
@@ -114,6 +106,14 @@ agent:
       protocols:
         grpc: {}
         http: {}
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: "otel-collector"
+            scrape_interval: 5s
+            static_configs:
+              - targets: ["0.0.0.0:8888"]
+   
     filelog/std:
       include: [/var/log/pods/*/*/*.log]
       exclude:
@@ -189,55 +189,55 @@ agent:
         - type: move
           from: attributes.uid
           to: resource["k8s.pod.uid"]
-    hostmetrics:
-      root_path: /hostfs
-      collection_interval: 15s
-      scrapers:
-        cpu:
-        disk:
-        filesystem:
-          exclude_mount_points:
-            match_type: regexp
-            mount_points:
-              - /dev/.*
-              - /proc/.*
-              - /sys/.*
-              - /run/k3s/containerd/.*
-              - /var/lib/docker/.*
-              - /var/lib/kubelet/.*
-              - /snap/.*
-          exclude_fs_types:
-            match_type: strict
-            fs_types:
-              - autofs
-              - binfmt_misc
-              - bpf
-              - cgroup2
-              - configfs
-              - debugfs
-              - devpts
-              - devtmpfs
-              - fusectl
-              - hugetlbfs
-              - iso9660
-              - mqueue
-              - nsfs
-              - overlay
-              - proc
-              - procfs
-              - pstore
-              - rpc_pipefs
-              - securityfs
-              - selinuxfs
-              - squashfs
-              - sysfs
-              - tracefs
-        load:
-        memory:
-        network:
-        paging:
-        processes:
-        # process: # a bug in the process scraper causes the collector to throw errors so disabling it for now
+    # hostmetrics:
+    #   root_path: /hostfs
+    #   collection_interval: 15s
+    #   scrapers:
+    #     cpu: {}
+    #     disk: {}
+    #     filesystem:
+    #       exclude_mount_points:
+    #         match_type: regexp
+    #         mount_points:
+    #           - /dev/.*
+    #           - /proc/.*
+    #           - /sys/.*
+    #           - /run/k3s/containerd/.*
+    #           - /var/lib/docker/.*
+    #           - /var/lib/kubelet/.*
+    #           - /snap/.*
+    #       exclude_fs_types:
+    #         match_type: strict
+    #         fs_types:
+    #           - autofs
+    #           - binfmt_misc
+    #           - bpf
+    #           - cgroup2
+    #           - configfs
+    #           - debugfs
+    #           - devpts
+    #           - devtmpfs
+    #           - fusectl
+    #           - hugetlbfs
+    #           - iso9660
+    #           - mqueue
+    #           - nsfs
+    #           - overlay
+    #           - proc
+    #           - procfs
+    #           - pstore
+    #           - rpc_pipefs
+    #           - securityfs
+    #           - selinuxfs
+    #           - squashfs
+    #           - sysfs
+    #           - tracefs
+    #     load: {}
+    #     memory: {}
+    #     network: {}
+    #     paging: {}
+    #     processes: {}
+        # process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 15s
       auth_type: "serviceAccount"
@@ -328,7 +328,7 @@ agent:
         processors: [batch, k8sattributes]
         exporters: [otlphttp/openobserve]
       metrics:
-        receivers: [hostmetrics, kubeletstats]
+        receivers: [kubeletstats]
         processors: [batch, k8sattributes]
         exporters: [otlphttp/openobserve]
       traces:
@@ -389,7 +389,7 @@ gateway:
           - job_name: "kubeApiServer"
             sample_limit: 10000
             # Default to scraping over https. If required, just disable this or change to `http`.
-            scheme: https
+            scheme: http
             scrape_interval: 15s
             scrape_timeout: 10s
             metrics_path: /metrics
@@ -415,22 +415,27 @@ gateway:
                 source_labels:
                   - __name__
                   - le
-          - job_name: "kubelet"
-            sample_limit: 10000
-            # Default to scraping over https. If required, just disable this or change to `http`.
+          - job_name: "otel-collector"
+            scrape_interval: 5s
+            static_configs:
+              - targets: ["0.0.0.0:8888"]
+          - job_name: cadvisor
             scheme: https
+            sample_limit: 10000
             scrape_interval: 15s
             scrape_timeout: 10s
             metrics_path: /metrics/cadvisor
-
-            kubernetes_sd_configs:
-              - role: node
-                follow_redirects: true
             tls_config:
               ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
               insecure_skip_verify: true
-            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-
+            authorization:
+              credentials_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              type: Bearer
+            kubernetes_sd_configs:
+              - role: node
+            # static_configs:
+            #   - targets:
+            #       - ${K8S_NODE_NAME}:10250
             metric_relabel_configs:
               - action: labeldrop
                 regex: name # dropping id results in error - inconsistent timestamps on metric points for metric container_fs_reads_total, container_fs_writes_bytes_total, etc
@@ -444,7 +449,6 @@ gateway:
               # Drop less useful container / always zero filesystem metrics.
               - action: drop
                 regex: container_fs_(io_current|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)
-                replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __name__
@@ -480,11 +484,9 @@ gateway:
             relabel_configs:
               - action: replace
                 regex: "(.*)"
-                replacement: "$1"
+                replacement: https-metrics
                 separator: ";"
-                source_labels:
-                  - job
-                target_label: __tmp_prometheus_job_name
+                target_label: endpoint
               - action: replace
                 replacement: "kubelet"
                 target_label: job
@@ -497,30 +499,12 @@ gateway:
                 target_label: node
               - action: replace
                 regex: "(.*)"
-                replacement: https-metrics
-                separator: ";"
-                target_label: endpoint
-              - action: replace
-                regex: "(.*)"
                 replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __metrics_path__
                 target_label: metrics_path
-              - action: hashmod
-                modulus: 1
-                regex: "(.*)"
-                replacement: "$1"
-                separator: ";"
-                source_labels:
-                  - __address__
-                target_label: __tmp_hash
-              - action: keep
-                regex: "$(SHARD)"
-                replacement: "$1"
-                separator: ";"
-                source_labels:
-                  - __tmp_hash
+
   processors:
     resourcedetection:
       detectors: [env]

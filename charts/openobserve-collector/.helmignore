@@ -29,3 +29,8 @@ __MACOSX/
 # Other
 secrets.yaml
 test/
+
+# test files
+install.sh
+uninstall.sh
+values_testing.yaml
