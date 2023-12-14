@@ -72,6 +72,7 @@ auth:
   ZO_S3_SECRET_KEY: ""
   
   AZURE_STORAGE_ACCOUNT_KEY: ""
+  AZURE_STORAGE_ACCOUNT_NAME: ""
 
 config:
   ZO_NODE_ROLE: "all"
@@ -172,7 +173,7 @@ config:
   ZO_ETCD_LOAD_PAGE_SIZE: "1000"
   ZO_SLED_DATA_DIR: ""
   ZO_SLED_PREFIX: "/zinc/observe/"
-  # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.
+  # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.valid values are s3, azure, minio
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "mysuperduperbucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
