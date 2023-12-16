@@ -28,6 +28,15 @@ spec:
       serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: check-etcd
+          image: busybox
+          command: ['sh', '-c', '
+            until nc -z {{ .Release.Name }}-etcd 2379; do
+              echo "Waiting for etcd to be ready";
+              sleep 5;
+            done;
+          ']
       containers:
         - name: {{ .Chart.Name }}
           securityContext:

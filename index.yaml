@@ -60,6 +60,30 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.7.2
+    created: "2023-12-16T04:53:16.957456-08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 9cf217630eff3d6c96914bb4dc0f5986c145e2ecdf3b76cd9f6690f0b1217aa5
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.7.24.tgz
+    version: 0.7.24
+  - apiVersion: v2
+    appVersion: v0.7.2
     created: "2023-12-14T15:06:50.707841-08:00"
     dependencies:
     - condition: etcd.enabled
@@ -1165,9 +1189,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.90.1
-    created: "2023-12-14T15:06:50.710002-08:00"
+    created: "2023-12-16T04:53:16.958545-08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: bddbbbae37cb7d32187718d43e18bf30c5bac91616e1922ebae0301c55abb17c
+    digest: 7ec58707750021a098eae65dc2e822805f97062b8830fbc99a54bc4383a24cd7
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1387,4 +1411,4 @@ entries:
     urls:
     - openobserve-collector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-12-14T15:06:50.704743-08:00"
+generated: "2023-12-16T04:53:16.954458-08:00"
