@@ -90,6 +90,9 @@ spec:
             - name: ZO_INGESTER_SIDECAR_QUERIER
               value: "false"
             {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . |  nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: data
               mountPath: /data
@@ -136,6 +139,9 @@ spec:
               value: "50800"
             - name: ZO_GRPC_PORT
               value: "50810"
+            {{- with .Values.extraEnv }}
+            {{- toYaml . |  nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: data
               mountPath: /data

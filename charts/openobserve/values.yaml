@@ -207,6 +207,14 @@ config:
   ZO_ACTIX_KEEP_ALIVE: "30" # in second 
 
 
+# Add extra environment variables to all pods, useful for overriding secrets
+extraEnv: []
+# - name: ZO_S3_SECRET_KEY
+#   valueFrom:
+#     secretKeyRef:
+#       name: s3credentials-secret
+#       key: S3_KEY
+
 service:
   type: ClusterIP
   # type: LoadBalancer
