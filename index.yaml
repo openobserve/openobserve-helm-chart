@@ -60,6 +60,78 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.7.2
+    created: "2023-12-20T18:00:20.308721-08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 3b47971a3fbac8df4c951201ad09c46c147fe3858f7ec23080ea9bb4aac915ad
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.7.29.tgz
+    version: 0.7.29
+  - apiVersion: v2
+    appVersion: v0.7.2
+    created: "2023-12-20T17:56:13.709624-08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 0e857e0d89c2720845649c6802764b4488badd33a620ca431a07cb986f2ee1f0
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.7.28.tgz
+    version: 0.7.28
+  - apiVersion: v2
+    appVersion: v0.7.2
+    created: "2023-12-20T16:42:28.306428-08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 5c80a19bd1289a67c9909e4696a714b10e5166b4a238430ddb929808e82ebcc5
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.7.27.tgz
+    version: 0.7.27
+  - apiVersion: v2
+    appVersion: v0.7.2
     created: "2023-12-20T16:37:23.244717-08:00"
     dependencies:
     - condition: etcd.enabled
@@ -1237,9 +1309,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.90.1
-    created: "2023-12-20T16:37:23.245706-08:00"
+    created: "2023-12-20T18:00:20.310314-08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 6d8840f983bb3908c2c9f112b233a848b7f2de5f68850c0feace7f8045d8be02
+    digest: c52c78b3261db43f838260a67b6817aea535d54b33a4da1ec6be721d049c5aef
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1459,4 +1531,4 @@ entries:
     urls:
     - openobserve-collector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-12-20T16:37:23.241756-08:00"
+generated: "2023-12-20T18:00:20.30579-08:00"

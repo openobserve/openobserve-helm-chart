@@ -19,8 +19,6 @@ data:
   ZO_GRPC_PORT: "{{ .Values.config.ZO_GRPC_PORT }}"
   ZO_GRPC_ADDR: "{{ .Values.config.ZO_GRPC_ADDR }}"
   ZO_INTERNAL_GRPC_TOKEN: "{{ .Values.config.ZO_INTERNAL_GRPC_TOKEN }}"
-  ZO_TCP_PORT: "{{ .Values.config.ZO_TCP_PORT }}"
-  ZO_UDP_PORT: "{{ .Values.config.ZO_UDP_PORT }}"
   ZO_APP_NAME: "{{ .Values.config.ZO_APP_NAME }}"
   ZO_NODE_ROLE: "{{ .Values.config.ZO_NODE_ROLE }}"
   ZO_CLUSTER_NAME: "{{ .Values.config.ZO_CLUSTER_NAME }}"
