@@ -251,6 +251,15 @@ agent:
         - pod
         - container
         - volume
+      metrics:
+        k8s.pod.cpu_limit_utilization:
+          enabled: true
+        k8s.pod.cpu_request_utilization:
+          enabled: true
+        k8s.pod.memory_limit_utilization:
+          enabled: true
+        k8s.pod.memory_request_utilization:
+          enabled: true
   processors:
     # resourcedetection:
     #   detectors: [system, env]
