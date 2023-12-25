@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   acme:
-    email: random-email-id@yahoo.com
+    email: {{ .Values.certIssuer.email }}
     privateKeySecretRef:
       name: letsencrypt
     server: https://acme-v02.api.letsencrypt.org/directory

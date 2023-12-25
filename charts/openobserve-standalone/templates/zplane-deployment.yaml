@@ -7,7 +7,7 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount.zplane }}
+  replicas: {{ .Values.zplane.replicaCount }}
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
@@ -55,7 +55,7 @@ spec:
             - name: ZPLANE_ZO_PASSWORD
               value: "{{ .Values.auth.ZO_ROOT_USER_PASSWORD }}"
             - name: ZPLANE_ZO_ENDPOINT
-              value: "http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.cluster.local:5080"
+              value: "http://{{ include "openobserve.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}"
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -65,7 +65,7 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations.zplane }}
+      {{- with .Values.zplane.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
