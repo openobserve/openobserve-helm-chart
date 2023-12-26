@@ -19,7 +19,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.90.1"
+  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
@@ -378,6 +378,15 @@ gateway:
       node_conditions_to_report:
         [Ready, MemoryPressure, DiskPressure, PIDPressure]
       allocatable_types_to_report: [cpu, memory, storage]
+      metrics:
+        k8s.container.cpu_limit: # redundant
+          enabled: false
+        k8s.container.cpu_request:  # redundant
+          enabled: false
+        k8s.container.memory_limit: # redundant
+          enabled: false
+        k8s.container.memory_request: # redundant
+          enabled: false
     k8s_events:
       auth_type: serviceAccount
     k8sobjects:
