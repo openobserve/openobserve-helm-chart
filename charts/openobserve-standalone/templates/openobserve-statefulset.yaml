@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openobserve.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "openobserve.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "openobserve.fullname" . }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "openobserve.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      
+      initContainers:
+        {{- if and .Values.persistence.volumePermissions.enabled .Values.persistence.enabled }}
+        - name: volume-permissions
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /data
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+          volumeMounts:
+            - name: data
+              mountPath: /data
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.config.ZO_HTTP_PORT }}
+              name: http
+            - containerPort: {{ .Values.config.ZO_GRPC_PORT }}
+              name: grpc
+          {{- if .Values.probes.enabled }}
+          livenessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+           failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
+          readinessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+           failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "openobserve.fullname" . }}
+            - configMapRef:
+                name: {{ include "openobserve.fullname" . }}
+          env:
+            {{- if .Values.sidecar.enabled }}
+            - name: ZO_INGESTER_SIDECAR_ENABLED
+              value: "true"
+            - name: ZO_INGESTER_SIDECAR_QUERIER
+              value: "false"
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . |  nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+        {{- if .Values.sidecar.enabled }}
+        - name: {{ .Chart.Name }}-querier
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 50800
+              name: http-q
+            - containerPort: 50810
+              name: grpc-q
+          {{- if .Values.probes.enabled }}
+          livenessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+           failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
+          readinessProbe:
+           httpGet:
+             path: /healthz
+             port: http
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+           failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: {{ include "openobserve.fullname" . }}
+            - configMapRef:
+                name: {{ include "openobserve.fullname" . }}
+          env:
+            {{- with .Values.extraEnv }}
+            {{- toYaml . |  nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      {{- range .Values.persistence.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      storageClassName: {{ .Values.persistence.storageClass }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
