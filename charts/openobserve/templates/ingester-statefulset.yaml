@@ -111,13 +111,13 @@ spec:
           livenessProbe:
            httpGet:
              path: /healthz
-             port: http
+             port: http-q
            initialDelaySeconds: {{ .Values.probes.ingester.initialDelaySeconds | default 10 }}
            failureThreshold: {{ .Values.probes.ingester.failureThreshold | default 3 }}
           readinessProbe:
            httpGet:
              path: /healthz
-             port: http
+             port: http-q
            initialDelaySeconds: {{ .Values.probes.ingester.initialDelaySeconds | default 10 }}
            failureThreshold: {{ .Values.probes.ingester.failureThreshold | default 3 }}
           {{- end }}
