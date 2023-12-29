@@ -108,24 +108,16 @@ data:
   ZO_ETCD_LOAD_PAGE_SIZE: "{{ .Values.config.ZO_ETCD_LOAD_PAGE_SIZE }}"
   ZO_SLED_DATA_DIR: "{{ .Values.config.ZO_SLED_DATA_DIR }}"
   ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
-  ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
   {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
-  {{- end }}
-  {{- if not .Values.minio.enabled }}
-  ZO_S3_SERVER_URL: "{{ .Values.config.ZO_S3_SERVER_URL }}"
-  {{- else }}
   ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000"
-  {{- end }}
-  {{- if not .Values.minio.enabled }}
-  ZO_S3_REGION_NAME: "{{ .Values.config.ZO_S3_REGION_NAME }}"
-  {{- else }}
   ZO_S3_REGION_NAME: "us-east-1"
-  {{- end }}
-  {{- if not .Values.minio.enabled }}
-  ZO_S3_BUCKET_NAME: "{{ .Values.config.ZO_S3_BUCKET_NAME }}"
-  {{- else }}
   ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
+  {{- else }}
+  ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
+  ZO_S3_SERVER_URL: "{{ .Values.config.ZO_S3_SERVER_URL }}"
+  ZO_S3_REGION_NAME: "{{ .Values.config.ZO_S3_REGION_NAME }}"
+  ZO_S3_BUCKET_NAME: "{{ .Values.config.ZO_S3_BUCKET_NAME }}"
   {{- end }}
   ZO_S3_FEATURE_FORCE_PATH_STYLE: "{{ .Values.config.ZO_S3_FEATURE_FORCE_PATH_STYLE }}"
   ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "{{ .Values.config.ZO_S3_FEATURE_FORCE_HOSTED_STYLE }}"
