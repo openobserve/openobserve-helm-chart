@@ -19,7 +19,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.88.0"
+  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
@@ -84,16 +84,8 @@ securityContext:
 
 agent:
   enabled: true
-  tolerations:
-    - key: "openobserve"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
-    - key: "querier"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
-    - key: "etcd"
+  tolerations: 
+    - key: "exampleKey1"
       operator: "Equal"
       value: "true"
       effect: "NoSchedule"
@@ -114,6 +106,14 @@ agent:
       protocols:
         grpc: {}
         http: {}
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: "otel-collector"
+            scrape_interval: 5s
+            static_configs:
+              - targets: ["0.0.0.0:8888"]
+   
     filelog/std:
       include: [/var/log/pods/*/*/*.log]
       exclude:
@@ -251,6 +251,15 @@ agent:
         - pod
         - container
         - volume
+      metrics:
+        k8s.pod.cpu_limit_utilization:
+          enabled: true
+        k8s.pod.cpu_request_utilization:
+          enabled: true
+        k8s.pod.memory_limit_utilization:
+          enabled: true
+        k8s.pod.memory_request_utilization:
+          enabled: true
   processors:
     # resourcedetection:
     #   detectors: [system, env]
@@ -369,6 +378,15 @@ gateway:
       node_conditions_to_report:
         [Ready, MemoryPressure, DiskPressure, PIDPressure]
       allocatable_types_to_report: [cpu, memory, storage]
+      metrics:
+        k8s.container.cpu_limit: # redundant
+          enabled: false
+        k8s.container.cpu_request:  # redundant
+          enabled: false
+        k8s.container.memory_limit: # redundant
+          enabled: false
+        k8s.container.memory_request: # redundant
+          enabled: false
     k8s_events:
       auth_type: serviceAccount
     k8sobjects:
@@ -415,22 +433,27 @@ gateway:
                 source_labels:
                   - __name__
                   - le
-          - job_name: "kubelet"
-            sample_limit: 10000
-            # Default to scraping over https. If required, just disable this or change to `http`.
+          - job_name: "otel-collector"
+            scrape_interval: 5s
+            static_configs:
+              - targets: ["0.0.0.0:8888"]
+          - job_name: cadvisor
             scheme: https
+            sample_limit: 10000
             scrape_interval: 15s
             scrape_timeout: 10s
             metrics_path: /metrics/cadvisor
-
-            kubernetes_sd_configs:
-              - role: node
-                follow_redirects: true
             tls_config:
               ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
               insecure_skip_verify: true
-            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-
+            authorization:
+              credentials_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              type: Bearer
+            kubernetes_sd_configs:
+              - role: node
+            # static_configs:
+            #   - targets:
+            #       - ${K8S_NODE_NAME}:10250
             metric_relabel_configs:
               - action: labeldrop
                 regex: name # dropping id results in error - inconsistent timestamps on metric points for metric container_fs_reads_total, container_fs_writes_bytes_total, etc
@@ -444,7 +467,6 @@ gateway:
               # Drop less useful container / always zero filesystem metrics.
               - action: drop
                 regex: container_fs_(io_current|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)
-                replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __name__
@@ -480,11 +502,9 @@ gateway:
             relabel_configs:
               - action: replace
                 regex: "(.*)"
-                replacement: "$1"
+                replacement: https-metrics
                 separator: ";"
-                source_labels:
-                  - job
-                target_label: __tmp_prometheus_job_name
+                target_label: endpoint
               - action: replace
                 replacement: "kubelet"
                 target_label: job
@@ -497,30 +517,12 @@ gateway:
                 target_label: node
               - action: replace
                 regex: "(.*)"
-                replacement: https-metrics
-                separator: ";"
-                target_label: endpoint
-              - action: replace
-                regex: "(.*)"
                 replacement: "$1"
                 separator: ";"
                 source_labels:
                   - __metrics_path__
                 target_label: metrics_path
-              - action: hashmod
-                modulus: 1
-                regex: "(.*)"
-                replacement: "$1"
-                separator: ";"
-                source_labels:
-                  - __address__
-                target_label: __tmp_hash
-              - action: keep
-                regex: "$(SHARD)"
-                replacement: "$1"
-                separator: ";"
-                source_labels:
-                  - __tmp_hash
+
   processors:
     resourcedetection:
       detectors: [env]

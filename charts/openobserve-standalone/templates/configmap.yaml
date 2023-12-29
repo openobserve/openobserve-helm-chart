@@ -6,13 +6,11 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 data:
+# {{- with .Values.config }}
+# {{- toYaml . |  nindent 2 }}
+# {{- end }}
   ZO_LOCAL_MODE: "{{ .Values.config.ZO_LOCAL_MODE }}"
   ZO_LOCAL_MODE_STORAGE: "{{ .Values.config.ZO_LOCAL_MODE_STORAGE }}"
-  {{- if not .Values.etcd.enabled }}
-  ZO_ETCD_ADDR: "{{ .Values.etcd.externalUrl }}"
-  {{- else }}
-  ZO_ETCD_ADDR: "{{ .Release.Name }}-etcd-headless.{{ .Release.Namespace }}.svc.cluster.local:2379"
-  {{- end }}
   ZO_HTTP_PORT: "{{ .Values.config.ZO_HTTP_PORT }}"
   ZO_HTTP_ADDR: "{{ .Values.config.ZO_HTTP_ADDR }}"
   ZO_HTTP_IPV6_ENABLED: "{{ .Values.config.ZO_HTTP_IPV6_ENABLED }}"
@@ -118,16 +116,24 @@ data:
   ZO_ETCD_LOAD_PAGE_SIZE: "{{ .Values.config.ZO_ETCD_LOAD_PAGE_SIZE }}"
   ZO_SLED_DATA_DIR: "{{ .Values.config.ZO_SLED_DATA_DIR }}"
   ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
+  ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
   {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
-  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000"
-  ZO_S3_REGION_NAME: "us-east-1"
-  ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
-  {{- else }}
-  ZO_S3_PROVIDER: "{{ .Values.config.ZO_S3_PROVIDER }}"
+  {{- end }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_SERVER_URL: "{{ .Values.config.ZO_S3_SERVER_URL }}"
+  {{- else }}
+  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000"
+  {{- end }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_REGION_NAME: "{{ .Values.config.ZO_S3_REGION_NAME }}"
+  {{- else }}
+  ZO_S3_REGION_NAME: "us-east-1"
+  {{- end }}
+  {{- if not .Values.minio.enabled }}
   ZO_S3_BUCKET_NAME: "{{ .Values.config.ZO_S3_BUCKET_NAME }}"
+  {{- else }}
+  ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
   {{- end }}
   ZO_S3_BUCKET_PREFIX: "{{ .Values.config.ZO_S3_BUCKET_PREFIX }}"
   ZO_S3_CONNECT_TIMEOUT: "{{ .Values.config.ZO_S3_CONNECT_TIMEOUT }}"

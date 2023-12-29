@@ -2,7 +2,9 @@
 
 ## Amazon EKS
 
-openobserve uses [IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) on Amazon EKS to securely access s3.
+By default standalone openobserve uses local disk as a storage. You can configure persistence storage or s3 storage.
+
+Openobserve uses [IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) on Amazon EKS to securely access s3.
 
 You must set a minimum of 2 values:
 
@@ -19,7 +21,7 @@ helm repo update
 
 kubectl create ns openobserve
 
-helm --namespace openobserve -f values.yaml install o2 openobserve/openobserve
+helm --namespace openobserve -f values.yaml install o2 openobserve/openobserve-standalone
 ```
 
 ## Uninstall

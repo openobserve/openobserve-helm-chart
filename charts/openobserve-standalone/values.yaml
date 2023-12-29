@@ -42,25 +42,18 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
-replicaCount:
-  ingester: 1
-  querier: 1
-  router: 1
-  alertmanager: 1
-  compactor: 1
+sidecar:
+  enabled: false
 
-ingester:
-  sidecar:
-    enabled: true
-  persistence:
-    enabled: true
-    size: 10Gi
-    storageClass: ""
-    accessModes:
-      - ReadWriteOnce
-    annotations: {}
-    volumePermissions:
-      enabled: false
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  annotations: {}
+  volumePermissions:
+    enabled: false
 
 # Credentials for authentication
 auth:
@@ -74,9 +67,10 @@ auth:
   AZURE_STORAGE_ACCOUNT_KEY: ""
   AZURE_STORAGE_ACCOUNT_NAME: ""
 
+# https://openobserve.ai/docs/environment-variables/
 config:
   ZO_NODE_ROLE: "all"
-  ZO_LOCAL_MODE: "false"
+  ZO_LOCAL_MODE: "true"
   ZO_LOCAL_MODE_STORAGE: "disk"
   ZO_HTTP_PORT: "5080"
   ZO_HTTP_ADDR: ""
@@ -88,14 +82,14 @@ config:
   ZO_GRPC_STREAM_HEADER_KEY: "stream-name"
   ZO_ROUTE_TIMEOUT: "600"
   ZO_INSTANCE_NAME: ""
-  ZO_DATA_DIR: "./data/"
-  ZO_DATA_DB_DIR: ""
-  ZO_DATA_WAL_DIR: ""
-  ZO_DATA_STREAM_DIR: ""
-  ZO_DATA_CACHE_DIR: ""
+  ZO_DATA_DIR: "/data/"
+  ZO_DATA_DB_DIR: "/data/db/"
+  ZO_DATA_WAL_DIR: "/data/wal/"
+  ZO_DATA_STREAM_DIR: "/data/stream/"
+  ZO_DATA_CACHE_DIR: "/data/cache/"
   ZO_UI_ENABLED: "true"
   ZO_BASE_URI: ""
-  ZO_META_STORE: ""
+  ZO_META_STORE: "sqlite"
   ZO_META_DYNAMO_PREFIX: ""
   ZO_META_POSTGRES_DSN: ""
   ZO_META_MYSQL_DSN: ""
@@ -222,10 +216,11 @@ service:
 
 certIssuer:
   enabled: false
+  email: random-email-id@yahoo.com
 
 ingress:
   enabled: false
-  # className: "nginx"
+  className: "nginx"
   annotations:
     {}
     # cert-manager.io/issuer: letsencrypt
@@ -247,99 +242,21 @@ ingress:
     #   hosts:
     #     - demo.openobserve.ai
 
-# You can specify resources for each deployment independently.
-# For example, to configure resources for the ingester, use
-# the code below:
-# resources:
-#   ingester:
-#     limits:
-#       cpu: 150m
-#       memory: 512Mi
-#     requests:
-#       cpu: 100m
-#       memory: 128Mi
-resources:
-  ingester: {}
-  querier: {}
-  compactor: {}
-  router: {}
-  alertmanager: {}
-
-# autoscaling:
-#   enabled: false
-#   minReplicas: 1
-#   maxReplicas: 100
-#   targetCPUUtilizationPercentage: 80
-#   # targetMemoryUtilizationPercentage: 80
-
-autoscaling:
-  ingester:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-  querier:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-  router:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-  compactor:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+resources: {}
+#   limits:
+#     cpu: 150m
+#     memory: 512Mi
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
 
 nodeSelector: {}
 
-tolerations:
-  ingester: []
-  querier: []
-  compactor: []
-  router: []
-  alertmanager: []
-  zplane: []
+tolerations: []
 
 affinity: {}
 
-etcd:
-  enabled: true # if true then etcd will be deployed as part of openobserve
-  externalUrl: "my_custom_host.com:2379" # if enabled is false then this is required
-  replicaCount: 3 # if enabled is true then this is required. should be odd number
-  image:
-    registry: docker.io
-    repository: bitnami/etcd
-    tag: 3.5.8-debian-11-r4
-    pullPolicy: IfNotPresent
-    digest: ""
-  auth:
-    token:
-      enabled: false
-    rbac:
-      create: false
-      allowNoneAuthentication: true
-      rootPassword: ""
-  logLevel: "info"
-  extraEnvVars:
-    - name: ETCD_QUOTA_BACKEND_BYTES
-      value: "17179869184"
-    - name: ETCD_AUTO_COMPACTION_RETENTION
-      value: "2"
-  persistence:
-    size: 20Gi
-    storageClass: ""
-    accessModes:
-      - ReadWriteOnce
-    annotations: {}
-
+# https://github.com/minio/minio/blob/master/helm/minio/values.yaml
 minio:
   enabled: false # if true then minio will be deployed as part of openobserve
   region: "us-east-1"
@@ -370,6 +287,10 @@ minio:
     accessModes:
       - ReadWriteOnce
     annotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
 
 # zPlane enables elasticsearch compatibility for openobserve. Copyright (c) 2023 Zinc Labs Inc.
 # You can enable zPlane by setting enabled to true
@@ -377,6 +298,7 @@ minio:
 # Reach out to hello@zinclabs.io for commercial license if you continue to use zPlane
 zplane:
   enabled: false # if true then zPlane will be deployed as part of openobserve
+  replicaCount: 1
   image:
     repository: public.ecr.aws/zinclabs/zplane
     tag: 0.1.6
@@ -402,15 +324,10 @@ zplane:
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
+  resources: {}
+  tolerations: []
 
 probes:
-  alertmanager:
-    enabled: false
-  compactor:
-    enabled: false
-  ingester:
-    enabled: false
-  querier:
-    enabled: false
-  router:
-    enabled: false
+  enabled: true
+  initialDelaySeconds: 10
+  failureThreshold: 3
