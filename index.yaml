@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.7.2
-    created: "2023-12-27T05:04:42.823447-08:00"
+    created: "2023-12-29T17:50:32.333102-08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -72,7 +72,27 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 38f67a0851d77e4a9bdd4a3c60512765d373b10d85fea6ac0e90394586c40724
+    digest: 4892359ac9dfb3158e32c3829e46608848d2b546d77a584e5a808fe04b14444b
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.7.30.tgz
+    version: 0.7.30
+  - apiVersion: v2
+    appVersion: v0.7.2
+    created: "2023-12-29T17:50:32.327782-08:00"
+    dependencies:
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: b1a58fe8f3b04202f85b6eafa4a97735541d5afe7052181cb0f5e6a73f8d459d
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1309,9 +1329,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.91.0
-    created: "2023-12-27T05:04:42.82461-08:00"
+    created: "2023-12-29T17:50:32.338786-08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: c19d4fcb195cb09e45d0dbf03b209808d0e986304920b22e4c09ffa7a99e8d3c
+    digest: d68a048be736c3b3284a32a704604113110b102b9c3d1396cc76c29c1ffde3b4
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1573,4 +1593,4 @@ entries:
     urls:
     - openobserve-collector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-12-27T05:04:42.819277-08:00"
+generated: "2023-12-29T17:50:32.324853-08:00"
