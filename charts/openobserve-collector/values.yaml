@@ -19,7 +19,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.91.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -189,55 +189,55 @@ agent:
         - type: move
           from: attributes.uid
           to: resource["k8s.pod.uid"]
-    # hostmetrics:
-    #   root_path: /hostfs
-    #   collection_interval: 15s
-    #   scrapers:
-    #     cpu: {}
-    #     disk: {}
-    #     filesystem:
-    #       exclude_mount_points:
-    #         match_type: regexp
-    #         mount_points:
-    #           - /dev/.*
-    #           - /proc/.*
-    #           - /sys/.*
-    #           - /run/k3s/containerd/.*
-    #           - /var/lib/docker/.*
-    #           - /var/lib/kubelet/.*
-    #           - /snap/.*
-    #       exclude_fs_types:
-    #         match_type: strict
-    #         fs_types:
-    #           - autofs
-    #           - binfmt_misc
-    #           - bpf
-    #           - cgroup2
-    #           - configfs
-    #           - debugfs
-    #           - devpts
-    #           - devtmpfs
-    #           - fusectl
-    #           - hugetlbfs
-    #           - iso9660
-    #           - mqueue
-    #           - nsfs
-    #           - overlay
-    #           - proc
-    #           - procfs
-    #           - pstore
-    #           - rpc_pipefs
-    #           - securityfs
-    #           - selinuxfs
-    #           - squashfs
-    #           - sysfs
-    #           - tracefs
-    #     load: {}
+    hostmetrics:
+      root_path: /hostfs
+      collection_interval: 15s
+      scrapers:
+        cpu: {}
+        disk: {}
+        filesystem:
+          exclude_mount_points:
+            match_type: regexp
+            mount_points:
+              - /dev/.*
+              - /proc/.*
+              - /sys/.*
+              - /run/k3s/containerd/.*
+              - /var/lib/docker/.*
+              - /var/lib/kubelet/.*
+              - /snap/.*
+          exclude_fs_types:
+            match_type: strict
+            fs_types:
+              - autofs
+              - binfmt_misc
+              - bpf
+              - cgroup2
+              - configfs
+              - debugfs
+              - devpts
+              - devtmpfs
+              - fusectl
+              - hugetlbfs
+              - iso9660
+              - mqueue
+              - nsfs
+              - overlay
+              - proc
+              - procfs
+              - pstore
+              - rpc_pipefs
+              - securityfs
+              - selinuxfs
+              - squashfs
+              - sysfs
+              - tracefs
+        load: {}
     #     memory: {}
-    #     network: {}
+        network: {}
     #     paging: {}
     #     processes: {}
-        # process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
+        process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 15s
       auth_type: "serviceAccount"
@@ -261,11 +261,11 @@ agent:
         k8s.pod.memory_request_utilization:
           enabled: true
   processors:
-    # resourcedetection:
-    #   detectors: [system, env]
-    #   override: true
-    #   system:
-    #     hostname_sources: [os, dns]
+    resourcedetection:
+      detectors: [system, env, k8snode]
+      override: true
+      system:
+        hostname_sources: [os, dns]
     k8sattributes:
       auth_type: "serviceAccount"
       passthrough: false
