@@ -205,6 +205,20 @@ config:
   ZO_ENRICHMENT_TABLE_LIMIT: "10" # size in mb
   ZO_ACTIX_REQ_TIMEOUT: "30" # in seconds# in second
   ZO_ACTIX_KEEP_ALIVE: "30" # in second 
+  O2_DEX_ENABLED: "false"
+  O2_DEX_CLIENT_ID: ""
+  O2_DEX_CLIENT_SECRET: ""
+  O2_DEX_BASE_URL: ""
+  O2_DEX_REDIRECT_URL: ""
+  O2_CALLBACK_URL: ""
+  O2_DEX_SCOPES: "openid profile email groups offline_access"
+  O2_DEX_GROUP_ATTRIBUTE: "ou"
+  O2_DEX_ROLE_ATTRIBUTE: "cn"
+  O2_DEX_DEFAULT_ORG: "default"
+
+
+  
+
 
 
 # Add extra environment variables to all pods, useful for overriding secrets
