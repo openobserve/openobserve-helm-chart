@@ -53,5 +53,5 @@ helm -n openobserve upgrade o2 .
 To uninstall
 
 ```shell
-helm -n openobserve uninstall o2 .
+helm -n openobserve uninstall o2 
 ```
