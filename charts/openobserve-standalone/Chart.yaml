@@ -1,5 +1,5 @@
 apiVersion: v2
-name: openobserve
+name: openobserve-standalone
 description:  Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session replay etc. Elasticsearch API compatibility.
 
 # A chart can be either an 'application' or a 'library' chart.
