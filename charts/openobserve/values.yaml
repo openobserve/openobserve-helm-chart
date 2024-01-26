@@ -8,9 +8,9 @@ image:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "v0.8.0-rc1-3b29d92-amd64"
   enterprise:
-    repository: 058694856476.dkr.ecr.us-west-2.amazonaws.com/openobserve-enterprise
+    repository: public.ecr.aws/zinclabs/openobserve-enterprise-dev
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.8.0-rc1-4149902-amd64"
+    tag: "v0.8.0-rc1-5a81854-amd64"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -427,34 +427,6 @@ enterprise:
   enabled: false
   dex:
     enabled: false
-    image:
-      repository: dexidp/dex
-      tag: v2.37.0
-      pullPolicy: IfNotPresent
-    extraEnv: []
-    podAnnotations: {}
-    ingress:
-      enabled: true
-      className: "nginx"
-      annotations:
-        cert-manager.io/issuer: letsencrypt
-        kubernetes.io/tls-acme: "true"
-        nginx.ingress.kubernetes.io/enable-cors: "true"
-        # nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
-        # nginx.ingress.kubernetes.io/proxy-connect-timeout: '600'
-        # nginx.ingress.kubernetes.io/proxy-send-timeout: '600'
-        # nginx.ingress.kubernetes.io/proxy-read-timeout: '600'
-        # nginx.ingress.kubernetes.io/proxy-body-size: 32m
-      hosts:
-        - host: dex.example.com
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-      tls:
-        - secretName: dex.example.com
-          hosts:
-            - dex.example.com
-
     config: 
       issuer: https://dex.example.com/dex
       storage:
@@ -467,6 +439,16 @@ enterprise:
         idTokens: 10m
         refreshTokens:
           validIfNotUsedFor: 30m
+      staticClients:
+      - id: o2-client
+        redirectURIs:
+        - https://openobserve.example.com/config/callback
+        name: o2-client
+        secret: ZXhhbXBsZS1hcHAtc2VjcmV0 # This should be base64 encoded value of client secret and must be same that you set in config.O2_DEX_CLIENT_SECRET
+      oauth2:
+        responseTypes:
+        - code
+        skipApprovalScreen: true
       connectors:
         # - type: google
         #   id: google
@@ -509,16 +491,34 @@ enterprise:
               - userAttr: DN
                 groupAttr: uniqueMember
               nameAttr: entryDN
-      staticClients:
-      - id: o2-client
-        redirectURIs:
-        - https://openobserve.example.com/config/callback
-        name: o2-client
-        secret: ZXhhbXBsZS1hcHAtc2VjcmV0
-      oauth2:
-        responseTypes:
-        - code
-        skipApprovalScreen: true
+    image:
+      repository: dexidp/dex
+      tag: v2.37.0
+      pullPolicy: IfNotPresent
+    extraEnv: []
+    podAnnotations: {}
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations:
+        cert-manager.io/issuer: letsencrypt
+        kubernetes.io/tls-acme: "true"
+        nginx.ingress.kubernetes.io/enable-cors: "true"
+        # nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+        # nginx.ingress.kubernetes.io/proxy-connect-timeout: '600'
+        # nginx.ingress.kubernetes.io/proxy-send-timeout: '600'
+        # nginx.ingress.kubernetes.io/proxy-read-timeout: '600'
+        # nginx.ingress.kubernetes.io/proxy-body-size: 32m
+      hosts:
+        - host: dex.example.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: dex.example.com
+          hosts:
+            - dex.example.com  
+    
 
 probes:
   alertmanager:
