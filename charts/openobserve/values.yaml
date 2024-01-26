@@ -21,8 +21,8 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: 
-    eks.amazonaws.com/role-arn: arn:aws:iam::058694856476:role/zinc-s3-eks
+  annotations: {}
+    # eks.amazonaws.com/role-arn: arn:aws:iam::058694856476:role/zinc-s3-eks
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
@@ -182,12 +182,12 @@ config:
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "us-east-2" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "o2-dev-bucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
+  ZO_S3_BUCKET_PREFIX: "o2"
   ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
   ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "false"
   ZO_S3_FEATURE_HTTP1_ONLY: "false"
   ZO_S3_FEATURE_HTTP2_ONLY: "false"
   ZO_S3_SYNC_TO_CACHE_INTERVAL: "600"
-  ZO_S3_BUCKET_PREFIX: "ent4"
   ZO_S3_CONNECT_TIMEOUT: "10" # in seconds
   ZO_S3_REQUEST_TIMEOUT: "3600" # in seconds
   ZO_S3_ALLOW_INVALID_CERTIFICATES: "false"
@@ -237,10 +237,10 @@ service:
   port: 5080
 
 certIssuer:
-  enabled: true
+  enabled: false
 
 ingress:
-  enabled: true
+  enabled: false
   className: "nginx"
   annotations:
     cert-manager.io/issuer: letsencrypt
