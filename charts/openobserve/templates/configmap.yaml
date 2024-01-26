@@ -147,7 +147,7 @@ data:
   ZO_PRINT_KEY_SQL: "{{ .Values.config.ZO_PRINT_KEY_SQL }}"
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"  
-  O2_DEX_ENABLED: "{{ .Values.config.O2_DEX_ENABLED }}"
+  O2_DEX_ENABLED: "{{ .Values.enterprise.dex.enabled }}"
   O2_DEX_CLIENT_ID: "{{ .Values.config.O2_DEX_CLIENT_ID }}"
   O2_DEX_CLIENT_SECRET: "{{ .Values.config.O2_DEX_CLIENT_SECRET }}"
   O2_DEX_BASE_URL: "{{ .Values.config.O2_DEX_BASE_URL }}"
