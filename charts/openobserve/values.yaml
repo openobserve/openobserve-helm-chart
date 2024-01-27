@@ -182,7 +182,7 @@ config:
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "us-east-2" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "o2-dev-bucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
-  ZO_S3_BUCKET_PREFIX: "o2"
+  ZO_S3_BUCKET_PREFIX: ""
   ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
   ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "false"
   ZO_S3_FEATURE_HTTP1_ONLY: "false"
