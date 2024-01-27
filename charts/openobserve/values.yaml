@@ -4,9 +4,9 @@
 
 image:
   oss:
-    repository: public.ecr.aws/zinclabs/openobserve-dev
+    repository: public.ecr.aws/zinclabs/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.8.0-rc1-3b29d92-amd64"
+    tag: "v0.8.0-rc2"
   enterprise:
     repository: public.ecr.aws/zinclabs/openobserve-enterprise-dev
     # Overrides the image tag whose default is the chart appVersion.
