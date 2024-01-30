@@ -347,6 +347,8 @@ agent:
 
 gateway:
   enabled: true
+  targetAllocator:
+    enabled: true
   affinity: {}
   nodeSelector: {}
   tolerations: []
