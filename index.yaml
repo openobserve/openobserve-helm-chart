@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.8.0-rc21
-    created: "2024-01-30T15:37:14.797747-08:00"
+    created: "2024-02-02T03:28:11.481473-06:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -72,7 +72,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: a505e2792985a0b24e81e8460f00c51fb838b7120ec29311667c4d342952ee98
+    digest: 3abc7d20bba792fb7032a9fd33e498098952eaf812f805fdfb83d322c8b8da1a
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1449,9 +1449,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.93.0
-    created: "2024-01-30T15:37:14.798936-08:00"
+    created: "2024-02-02T03:28:11.482821-06:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 724b1ad303d1d263600434fe49688c21988fbee41262a80ffdb48751de5c34a7
+    digest: 8dab8322cca055f392d81e6aecb213cc504d42a768937d3d655898b5cdc29c44
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1744,7 +1744,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.7.2
-    created: "2024-01-30T15:37:14.800421-08:00"
+    created: "2024-02-02T03:28:11.484291-06:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -1752,7 +1752,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 4b5b694509e75918fc601aabdb7f28d9857139cc44b5cfc962216e0435b00334
+    digest: 484a411073cff5c416d561de6852c581045131dfe1441bd0407b45be08195c6d
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1762,4 +1762,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-01-30T15:37:14.793326-08:00"
+generated: "2024-02-02T03:28:11.476872-06:00"
