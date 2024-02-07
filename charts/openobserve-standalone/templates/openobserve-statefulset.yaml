@@ -31,7 +31,7 @@ spec:
       initContainers:
         {{- if and .Values.persistence.volumePermissions.enabled .Values.persistence.enabled }}
         - name: volume-permissions
-          image: busybox:latest
+          image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
