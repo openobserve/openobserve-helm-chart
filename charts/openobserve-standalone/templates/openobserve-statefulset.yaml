@@ -60,14 +60,14 @@ spec:
           livenessProbe:
            httpGet:
              path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+             port: {{ .Values.config.ZO_HTTP_PORT }}
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
           readinessProbe:
            httpGet:
              path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+             port: {{ .Values.config.ZO_HTTP_PORT }}
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
           {{- end }}
           resources:

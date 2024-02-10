@@ -527,10 +527,10 @@ probes:
   compactor:
     enabled: false
   ingester:
-    enabled: false
+    enabled: true
   querier:
-    enabled: false
+    enabled: true
   router:
-    enabled: false
+    enabled: true
   dex:
     enabled: false
