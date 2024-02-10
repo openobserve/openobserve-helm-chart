@@ -58,8 +58,6 @@ replicaCount:
   zplane: 1
 
 ingester:
-  sidecar:
-    enabled: false
   persistence:
     enabled: true
     size: 10Gi

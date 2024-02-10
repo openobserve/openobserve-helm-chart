@@ -42,9 +42,6 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
-sidecar:
-  enabled: false
-
 persistence:
   enabled: true
   size: 10Gi

@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "openobserve-collector.labels" . | nindent 4 }}
 spec:
-  mode: daemonset # "daemonset", "deployment" (default), "sidecar", "statefulset"
+  mode: daemonset # "daemonset", "deployment" (default), "statefulset"
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
   env:
