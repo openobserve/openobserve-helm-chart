@@ -55,7 +55,7 @@ spec:
             - name: ZPLANE_ZO_PASSWORD
               value: "{{ .Values.auth.ZO_ROOT_USER_PASSWORD }}"
             - name: ZPLANE_ZO_ENDPOINT
-              value: "http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.cluster.local:5080"
+              value: "http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5080"
 
       {{- with .Values.nodeSelector }}
       nodeSelector:

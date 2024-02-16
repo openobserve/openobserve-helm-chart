@@ -11,7 +11,7 @@ data:
   {{- if not .Values.etcd.enabled }}
   ZO_ETCD_ADDR: "{{ .Values.etcd.externalUrl }}"
   {{- else }}
-  ZO_ETCD_ADDR: "{{ .Release.Name }}-etcd-headless.{{ .Release.Namespace }}.svc.cluster.local:2379"
+  ZO_ETCD_ADDR: "{{ .Release.Name }}-etcd-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:2379"
   {{- end }}
   ZO_HTTP_PORT: "{{ .Values.config.ZO_HTTP_PORT }}"
   ZO_HTTP_ADDR: "{{ .Values.config.ZO_HTTP_ADDR }}"
@@ -125,7 +125,7 @@ data:
   ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
   {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
-  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000"
+  ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:9000"
   ZO_S3_REGION_NAME: "us-east-1"
   ZO_S3_BUCKET_NAME: "{{ (index .Values.minio.buckets 0 ).name }}"
   {{- else }}
