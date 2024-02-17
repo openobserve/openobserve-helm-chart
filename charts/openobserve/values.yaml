@@ -426,6 +426,29 @@ zplane:
       #   hosts:
       #     - chart-example.local
 
+# Postgres is used for storing openobserve metadata. 
+# Make sure to install cloudnative-pg operator before enabling this
+# https://github.com/cloudnative-pg/cloudnative-pg/blob/main/docs/src/installation_upgrade.md
+# kubectl apply --server-side -f \
+#   https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/releases/cnpg-1.22.1.yaml
+postgres:
+  enabled: false
+  pgadmin:
+    enabled: false
+  spec:
+    password: b3Blbm9ic2VydmU= # base64 encoded value of password # username is hardcoded to openobserve, db is hardcoded to openobserve
+    enableSuperuserAccess: true # if true then superuser access will be enabled. You can get the password from appropriate secret once the postgres is deployed
+    instances: 2
+    storage:
+      size: 10Gi
+    postgresql:
+      parameters:
+        shared_buffers: "1GB"
+        max_connections: "1500"
+    monitoring:
+      enablePodMonitor: true
+
+
 enterprise:
   enabled: false
   dex:

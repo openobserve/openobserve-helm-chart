@@ -1,0 +1,31 @@
+{{- if and .Values.postgres.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: openobserve
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  enableSuperuserAccess: true
+  managed:
+    roles:
+    - name: openobserve  # this should match the username in secret
+      ensure: present
+      comment: OpenObserve and allies - OpenObserve, OpenOFGA, DexIDP
+      login: true
+      superuser: true
+      createrole: true
+      inRoles:
+        - pg_read_all_data
+        - pg_write_all_data
+      passwordSecret:
+        name: openobservepguser
+  instances: 1
+  storage:
+    size: 10Gi
+  postgresql:
+    parameters:
+      shared_buffers: "1GB"
+      max_connections: "1500"
+  monitoring:
+    enablePodMonitor: true
+{{- end }}
