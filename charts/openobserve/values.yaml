@@ -19,6 +19,7 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+clusterDomain: "cluster.local"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -341,6 +342,7 @@ etcd:
   enabled: true # if true then etcd will be deployed as part of openobserve
   externalUrl: "my_custom_host.com:2379" # if enabled is false then this is required
   replicaCount: 3 # if enabled is true then this is required. should be odd number
+  clusterDomain: "cluster.local"
   image:
     registry: docker.io
     repository: bitnami/etcd
