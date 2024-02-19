@@ -49,19 +49,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 5080
+              containerPort: {{ .Values.config.ZO_HTTP_PORT }}
               protocol: TCP
           {{- if .Values.probes.alertmanager.enabled }}
           livenessProbe:
            httpGet:
              path: /healthz
-             port: http
+             port: {{ .Values.config.ZO_HTTP_PORT }}
            initialDelaySeconds: {{ .Values.probes.alertmanager.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.alertmanager.failureThreshold | default 3 }}
           readinessProbe:
            httpGet:
              path: /healthz
-             port: http
+             port: {{ .Values.config.ZO_HTTP_PORT }}
            initialDelaySeconds: {{ .Values.probes.alertmanager.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.alertmanager.failureThreshold | default 3 }}
           {{- end }}

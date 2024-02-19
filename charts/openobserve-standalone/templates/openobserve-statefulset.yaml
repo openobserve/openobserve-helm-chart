@@ -60,59 +60,14 @@ spec:
           livenessProbe:
            httpGet:
              path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+             port: {{ .Values.config.ZO_HTTP_PORT }}
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
           readinessProbe:
            httpGet:
              path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
-           failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
-          {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          envFrom:
-            - secretRef:
-                name: {{ include "openobserve.fullname" . }}
-            - configMapRef:
-                name: {{ include "openobserve.fullname" . }}
-          env:
-            {{- if .Values.sidecar.enabled }}
-            - name: ZO_INGESTER_SIDECAR_ENABLED
-              value: "true"
-            - name: ZO_INGESTER_SIDECAR_QUERIER
-              value: "false"
-            {{- end }}
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-          volumeMounts:
-            - name: data
-              mountPath: /data
-        {{- if .Values.sidecar.enabled }}
-        - name: {{ .Chart.Name }}-querier
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: 50800
-              name: http-q
-            - containerPort: 50810
-              name: grpc-q
-          {{- if .Values.probes.enabled }}
-          livenessProbe:
-           httpGet:
-             path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
-           failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
-          readinessProbe:
-           httpGet:
-             path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
+             port: {{ .Values.config.ZO_HTTP_PORT }}
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
           {{- end }}
           resources:
@@ -129,7 +84,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

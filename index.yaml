@@ -59,6 +59,126 @@ entries:
     version: 5.0.7
   openobserve:
   - apiVersion: v2
+    appVersion: v0.8.1
+    created: "2024-02-16T17:06:26.147935-08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: e33ef9458ab32d472e88b7ba2a9fbd3f7ed23b86c4c5deee6182710c41100f73
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.8.41.tgz
+    version: 0.8.41
+  - apiVersion: v2
+    appVersion: v0.8.0
+    created: "2024-02-11T11:13:33.9449+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: dc1a2497263f16bfef39e871de1734d7161c708dde1f53fb7052dce4ce451c90
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.8.4.tgz
+    version: 0.8.4
+  - apiVersion: v2
+    appVersion: v0.8.0
+    created: "2024-02-10T12:20:20.349556+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: b33b44af9e5b9c447d454ebfb2ba528e4ed6bd152d58dd9324058c2f7aee3322
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.8.3.tgz
+    version: 0.8.3
+  - apiVersion: v2
+    appVersion: v0.8.0
+    created: "2024-02-10T11:30:32.027449+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 2a9a9aef2eeb4550acb6905134b7d8cc5710612e9b0d59ef1ca5301981f93b28
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.8.2.tgz
+    version: 0.8.2
+  - apiVersion: v2
+    appVersion: v0.8.0
+    created: "2024-02-10T10:52:08.037839+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 30c03f178dea80fe7bbe364493807c5c83cdb640d8fba086e2f59142b2d89974
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.8.1.tgz
+    version: 0.8.1
+  - apiVersion: v2
     appVersion: v0.8.0-rc21
     created: "2024-02-06T19:11:38.861453-08:00"
     dependencies:
@@ -1473,9 +1593,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.93.0
-    created: "2024-02-06T19:11:38.862538-08:00"
+    created: "2024-02-16T17:06:26.149204-08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 1f42468b0c8066882e12cf9722ebe58c1ba5a8fe952db289f6577d29f46cc2e1
+    digest: f34ac7911ac947c033415450c40419a48629a631dab97768e644fe95c4181a17
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1767,8 +1887,8 @@ entries:
     version: 0.1.0
   openobserve-standalone:
   - apiVersion: v2
-    appVersion: v0.7.2
-    created: "2024-02-06T19:11:38.864098-08:00"
+    appVersion: v0.8.0
+    created: "2024-02-16T17:06:26.150597-08:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -1776,7 +1896,27 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: ca3e521558cc929cc470b16fe76af0e659a25eb60f62bc46e1412eae5599ebf6
+    digest: dff1e59ca8a30b1fc9f514f9cae35d592c423158e9c87c8091e022520ef343bf
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-standalone
+    type: application
+    urls:
+    - openobserve-standalone-0.8.4.tgz
+    version: 0.8.4
+  - apiVersion: v2
+    appVersion: v0.7.2
+    created: "2024-02-10T12:20:20.352753+08:00"
+    dependencies:
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 8b33e83acd0e7cae39ab81fe7f0ad21a4a4254fa1c4378697f23e4049cb63601
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1786,4 +1926,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-02-06T19:11:38.857507-08:00"
+generated: "2024-02-16T17:06:26.143552-08:00"

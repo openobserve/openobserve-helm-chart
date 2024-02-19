@@ -19,6 +19,7 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+clusterDomain: "cluster.local"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -58,8 +59,6 @@ replicaCount:
   zplane: 1
 
 ingester:
-  sidecar:
-    enabled: false
   persistence:
     enabled: true
     size: 10Gi
@@ -102,6 +101,7 @@ config:
   ZO_DATA_STREAM_DIR: ""
   ZO_DATA_CACHE_DIR: ""
   ZO_UI_ENABLED: "true"
+  ZO_WEB_URL: ""
   ZO_BASE_URI: ""
   ZO_META_STORE: ""
   ZO_META_DYNAMO_PREFIX: ""
@@ -120,6 +120,7 @@ config:
   ZO_FEATURE_DISTINCT_EXTRA_FIELDS: ""
   ZO_FEATURE_FILELIST_DEDUP_ENABLED: "false"
   ZO_FEATURE_QUERY_QUEUE_ENABLED: "true"
+  ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_num"
   ZO_BLOOM_FILTER_ENABLED: "true"
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
   ZO_TRACING_ENABLED: "false"
@@ -131,10 +132,13 @@ config:
   ZO_HEARTBEAT_INTERVAL: "30"
   ZO_JSON_LIMIT: "209715200"
   ZO_PAYLOAD_LIMIT: "209715200"
-  ZO_MAX_FILE_SIZE_ON_DISK: "32"
+  ZO_MAX_FILE_SIZE_ON_DISK: "64"
+  ZO_MAX_FILE_SIZE_IN_MEMORY: "256"
   ZO_MAX_FILE_RETENTION_TIME: "600"
   ZO_FILE_PUSH_INTERVAL: "10"
   ZO_FILE_MOVE_THREAD_NUM: "0"
+  ZO_MEM_TABLE_MAX_SIZE: "0"
+  ZO_MEM_PERSIST_INTERVAL: "5"
   ZO_QUERY_THREAD_NUM: "0"
   ZO_QUERY_TIMEOUT: "600"
   ZO_HTTP_WORKER_NUM: "0"
@@ -327,6 +331,7 @@ etcd:
   enabled: true # if true then etcd will be deployed as part of openobserve
   externalUrl: "my_custom_host.com:2379" # if enabled is false then this is required
   replicaCount: 3 # if enabled is true then this is required. should be odd number
+  clusterDomain: "cluster.local"
   image:
     registry: docker.io
     repository: bitnami/etcd
@@ -554,10 +559,10 @@ probes:
   compactor:
     enabled: false
   ingester:
-    enabled: false
+    enabled: true
   querier:
-    enabled: false
+    enabled: true
   router:
-    enabled: false
+    enabled: true
   dex:
     enabled: false

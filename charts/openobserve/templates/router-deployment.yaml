@@ -50,22 +50,22 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 5080
+            - containerPort: {{ .Values.config.ZO_HTTP_PORT }}
               name: http
-            - containerPort: 5081
+            - containerPort: {{ .Values.config.ZO_GRPC_PORT }}
               name: grpc
           {{- if .Values.probes.router.enabled }}
           livenessProbe:
            httpGet:
              path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.router.initialDelaySeconds | default 10 }}
+             port: {{ .Values.config.ZO_HTTP_PORT }}
+           initialDelaySeconds: {{ .Values.probes.router.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.router.failureThreshold | default 3 }}
           readinessProbe:
            httpGet:
              path: /healthz
-             port: http
-           initialDelaySeconds: {{ .Values.probes.router.initialDelaySeconds | default 10 }}
+             port: {{ .Values.config.ZO_HTTP_PORT }}
+           initialDelaySeconds: {{ .Values.probes.router.initialDelaySeconds | default 60 }}
            failureThreshold: {{ .Values.probes.router.failureThreshold | default 3 }}
           {{- end }}
           resources:
