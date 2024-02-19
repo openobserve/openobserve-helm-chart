@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: openobserve
+  name: {{ include "openobserve.fullname" . }}-postgres
   namespace: {{ .Release.Namespace | quote }}
 spec:
   enableSuperuserAccess: true
@@ -18,7 +18,7 @@ spec:
         - pg_read_all_data
         - pg_write_all_data
       passwordSecret:
-        name: openobservepguser
+        name: {{ include "openobserve.fullname" . }}-openobservepguser
   instances: 1
   storage:
     size: 10Gi

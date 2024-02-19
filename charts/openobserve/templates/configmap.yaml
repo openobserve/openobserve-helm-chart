@@ -40,9 +40,14 @@ data:
   ZO_DATA_CACHE_DIR: "{{ .Values.config.ZO_DATA_CACHE_DIR }}"
   ZO_UI_ENABLED: "{{ .Values.config.ZO_UI_ENABLED }}"
   ZO_BASE_URI: "{{ .Values.config.ZO_BASE_URI }}"
-  ZO_META_STORE: "{{ .Values.config.ZO_META_STORE }}"
   ZO_META_DYNAMO_PREFIX: "{{ .Values.config.ZO_META_DYNAMO_PREFIX }}"
+  {{- if .Values.postgres.enabled }}
+  ZO_META_POSTGRES_DSN: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/app?sslmode=disable"
+  ZO_META_STORE: "postgres"
+  {{- else }}
   ZO_META_POSTGRES_DSN: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
+  ZO_META_STORE: "{{ .Values.config.ZO_META_STORE }}"
+  {{- end }}
   ZO_META_MYSQL_DSN: "{{ .Values.config.ZO_META_MYSQL_DSN }}"
   ZO_WAL_MEMORY_MODE_ENABLED: "{{ .Values.config.ZO_WAL_MEMORY_MODE_ENABLED }}"
   ZO_WAL_LINE_MODE_ENABLED: "{{ .Values.config.ZO_WAL_LINE_MODE_ENABLED }}"

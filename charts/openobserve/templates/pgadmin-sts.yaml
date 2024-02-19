@@ -1,0 +1,62 @@
+{{- if and .Values.postgres.pgadmin.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openobserve.fullname" . }}-pgadmin
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: pgadmin
+spec:
+  serviceName: {{ include "openobserve.fullname" . }}-pgadmin
+  replicas: 1
+  selector:
+    matchLabels:
+      name: pgadmin
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        name: pgadmin
+        app: pgadmin
+    spec:
+      securityContext:
+        fsGroup: 2000
+        runAsUser: 10000
+        runAsGroup: 3000
+        runAsNonRoot: true
+      # terminationGracePeriodSeconds: 0
+      containers:
+        - name: pgadmin
+          image: dpage/pgadmin4:latest
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: hello@openobserve.ai
+            - name: PGADMIN_DEFAULT_PASSWORD
+              value: SupermanVsSpiderman#735
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+          - name: data
+            mountPath: /var/lib/pgadmin
+          - name: log
+            mountPath: /var/log/pgadmin
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+  - metadata:
+      name: log
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+{{- end }}

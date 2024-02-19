@@ -6,11 +6,11 @@ image:
   oss:
     repository: public.ecr.aws/zinclabs/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.8.0"
+    tag: "v0.8.1"
   enterprise:
-    repository: public.ecr.aws/zinclabs/openobserve-enterprise-dev
+    repository: public.ecr.aws/zinclabs/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.8.0-rc1-5a81854-amd64"
+    tag: "v0.8.1"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
@@ -432,11 +432,11 @@ zplane:
 # kubectl apply --server-side -f \
 #   https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/releases/cnpg-1.22.1.yaml
 postgres:
-  enabled: false
+  enabled: true
   pgadmin:
-    enabled: false
+    enabled: true
   spec:
-    password: b3Blbm9ic2VydmU= # base64 encoded value of password # username is hardcoded to openobserve, db is hardcoded to openobserve
+    password: Batman123 # password # username is hardcoded to openobserve, db is hardcoded to app
     enableSuperuserAccess: true # if true then superuser access will be enabled. You can get the password from appropriate secret once the postgres is deployed
     instances: 2
     storage:
