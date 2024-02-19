@@ -43,7 +43,7 @@ data:
   ZO_BASE_URI: "{{ .Values.config.ZO_BASE_URI }}"
   ZO_META_DYNAMO_PREFIX: "{{ .Values.config.ZO_META_DYNAMO_PREFIX }}"
   {{- if .Values.postgres.enabled }}
-  ZO_META_POSTGRES_DSN: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/app?sslmode=disable"
+  ZO_META_POSTGRES_DSN: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
   ZO_META_STORE: "postgres"
   {{- else }}
   ZO_META_POSTGRES_DSN: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"

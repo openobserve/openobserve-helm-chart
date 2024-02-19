@@ -24,7 +24,7 @@ spec:
               value: postgres
             - name: OPENFGA_DATASTORE_URI
               {{- if .Values.postgres.enabled }}
-              value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/app?sslmode=disable"
+              value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
               {{- else }}
               value: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
               {{- end }}
@@ -42,7 +42,7 @@ spec:
               value: postgres
             - name: OPENFGA_DATASTORE_URI
               {{- if .Values.postgres.enabled }}
-              value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.cluster.local:5432/app?sslmode=disable"
+              value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
               {{- else }}
               value: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
               {{- end }}
