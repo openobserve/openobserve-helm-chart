@@ -213,17 +213,6 @@ config:
   ZO_ENRICHMENT_TABLE_LIMIT: "10" # size in mb
   ZO_ACTIX_REQ_TIMEOUT: "30" # in seconds# in second
   ZO_ACTIX_KEEP_ALIVE: "30" # in second 
-  # O2_DEX_ENABLED: "false" # the value will be picked from enterprise.dex.enabled section
-  O2_DEX_CLIENT_ID: "o2-client"
-  O2_DEX_CLIENT_SECRET: "ZXhhbXBsZS1hcHAtc2VjcmV0"
-  O2_DEX_BASE_URL: "https://dex.example.com/dex"
-  O2_DEX_REDIRECT_URL: "https://openobserve.example.com/config/callback"
-  O2_CALLBACK_URL: "https://openobserve.example.com/web/cb"
-  O2_DEX_SCOPES: "openid profile email groups offline_access"
-  O2_DEX_GROUP_ATTRIBUTE: "ou"
-  O2_DEX_ROLE_ATTRIBUTE: "cn"
-  O2_DEX_DEFAULT_ORG: "default"
-
 
 
 # Add extra environment variables to all pods, useful for overriding secrets
@@ -451,9 +440,22 @@ postgres:
 
 enterprise:
   enabled: false
+  openfga:
+    enabled: false
+    image:
+      repository: openfga/openfga
+      tag: latest
+      pullPolicy: IfNotPresent
   dex:
     enabled: false
-    config: 
+    parameters:
+      O2_CALLBACK_URL: https://openobserve.example.com/web/cb
+      O2_DEX_SCOPES: openid profile email groups offline_access
+      O2_DEX_GROUP_ATTRIBUTE: ou
+      O2_DEX_DEFAULT_ORG: default
+      O2_DEX_DEFAULT_ROLE: user
+      O2_DEX_ROLE_ATTRIBUTE: role
+    config:
       issuer: https://dex.example.com/dex
       storage:
         type: kubernetes
@@ -468,7 +470,7 @@ enterprise:
       staticClients:
       - id: o2-client
         redirectURIs:
-        - https://openobserve.example.com/config/callback
+        - https://openobserve.example.com/config/redirect
         name: o2-client
         secret: ZXhhbXBsZS1hcHAtc2VjcmV0 # This should be base64 encoded value of client secret and must be same that you set in config.O2_DEX_CLIENT_SECRET
       oauth2:

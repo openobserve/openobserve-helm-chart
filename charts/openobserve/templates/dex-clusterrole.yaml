@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "openobserve.fullname" . }}-dex
+  name: {{ include "openobserve.fullname" . }}-{{- .Release.Namespace -}}-dex
 rules:
 - apiGroups: ["dex.coreos.com"] # API group created by dex
   resources: ["*"]
