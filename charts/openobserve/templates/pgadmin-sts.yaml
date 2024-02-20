@@ -30,9 +30,9 @@ spec:
           image: dpage/pgadmin4:latest
           env:
             - name: PGADMIN_DEFAULT_EMAIL
-              value: hello@openobserve.ai
+              value: {{ .Values.postgres.pgadmin.PGADMIN_DEFAULT_EMAIL }}
             - name: PGADMIN_DEFAULT_PASSWORD
-              value: SupermanVsSpiderman#735
+              value: {{ .Values.postgres.pgadmin.PGADMIN_DEFAULT_PASSWORD }}
           imagePullPolicy: Always
           ports:
             - containerPort: 80

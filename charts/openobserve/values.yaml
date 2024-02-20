@@ -429,6 +429,8 @@ postgres:
   enabled: true
   pgadmin:
     enabled: true
+    PGADMIN_DEFAULT_EMAIL: hello@openobserve.ai
+    PGADMIN_DEFAULT_PASSWORD: Batman123
   spec:
     password: Batman123 # password # username is hardcoded to openobserve, db is hardcoded to app
     enableSuperuserAccess: true # if true then superuser access will be enabled. You can get the password from appropriate secret once the postgres is deployed
