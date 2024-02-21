@@ -170,3 +170,4 @@ data:
   O2_DEX_ROLE_ATTRIBUTE: "{{ .Values.enterprise.dex.parameters.O2_DEX_ROLE_ATTRIBUTE }}"
   O2_DEX_DEFAULT_ORG: "{{ .Values.enterprise.dex.parameters.O2_DEX_DEFAULT_ORG }}"
   O2_DEX_DEFAULT_ROLE: "{{ .Values.enterprise.dex.parameters.O2_DEX_DEFAULT_ROLE }}"
+  O2_MAP_GROUP_TO_ROLE: "{{ .Values.enterprise.dex.parameters.O2_MAP_GROUP_TO_ROLE }}"
