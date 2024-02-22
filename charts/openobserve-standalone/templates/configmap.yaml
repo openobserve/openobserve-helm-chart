@@ -6,9 +6,6 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 data:
-# {{- with .Values.config }}
-# {{- toYaml . |  nindent 2 }}
-# {{- end }}
   ZO_LOCAL_MODE: "{{ .Values.config.ZO_LOCAL_MODE }}"
   ZO_LOCAL_MODE_STORAGE: "{{ .Values.config.ZO_LOCAL_MODE_STORAGE }}"
   ZO_HTTP_PORT: "{{ .Values.config.ZO_HTTP_PORT }}"
