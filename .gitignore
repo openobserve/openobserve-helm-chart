@@ -8,3 +8,6 @@ artifacts/
 install.sh
 uninstall.sh
 values_testing.yaml
+
+# local test development files
+t_*.*

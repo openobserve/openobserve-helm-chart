@@ -34,3 +34,6 @@ test/
 install.sh
 uninstall.sh
 values_testing.yaml
+
+t_*.*
+
