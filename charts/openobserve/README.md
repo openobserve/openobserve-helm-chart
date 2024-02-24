@@ -13,6 +13,13 @@ You must set a minimum of 2 values:
 
 ## Install
 
+Install the Cloud Native PostgreSQL Operator. This is a prerequisite for openobserve helm chart. This helm chart sets up a postgres database cluster (1 primary + 1 replica) and uses it as metadata store of OpenObserve.
+```shell
+kubectl apply -f \
+  https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/releases/cnpg-1.22.1.yaml
+```
+
+Install the openobserve helm chart
 ```shell
 helm repo add openobserve https://charts.openobserve.ai
 helm repo update
