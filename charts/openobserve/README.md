@@ -32,7 +32,7 @@ helm --namespace openobserve -f values.yaml install o2 openobserve/openobserve
 ## Uninstall
 
 ```shell
-helm delete o2
+helm --namespace openobserve delete o2
 ```
 
 # Development
