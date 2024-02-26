@@ -463,6 +463,7 @@ enterprise:
       O2_DEX_DEFAULT_ROLE: user
       O2_DEX_ROLE_ATTRIBUTE: role
       O2_MAP_GROUP_TO_ROLE: "false"
+      O2_DEX_NATIVE_LOGIN_ENABLED: "true"
     config:
       issuer: https://dex.example.com/dex
       storage:
