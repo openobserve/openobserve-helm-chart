@@ -217,6 +217,7 @@ config:
   ZO_ENRICHMENT_TABLE_LIMIT: "10" # size in mb
   ZO_ACTIX_REQ_TIMEOUT: "30" # in seconds# in second
   ZO_ACTIX_KEEP_ALIVE: "30" # in second 
+  ZO_BLOOM_FILTER_ON_ALL_FIELDS : "true"
 
 
 # Add extra environment variables to all pods, useful for overriding secrets
