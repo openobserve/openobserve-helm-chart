@@ -100,11 +100,11 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.nodeSelector.ingester }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.affinity.ingester }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}

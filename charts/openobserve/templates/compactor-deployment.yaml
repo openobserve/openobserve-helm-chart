@@ -79,11 +79,11 @@ spec:
             {{- toYaml . |  nindent 12 }}
             {{- end }}
 
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.nodeSelector.compactor }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.affinity.compactor }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}

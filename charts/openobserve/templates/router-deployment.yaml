@@ -82,11 +82,11 @@ spec:
             {{- toYaml . |  nindent 12 }}
             {{- end }}
             
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.nodeSelector.router }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.affinity.router }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}

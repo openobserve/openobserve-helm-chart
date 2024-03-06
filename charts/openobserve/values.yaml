@@ -315,7 +315,13 @@ autoscaling:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+nodeSelector:
+  ingester: {}
+  querier: {}
+  compactor: {}
+  router: {}
+  alertmanager: {}
+  zplane: {}
 
 tolerations:
   ingester: []
@@ -326,7 +332,13 @@ tolerations:
   zplane: []
   dex: []
 
-affinity: {}
+affinity:
+  ingester: {}
+  querier: {}
+  compactor: {}
+  router: {}
+  alertmanager: {}
+  zplane: {}
 
 etcd:
   enabled: true # if true then etcd will be deployed as part of openobserve
