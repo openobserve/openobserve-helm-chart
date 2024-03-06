@@ -332,7 +332,13 @@ tolerations:
   zplane: []
   dex: []
 
-affinity: {}
+affinity:
+  ingester: {}
+  querier: {}
+  compactor: {}
+  router: {}
+  alertmanager: {}
+  zplane: {}
 
 etcd:
   enabled: true # if true then etcd will be deployed as part of openobserve
