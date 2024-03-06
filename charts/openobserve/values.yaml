@@ -315,7 +315,13 @@ autoscaling:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+nodeSelector:
+  ingester: {}
+  querier: {}
+  compactor: {}
+  router: {}
+  alertmanager: {}
+  zplane: {}
 
 tolerations:
   ingester: []

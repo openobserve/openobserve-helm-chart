@@ -57,7 +57,7 @@ spec:
             - name: ZPLANE_ZO_ENDPOINT
               value: "http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5080"
 
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.nodeSelector.zplane }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
