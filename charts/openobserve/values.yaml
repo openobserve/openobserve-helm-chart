@@ -81,6 +81,8 @@ auth:
   AZURE_STORAGE_ACCOUNT_KEY: ""
   AZURE_STORAGE_ACCOUNT_NAME: ""
 
+# The config settings correspond one-to-one with environment variables. Before adjusting the following settings, it is highly recommended to read the following documents in detail.
+# https://openobserve.ai/docs/environment-variables/
 config:
   ZO_NODE_ROLE: "all"
   ZO_LOCAL_MODE: "false"
@@ -216,7 +218,7 @@ config:
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "false"
   ZO_ENRICHMENT_TABLE_LIMIT: "10" # size in mb
   ZO_ACTIX_REQ_TIMEOUT: "30" # in seconds# in second
-  ZO_ACTIX_KEEP_ALIVE: "30" # in second 
+  ZO_ACTIX_KEEP_ALIVE: "30" # in second
   ZO_BLOOM_FILTER_ON_ALL_FIELDS : "true"
 
 
@@ -433,7 +435,7 @@ zplane:
       #   hosts:
       #     - chart-example.local
 
-# Postgres is used for storing openobserve metadata. 
+# Postgres is used for storing openobserve metadata.
 # Make sure to install cloudnative-pg operator before enabling this
 # https://github.com/cloudnative-pg/cloudnative-pg/blob/main/docs/src/installation_upgrade.md
 # kubectl apply --server-side -f \
@@ -567,8 +569,8 @@ enterprise:
       tls:
         - secretName: dex.example.com
           hosts:
-            - dex.example.com  
-    
+            - dex.example.com
+
 
 probes:
   alertmanager:
