@@ -64,6 +64,7 @@ auth:
   AZURE_STORAGE_ACCOUNT_KEY: ""
   AZURE_STORAGE_ACCOUNT_NAME: ""
 
+# The config settings correspond one-to-one with environment variables. Before adjusting the following settings, it is highly recommended to read the following documents in detail.
 # https://openobserve.ai/docs/environment-variables/
 config:
   ZO_NODE_ROLE: "all"
@@ -200,7 +201,7 @@ config:
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "false"
   ZO_ENRICHMENT_TABLE_LIMIT: "10" # size in mb
   ZO_ACTIX_REQ_TIMEOUT: "30" # in seconds# in second
-  ZO_ACTIX_KEEP_ALIVE: "30" # in second 
+  ZO_ACTIX_KEEP_ALIVE: "30" # in second
 
 
 # Add extra environment variables to all pods, useful for overriding secrets
