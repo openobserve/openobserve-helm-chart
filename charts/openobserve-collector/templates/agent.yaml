@@ -38,6 +38,7 @@ spec:
     - name: varlibdockercontainers
       readOnly: true
       mountPath: /var/lib/docker/containers
+  resources: {{ .Values.gateway.resources | toYaml | nindent 4 }}
   config: |
     receivers: {{ .Values.agent.receivers | toYaml | nindent 6 }}
     connectors: {{ .Values.agent.connectors | toYaml | nindent 6 }}
