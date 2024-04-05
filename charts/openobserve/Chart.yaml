@@ -28,6 +28,10 @@ dependencies:
     version: "8.11.4"
     repository: "https://charts.bitnami.com/bitnami"
     condition: etcd.enabled
+  - name: nats
+    version: "1.1.10"
+    repository: "https://nats-io.github.io/k8s/helm/charts/"
+    condition: nats.enabled
   - name: minio
     version: "5.0.7"
     repository: "https://charts.min.io"
