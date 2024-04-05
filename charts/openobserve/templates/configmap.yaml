@@ -51,7 +51,8 @@ data:
   ZO_UI_SQL_BASE64_ENABLED: "{{ .Values.config.ZO_UI_SQL_BASE64_ENABLED }}"
   ZO_WEB_URL: "{{ .Values.config.ZO_WEB_URL }}"
   ZO_BASE_URI: "{{ .Values.config.ZO_BASE_URI }}"
-  ZO_META_DYNAMO_PREFIX: "{{ .Values.config.ZO_META_DYNAMO_PREFIX }}"
+  ZO_CLUSTER_COORDINATOR: "{{ .Values.config.ZO_CLUSTER_COORDINATOR }}"
+  ZO_QUEUE_STORE: "{{ .Values.config.ZO_QUEUE_STORE }}"
   {{- if .Values.postgres.enabled }}
   ZO_META_POSTGRES_DSN: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
   ZO_META_STORE: "postgres"
@@ -142,8 +143,6 @@ data:
   ZO_DISK_CACHE_MAX_SIZE: "{{ .Values.config.ZO_DISK_CACHE_MAX_SIZE }}"
   ZO_DISK_CACHE_SKIP_SIZE: "{{ .Values.config.ZO_DISK_CACHE_SKIP_SIZE }}"
   ZO_DISK_CACHE_RELEASE_SIZE: "{{ .Values.config.ZO_DISK_CACHE_RELEASE_SIZE }}"
-  ZO_SLED_DATA_DIR: "{{ .Values.config.ZO_SLED_DATA_DIR }}"
-  ZO_SLED_PREFIX: "{{ .Values.config.ZO_SLED_PREFIX }}"
   {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
   ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:9000"
@@ -173,8 +172,6 @@ data:
   ZO_PRINT_KEY_SQL: "{{ .Values.config.ZO_PRINT_KEY_SQL }}"
   ZO_INGESTER_SERVICE_URL: "{{ .Values.config.ZO_INGESTER_SERVICE_URL }}"
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "{{ .Values.config.ZO_IGNORE_FILE_RETENTION_BY_STREAM }}"
-  ZO_CLUSTER_COORDINATOR: "{{ .Values.config.ZO_CLUSTER_COORDINATOR }}"
-  ZO_QUEUE_STORE: "{{ .Values.config.ZO_QUEUE_STORE }}"
   {{- if .Values.nats.enabled }}
   ZO_NATS_ADDR: "nats://{{ .Release.Name }}-nats.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4222"
   ZO_NATS_LOCK_WAIT_TIMEOUT: "{{ .Values.config.ZO_NATS_LOCK_WAIT_TIMEOUT }}"
