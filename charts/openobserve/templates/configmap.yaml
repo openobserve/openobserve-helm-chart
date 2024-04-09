@@ -16,6 +16,7 @@ data:
   ZO_ETCD_ADDR: "{{ .Values.etcd.externalUrl }}"
   {{- else }}
   ZO_ETCD_ADDR: "{{ .Release.Name }}-etcd-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:2379"
+  {{- end }}
   ZO_ETCD_PREFIX: "{{ .Values.config.ZO_ETCD_PREFIX }}"
   ZO_ETCD_CONNECT_TIMEOUT: "{{ .Values.config.ZO_ETCD_CONNECT_TIMEOUT }}"
   ZO_ETCD_COMMAND_TIMEOUT: "{{ .Values.config.ZO_ETCD_COMMAND_TIMEOUT }}"
@@ -28,7 +29,18 @@ data:
   ZO_ETCD_KEY_FILE: "{{ .Values.config.ZO_ETCD_KEY_FILE }}"
   ZO_ETCD_DOMAIN_NAME: "{{ .Values.config.ZO_ETCD_DOMAIN_NAME }}"
   ZO_ETCD_LOAD_PAGE_SIZE: "{{ .Values.config.ZO_ETCD_LOAD_PAGE_SIZE }}"
+  {{- if not .Values.nats.enabled }}
+  ZO_NATS_ADDR: "{{ .Values.nats.externalUrl }}"
+  {{- else }}
+  ZO_NATS_ADDR: "nats://{{ .Release.Name }}-nats.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4222"
   {{- end }}
+  ZO_ETCD_PREFIX: "{{ .Values.config.ZO_ETCD_PREFIX }}"
+  ZO_NATS_USER: "{{ .Values.config.ZO_NATS_USER }}"
+  ZO_NATS_PASSWORD: "{{ .Values.config.ZO_NATS_PASSWORD }}"
+  ZO_NATS_REPLICAS: "{{ .Values.config.ZO_NATS_REPLICAS }}"
+  ZO_NATS_CONNECT_TIMEOUT: "{{ .Values.config.ZO_NATS_CONNECT_TIMEOUT }}"
+  ZO_NATS_COMMAND_TIMEOUT: "{{ .Values.config.ZO_NATS_COMMAND_TIMEOUT }}"
+  ZO_NATS_LOCK_WAIT_TIMEOUT: "{{ .Values.config.ZO_NATS_LOCK_WAIT_TIMEOUT }}"
   ZO_HTTP_PORT: "{{ .Values.config.ZO_HTTP_PORT }}"
   ZO_HTTP_ADDR: "{{ .Values.config.ZO_HTTP_ADDR }}"
   ZO_HTTP_IPV6_ENABLED: "{{ .Values.config.ZO_HTTP_IPV6_ENABLED }}"
@@ -172,10 +184,6 @@ data:
   ZO_PRINT_KEY_SQL: "{{ .Values.config.ZO_PRINT_KEY_SQL }}"
   ZO_INGESTER_SERVICE_URL: "{{ .Values.config.ZO_INGESTER_SERVICE_URL }}"
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "{{ .Values.config.ZO_IGNORE_FILE_RETENTION_BY_STREAM }}"
-  {{- if .Values.nats.enabled }}
-  ZO_NATS_ADDR: "nats://{{ .Release.Name }}-nats.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4222"
-  ZO_NATS_LOCK_WAIT_TIMEOUT: "{{ .Values.config.ZO_NATS_LOCK_WAIT_TIMEOUT }}"
-  {{- end }}
   ZO_RUM_ENABLED: "{{ .Values.config.ZO_RUM_ENABLED }}"
   ZO_RUM_CLIENT_TOKEN: "{{ .Values.config.ZO_RUM_CLIENT_TOKEN }}"
   ZO_RUM_APPLICATION_ID: "{{ .Values.config.ZO_RUM_APPLICATION_ID }}"

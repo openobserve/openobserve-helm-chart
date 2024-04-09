@@ -110,8 +110,8 @@ config:
   ZO_UI_SQL_BASE64_ENABLED: "false"
   ZO_WEB_URL: ""
   ZO_BASE_URI: ""
-  ZO_CLUSTER_COORDINATOR: "nats"
-  ZO_META_STORE: "nats"
+  ZO_CLUSTER_COORDINATOR: "etcd"
+  ZO_META_STORE: "etcd"
   ZO_META_POSTGRES_DSN: ""
   ZO_META_MYSQL_DSN: ""
   ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
@@ -207,7 +207,15 @@ config:
   ZO_ETCD_CERT_FILE: ""
   ZO_ETCD_KEY_FILE: ""
   ZO_ETCD_DOMAIN_NAME: ""
-  ZO_ETCD_LOAD_PAGE_SIZE: "1000"
+  ZO_ETCD_LOAD_PAGE_SIZE: "100" 
+  ZO_NATS_ADDR: "nats://nats.openobserve.svc.cluster.local:4222"
+  ZO_NATS_PREFIX: "o2_"
+  ZO_NATS_USER: ""
+  ZO_NATS_PASSWORD: ""
+  ZO_NATS_REPLICAS: "3"
+  ZO_NATS_CONNECT_TIMEOUT: "5"
+  ZO_NATS_COMMAND_TIMEOUT: "10"
+  ZO_NATS_LOCK_WAIT_TIMEOUT: "600"
   # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.valid values are s3, azure, minio
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "us-east-2" # do not need to set this if enabled minio is being used. settings will be picked from minio section
@@ -230,8 +238,6 @@ config:
   ZO_PRINT_KEY_SQL: "false"
   ZO_INGESTER_SERVICE_URL: ""
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "false"
-  ZO_NATS_ADDR: "nats://nats.openobserve.svc.cluster.local:4222"
-  ZO_NATS_LOCK_WAIT_TIMEOUT: "600"
   ZO_RUM_ENABLED: "false"
   ZO_RUM_CLIENT_TOKEN: ""
   ZO_RUM_APPLICATION_ID: ""
@@ -367,7 +373,8 @@ affinity:
   zplane: {}
 
 nats:
-  enabled: true
+  enabled: true # if true then nats will be deployed as part of openobserve
+  externalUrl: "my_custom_host.com:4222" # if enabled is false then this is required
   config:
     cluster:
       enabled: true
