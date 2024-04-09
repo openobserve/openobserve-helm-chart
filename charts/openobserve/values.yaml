@@ -111,7 +111,6 @@ config:
   ZO_WEB_URL: ""
   ZO_BASE_URI: ""
   ZO_CLUSTER_COORDINATOR: "nats"
-  ZO_QUEUE_STORE: "nats"
   ZO_META_STORE: "nats"
   ZO_META_POSTGRES_DSN: ""
   ZO_META_MYSQL_DSN: ""
