@@ -29,6 +29,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+        {{- if .Values.etcd.enabled }}
         - name: check-etcd
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
           command: ['sh', '-c', '
@@ -37,6 +38,17 @@ spec:
               sleep 5;
             done;
           ']
+        {{- end }} 
+        {{- if .Values.nats.enabled }}
+        - name: check-nats
+          image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
+          command: ['sh', '-c', '
+            until nc -zv {{ .Release.Name }}-nats 4222; do
+              echo "Waiting for NATS to be ready...";
+              sleep 2;
+            done;
+          ']
+         {{- end }} 
       containers:
         - name: {{ .Chart.Name }}
           securityContext:

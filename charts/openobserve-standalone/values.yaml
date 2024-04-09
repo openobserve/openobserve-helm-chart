@@ -95,7 +95,6 @@ config:
   ZO_WEB_URL: ""
   ZO_BASE_URI: ""
   ZO_META_STORE: "sqlite"
-  ZO_META_DYNAMO_PREFIX: ""
   ZO_META_POSTGRES_DSN: ""
   ZO_META_MYSQL_DSN: ""
   ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
@@ -192,8 +191,6 @@ config:
   ZO_ETCD_KEY_FILE: ""
   ZO_ETCD_DOMAIN_NAME: ""
   ZO_ETCD_LOAD_PAGE_SIZE: "1000"
-  ZO_SLED_DATA_DIR: ""
-  ZO_SLED_PREFIX: "/zinc/observe/"
   # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.valid values are s3, azure, minio
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
