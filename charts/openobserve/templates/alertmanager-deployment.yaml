@@ -62,7 +62,8 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.config.ZO_HTTP_PORT }}
-              protocol: TCP
+            - name: grpc
+              containerPort: {{ .Values.config.ZO_GRPC_PORT }}
           {{- if .Values.probes.alertmanager.enabled }}
           livenessProbe:
            httpGet:

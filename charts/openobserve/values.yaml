@@ -263,7 +263,8 @@ extraEnv: []
 service:
   type: ClusterIP
   # type: LoadBalancer
-  port: 5080
+  http_port: 5080
+  grpc_port: 5081
 
 certIssuer:
   enabled: false

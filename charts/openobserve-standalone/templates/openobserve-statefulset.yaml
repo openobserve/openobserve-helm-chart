@@ -52,10 +52,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.config.ZO_HTTP_PORT }}
-              name: http
-            - containerPort: {{ .Values.config.ZO_GRPC_PORT }}
-              name: grpc
+            - name: http
+              containerPort: {{ .Values.config.ZO_HTTP_PORT }}
+            - name: grpc
+              containerPort: {{ .Values.config.ZO_GRPC_PORT }}
           {{- if .Values.probes.enabled }}
           livenessProbe:
            httpGet:

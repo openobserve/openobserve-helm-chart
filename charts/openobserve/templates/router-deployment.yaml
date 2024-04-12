@@ -62,10 +62,10 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.config.ZO_HTTP_PORT }}
-              name: http
-            - containerPort: {{ .Values.config.ZO_GRPC_PORT }}
-              name: grpc
+            - name: http
+              containerPort: {{ .Values.config.ZO_HTTP_PORT }}
+            - name: grpc
+              containerPort: {{ .Values.config.ZO_GRPC_PORT }}
           {{- if .Values.probes.router.enabled }}
           livenessProbe:
            httpGet:
