@@ -34,7 +34,7 @@ data:
   {{- else }}
   ZO_NATS_ADDR: "nats://{{ .Release.Name }}-nats.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4222"
   {{- end }}
-  ZO_ETCD_PREFIX: "{{ .Values.config.ZO_ETCD_PREFIX }}"
+  ZO_NATS_PREFIX: "{{ .Values.config.ZO_NATS_PREFIX }}"
   ZO_NATS_USER: "{{ .Values.config.ZO_NATS_USER }}"
   ZO_NATS_PASSWORD: "{{ .Values.config.ZO_NATS_PASSWORD }}"
   ZO_NATS_REPLICAS: "{{ .Values.config.ZO_NATS_REPLICAS }}"
