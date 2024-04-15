@@ -181,7 +181,7 @@ config:
   ZO_MEMORY_CACHE_MAX_SIZE: "0"
   ZO_MEMORY_CACHE_SKIP_SIZE: "0"
   ZO_MEMORY_CACHE_RELEASE_SIZE: "0"
-  ZO_MEMORY_CACHE_GC_SIZE: "10"
+  ZO_MEMORY_CACHE_GC_SIZE: "50"
   ZO_MEMORY_CACHE_GC_INTERVAL: "0"
   ZO_MEMORY_CACHE_DATAFUSION_MEMORY_POOL: ""
   ZO_MEMORY_CACHE_DATAFUSION_MAX_SIZE: "0"
@@ -190,7 +190,7 @@ config:
   ZO_DISK_CACHE_MAX_SIZE: "0"
   ZO_DISK_CACHE_SKIP_SIZE: "0"
   ZO_DISK_CACHE_RELEASE_SIZE: "0"
-  ZO_DISK_CACHE_GC_SIZE: "10"
+  ZO_DISK_CACHE_GC_SIZE: "100"
   ZO_DISK_CACHE_GC_INTERVAL: "0"
   # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.valid values are s3, azure, minio
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
