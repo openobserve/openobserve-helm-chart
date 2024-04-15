@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.10.0
-    created: "2024-04-15T10:18:48.311001+08:00"
+    created: "2024-04-15T20:42:29.520073+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 485fd8008f4fdeedddde0f7e54bb8b137621c0133419521f5239f9c6ba507b64
+    digest: 0f92e8b3bafcd7d382a176b37f06290c9f7e06fb80886ebdfa1e1db2c5324036
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1845,9 +1845,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.97.0
-    created: "2024-04-15T10:18:48.312057+08:00"
+    created: "2024-04-15T20:42:29.521133+08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: ecaf1b30f029aded5846c7e4f6a988a8dbbfda99c9714aa580be85c56fd3ab99
+    digest: af37e6712cf75aae863f39c26b5c424c0d345155e526d3810acc768c7a85e4fe
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2182,7 +2182,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.10.0
-    created: "2024-04-15T10:18:48.313466+08:00"
+    created: "2024-04-15T20:42:29.5226+08:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -2190,7 +2190,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: e1c5610a246a2a6624331228e1c539e0662a3cce95c40b14610329f27dbe7f7b
+    digest: ed53a6ad79d7df17e10369167536a0b58f9fed476c7268c33eb2b9f3ec5751b0
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2300,4 +2300,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-04-15T10:18:48.305591+08:00"
+generated: "2024-04-15T20:42:29.51478+08:00"
