@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.10.2
-    created: "2024-04-24T20:48:13.99577+08:00"
+    created: "2024-04-24T20:51:57.777744+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 1d94170310b774ef9558eba733fc88d896311186a07fa83473132702e8a3d802
+    digest: 831aa221f060fab1b5bb74b92b77e8d0be560bbccc492a725f9f49bf96b34fd4
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -1901,9 +1901,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.97.0
-    created: "2024-04-24T20:48:13.9969+08:00"
+    created: "2024-04-24T20:51:57.778813+08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: a2103bcaf3fc3b77844e8a9b66218a3518a5e60c01c3a3ca0834bebeba2a7268
+    digest: b8b25de0edfa66a2de09a79626cac8d642341e5e9210214c662df5e1c2c7c47e
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2238,7 +2238,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.10.2
-    created: "2024-04-24T20:48:13.998985+08:00"
+    created: "2024-04-24T20:51:57.780327+08:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -2246,7 +2246,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: b584fc5c351ed347adbef9f514ef92535d7e3edba99b537c1ccfbfd8532922ce
+    digest: 628f1d44eb087e5c3c02dad5538158690601c93db3807ab700deefb0b592d654
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2396,4 +2396,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-04-24T20:48:13.990649+08:00"
+generated: "2024-04-24T20:51:57.772745+08:00"
