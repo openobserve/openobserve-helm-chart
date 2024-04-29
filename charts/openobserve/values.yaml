@@ -6,11 +6,11 @@ image:
   oss:
     repository: public.ecr.aws/zinclabs/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.10.3"
+    tag: "v0.10.4"
   enterprise:
     repository: public.ecr.aws/zinclabs/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.10.3"
+    tag: "v0.10.4"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
