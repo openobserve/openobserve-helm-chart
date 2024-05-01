@@ -598,7 +598,7 @@ enterprise:
         redirectURIs:
         - https://openobserve.example.com/config/redirect
         name: o2-client
-        secret: ZXhhbXBsZS1hcHAtc2VjcmV0 # This should be base64 encoded value of client secret and must be same that you set in config.O2_DEX_CLIENT_SECRET
+        secret: ZXhhbXBsZS1hcHAtc2VjcmV0 # This should be base64 encoded value of client secret.Gets mapped to O2_DEX_CLIENT_SECRET
       oauth2:
         responseTypes:
         - code
