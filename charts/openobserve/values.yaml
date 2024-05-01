@@ -539,8 +539,31 @@ postgres:
 
 enterprise:
   enabled: false
+  parameters:
+    O2_AUDIT_ENABLED: "true"
+    O2_AUDIT_BATCH_SIZE: "500"
+    O2_CUSTOM_LOGO_TEXT: ""
+    O2_CUSTOM_SLACK_URL: ""
+    O2_CUSTOM_DOCS_URL: ""
+    O2_CUSTOM_HIDE_MENUS: ""
+    O2_SUPER_CLUSTER_ENABLED: "false"
+    O2_SUPER_CLUSTER_PUBLIC_ADDR: ""
+    O2_SUPER_CLUSTER_PUBLIC_PORT: ""
+    O2_SUPER_CLUSTER_GRPC_TOKEN: ""
+    O2_SEARCH_GROUP_LONG_MAX_CPU: "80%"
+    O2_SEARCH_GROUP_LONG_MAX_MEMORY: "80%"
+    O2_SEARCH_GROUP_LONG_MAX_CONCURRENCY: "2"
+    O2_SEARCH_GROUP_SHORT_MAX_CPU: "20%"
+    O2_SEARCH_GROUP_SHORT_MAX_MEMORY: "20%"
+    O2_SEARCH_GROUP_BASE_SPEED: "1024" # in MB
+    O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
   openfga:
     enabled: false
+    parameters:
+      O2_OPENFGA_LIST_ONLY_PERMITTED: "true"
+      O2_MAP_GROUP_TO_ROLE: "true"
+      O2_MAP_GROUP_TO_ROLE_SKIP_CREATION: "false"
+      O2_OPENFGA_PAGE_SIZE: "100"
     image:
       repository: openfga/openfga
       tag: latest
@@ -554,8 +577,10 @@ enterprise:
       O2_DEX_DEFAULT_ORG: default
       O2_DEX_DEFAULT_ROLE: user
       O2_DEX_ROLE_ATTRIBUTE: role
-      O2_MAP_GROUP_TO_ROLE: "false"
       O2_DEX_NATIVE_LOGIN_ENABLED: "true"
+      O2_DEX_GROUP_CLAIM: "groups"
+      O2_DEX_LDAP_GROUP_ATTRIBUTE: "ou"
+      O2_DEX_LDAP_ROLE_ATTRIBUTE: "cn"
     config:
       issuer: https://dex.example.com/dex
       storage:
