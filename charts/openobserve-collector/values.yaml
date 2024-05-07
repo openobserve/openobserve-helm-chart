@@ -406,7 +406,7 @@ gateway:
     # Most folks don't need prometheus receiver since default dashboards get data from kubeletstats receiver, so it's commented out by default
     prometheus:
       config:
-        scrape_configs:
+        scrape_configs: []
           # - job_name: "kubeApiServer"
           #   sample_limit: 10000
           #   # Default to scraping over https. If required, just disable this or change to `http`.
