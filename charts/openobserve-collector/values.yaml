@@ -120,7 +120,7 @@ agent:
         # Exclude logs from all containers named otel-collector or otc-container (otel-contrib)
         - /var/log/pods/*/otel-collector/*.log  # named otel-collector
         - /var/log/pods/*/otc-container/*.log   # named otc-container (for otel-contrib containers)
-        - /var/log/pods/*/openobserve/*.log     # named openobserve. Would want to avoid cyclical logs
+        # - /var/log/pods/*/openobserve/*.log     # named openobserve. Would want to avoid cyclical logs
       start_at: end
       include_file_path: true
       include_file_name: false
