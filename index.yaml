@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.10.5
-    created: "2024-05-10T16:48:31.471233-07:00"
+    created: "2024-05-20T15:01:30.014553-07:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,35 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 66f82ca013339f65c8fb9c74070db7ba666a519053e2ee03e167729c98e2a807
+    digest: 12bfc9149970765eb0b377a7d8b488b4d347860649fb221f98b7851f282be76c
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.10.20.tgz
+    version: 0.10.20
+  - apiVersion: v2
+    appVersion: v0.10.5
+    created: "2024-05-20T14:59:56.006655-07:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: nats.enabled
+      name: nats
+      repository: https://nats-io.github.io/k8s/helm/charts/
+      version: 1.1.11
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 6bf57f1dacf8f89e05b472c86d93f3334de03ee357eeddbe47f57eaf4b27b573
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2097,9 +2125,23 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.99.0
-    created: "2024-05-10T16:48:31.472201-07:00"
+    created: "2024-05-20T15:01:30.015517-07:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: dcc3d53b4f443cb270a2bd1987aa1332660d8f690dd324cc2ff0a02c0fc53bd2
+    digest: 715a66d47888daeed31b8d23f58db50631ec02d4a350e603e4dbd9d9fa22dd94
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-collector
+    type: application
+    urls:
+    - openobserve-collector-0.3.7.tgz
+    version: 0.3.7
+  - apiVersion: v2
+    appVersion: 0.99.0
+    created: "2024-05-20T14:59:56.007583-07:00"
+    description: An opinionated installation of OTEL Collector for OpenObserve
+    digest: a41393bf8fa0d858d2d11749402a6c4922b927f36b77a94b03025431290363c7
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2476,7 +2518,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.10.5
-    created: "2024-05-10T16:48:31.473674-07:00"
+    created: "2024-05-20T15:01:30.016939-07:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -2484,7 +2526,27 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 5b37e1707c3826eec0a01ae44231cdaca2cae15fee55776a5b0e9d0f9731ce06
+    digest: fd9de8d21fe717ee43841972e1e91c8579c1edfce5d674c13dd47a497a69e542
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-standalone
+    type: application
+    urls:
+    - openobserve-standalone-0.10.6.tgz
+    version: 0.10.6
+  - apiVersion: v2
+    appVersion: v0.10.5
+    created: "2024-05-20T14:59:56.009383-07:00"
+    dependencies:
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 62f4a09a986bd6cfb9000cac91f405226933ed3249a82621f863400de37bf639
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2674,4 +2736,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-05-10T16:48:31.465982-07:00"
+generated: "2024-05-20T15:01:30.009269-07:00"
