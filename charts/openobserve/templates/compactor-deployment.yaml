@@ -82,7 +82,7 @@ spec:
             {{- toYaml .Values.resources.compactor | nindent 12 }}
           envFrom:
             - secretRef:
-                name: {{ include "openobserve.fullname" . }}
+                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
           env:

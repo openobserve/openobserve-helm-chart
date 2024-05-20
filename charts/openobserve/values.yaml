@@ -69,7 +69,14 @@ ingester:
     volumePermissions:
       enabled: false
 
-# Credentials for authentication
+
+# Enable the following to use an external secret instead of placing credentials under the auth section in this values.yaml file
+externalSecret:
+  enabled: false
+  # name of the external secret
+  name: "super-secret"
+
+# Credentials for authentication. Will be stored in a k8s secret
 auth:
   ZO_ROOT_USER_EMAIL: "root@example.com"
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
@@ -80,6 +87,10 @@ auth:
 
   AZURE_STORAGE_ACCOUNT_KEY: ""
   AZURE_STORAGE_ACCOUNT_NAME: ""
+  ZO_META_POSTGRES_DSN: ""
+  ZO_META_MYSQL_DSN: ""
+  ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
+  ZO_RUM_CLIENT_TOKEN: ""
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -113,8 +124,6 @@ config:
   ZO_CLUSTER_COORDINATOR: "nats"
   ZO_QUEUE_STORE: ""
   ZO_META_STORE: "postgres"
-  ZO_META_POSTGRES_DSN: ""
-  ZO_META_MYSQL_DSN: ""
   ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
   ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
   ZO_META_TRANSACTION_RETRIES: "3"
@@ -150,7 +159,6 @@ config:
   ZO_TRACING_ENABLED: "false"
   ZO_TRACING_SEARCH_ENABLED: "false"
   ZO_TRACING_HEADER_KEY: "Authorization"
-  ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
   OTEL_OTLP_HTTP_ENDPOINT: ""
   ZO_TELEMETRY: "true"
   ZO_TELEMETRY_HEARTBEAT: "1800"
@@ -258,7 +266,6 @@ config:
   ZO_INGESTER_SERVICE_URL: ""
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "false"
   ZO_RUM_ENABLED: "false"
-  ZO_RUM_CLIENT_TOKEN: ""
   ZO_RUM_APPLICATION_ID: ""
   ZO_RUM_SITE: ""
   ZO_RUM_SERVICE: ""
