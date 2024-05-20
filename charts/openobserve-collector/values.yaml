@@ -24,6 +24,7 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+clusterDomain: "cluster.local"
 
 serviceAccount:
   # Specifies whether a service account should be created

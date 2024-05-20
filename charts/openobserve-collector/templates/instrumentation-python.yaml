@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 spec:
   exporter:
-    endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.cluster.local:4318
+    endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4318
   propagators:
     - tracecontext
     - baggage
