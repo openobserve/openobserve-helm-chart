@@ -16,7 +16,7 @@ aws s3 cp . s3://zincsearch-releases/chartsv2/ --recursive --exclude "*" --inclu
 rm *.tgz
 
 # upload the index.yaml
-aws s3 cp index.yaml s3://zincsearch-releases/chartsv2/ --profile=dev
+aws s3 cp index.yaml s3://zincsearch-releases/chartsv2/ --profile=development-openobserve-admin
 
 # invalidate cludfront cache
-aws cloudfront create-invalidation --distribution-id E1KAOPVKDAGD4X --paths="/*" --profile=dev
+aws cloudfront create-invalidation --distribution-id E1KAOPVKDAGD4X --paths="/*" --profile=development-openobserve-admin

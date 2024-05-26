@@ -543,7 +543,7 @@ postgres:
         max_connections: "1500"
     monitoring:
       enablePodMonitor: true
-
+    backup: {} # All the configuration associated with an object store from https://cloudnative-pg.io/documentation/1.17/backup_recovery/
 
 enterprise:
   enabled: false
