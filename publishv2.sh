@@ -10,7 +10,7 @@ done
 helm repo index --merge index.yaml .
 
 # Upload the charts to the S3 bucket
-aws s3 cp . s3://zincsearch-releases/chartsv2/ --recursive --exclude "*" --include "*.tgz"
+aws s3 cp . s3://zincsearch-releases/chartsv2/ --recursive --exclude "*" --include "*.tgz" --profile=development-openobserve-admin
 
 # delete the charts after upload
 rm *.tgz
