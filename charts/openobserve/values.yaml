@@ -59,6 +59,8 @@ replicaCount:
   zplane: 1
 
 ingester:
+  headless:
+    enabled: false
   persistence:
     enabled: true
     size: 10Gi

@@ -10,7 +10,12 @@ spec:
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
+  {{ if .Values.headless.enabled}}
   serviceName: {{ include "openobserve.fullname" . }}-headless
+  {{- end }}
+  {{- if not .Values.headless.enabled}
+  serviceName: {{ include "openobserve.fullname" . }}
+  {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}

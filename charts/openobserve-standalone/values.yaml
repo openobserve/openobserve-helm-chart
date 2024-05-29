@@ -51,6 +51,8 @@ persistence:
   annotations: {}
   volumePermissions:
     enabled: false
+headless:
+  enabled: true
 
 # Credentials for authentication
 auth:
