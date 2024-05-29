@@ -13,7 +13,12 @@ spec:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
       role: ingester
+  {{ if .Values.ingester.headless.enabled}}
   serviceName: {{ include "openobserve.fullname" . }}-ingester-headless
+  {{- end }}
+  {{- if not .Values.ingester.headless.enabled}}
+  serviceName: {{ include "openobserve.fullname" . }}
+  {{- end }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}

@@ -1,3 +1,4 @@
+{{ if .Values.ingester.headless.enabled}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -19,3 +20,4 @@ spec:
   selector:
     {{- include "openobserve.selectorLabels" . | nindent 4 }}
     role: ingester
+{{- end }}
