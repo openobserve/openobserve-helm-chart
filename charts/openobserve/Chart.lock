@@ -4,9 +4,9 @@ dependencies:
   version: 8.11.4
 - name: nats
   repository: https://nats-io.github.io/k8s/helm/charts/
-  version: 1.1.11
+  version: 1.1.12
 - name: minio
   repository: https://charts.min.io
   version: 5.0.7
-digest: sha256:8ad744fb8404c8900becc3eda505c5a5ff47cf60283e47620347c2b3ecc3217f
-generated: "2024-05-30T11:46:35.792877312+02:00"
+digest: sha256:f0b1fcfe61b63fde05d54daba776297b9d91e03c6daed8ba4e044958c4dd7093
+generated: "2024-06-10T10:25:28.981211-07:00"
