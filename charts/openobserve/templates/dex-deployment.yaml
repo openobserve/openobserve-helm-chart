@@ -60,9 +60,9 @@ spec:
               mountPath: /etc/dex
               readOnly: true
           envFrom:
-            - secretRef:
-                name: {{ include "openobserve.fullname" . }}
             - configMapRef:
+                name: {{ include "openobserve.fullname" . }}
+            - secretRef:
                 name: {{ include "openobserve.fullname" . }}
           env:
             {{- with .Values.enterprise.dex.extraEnv }}
