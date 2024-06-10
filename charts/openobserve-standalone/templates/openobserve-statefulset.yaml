@@ -13,7 +13,7 @@ spec:
   {{ if .Values.headless.enabled}}
   serviceName: {{ include "openobserve.fullname" . }}-headless
   {{- end }}
-  {{- if not .Values.headless.enabled}
+  {{- if not .Values.headless.enabled }}
   serviceName: {{ include "openobserve.fullname" . }}
   {{- end }}
   template:
