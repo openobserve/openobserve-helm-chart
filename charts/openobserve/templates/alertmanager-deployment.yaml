@@ -81,10 +81,10 @@ spec:
           resources:
             {{- toYaml .Values.resources.alertmanager | nindent 12 }}
           envFrom:
-            - secretRef:
-                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
+            - secretRef:
+                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
             - name: ZO_NODE_ROLE
               value: "alertmanager"

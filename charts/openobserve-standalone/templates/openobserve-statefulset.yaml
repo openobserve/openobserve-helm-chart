@@ -78,9 +78,9 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
-            - secretRef:
-                name: {{ include "openobserve.fullname" . }}
             - configMapRef:
+                name: {{ include "openobserve.fullname" . }}
+            - secretRef:
                 name: {{ include "openobserve.fullname" . }}
           env:
             {{- with .Values.extraEnv }}
