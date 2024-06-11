@@ -67,10 +67,8 @@ data:
   ZO_CLUSTER_COORDINATOR: "{{ .Values.config.ZO_CLUSTER_COORDINATOR }}"
   ZO_QUEUE_STORE: "{{ .Values.config.ZO_QUEUE_STORE }}"
   {{- if .Values.postgres.enabled }}
-  ZO_META_POSTGRES_DSN: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
   ZO_META_STORE: "postgres"
   {{- else }}
-  ZO_META_POSTGRES_DSN: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
   ZO_META_STORE: "{{ .Values.config.ZO_META_STORE }}"
   {{- end }}
   ZO_META_MYSQL_DSN: "{{ .Values.config.ZO_META_MYSQL_DSN }}"
