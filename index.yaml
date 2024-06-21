@@ -2293,6 +2293,20 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.99.0
+    created: "2024-06-14T13:12:24.573046+07:00"
+    description: An opinionated installation of OTEL Collector for OpenObserve
+    digest: 58449e7fd1ce2c5279d9a46a6a157622479457867f1541c4a9094dccb127b38d
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-collector
+    type: application
+    urls:
+    - openobserve-collector-0.3.8.tgz
+    version: 0.3.8
+  - apiVersion: v2
+    appVersion: 0.99.0
     created: "2024-06-13T15:51:36.749119-07:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
     digest: 2037e63e076f16c64cd89edf191e9d9c228a424b3d5b17db79e85afd02d58a4f
@@ -2924,4 +2938,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-06-13T15:51:36.742025-07:00"
+generated: "2024-06-14T13:12:24.571356+07:00"
