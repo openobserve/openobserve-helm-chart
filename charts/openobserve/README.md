@@ -1,4 +1,4 @@
-# openobserve helm chart
+# OpenObserve helm chart
 
 ## Amazon EKS
 

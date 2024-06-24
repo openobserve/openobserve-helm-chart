@@ -71,6 +71,13 @@ ingester:
     volumePermissions:
       enabled: false
 
+querier:
+  persistence:  # If enabled it will be used for disk cache. Highly recommend to enable this for production
+    enabled: true
+    size: 100Gi
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
 
 # Enable the following to use an external secret instead of placing credentials under the auth section in this values.yaml file
 externalSecret:
