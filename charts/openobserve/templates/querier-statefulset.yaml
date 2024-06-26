@@ -9,6 +9,10 @@ spec:
   serviceName: "{{ include "openobserve.fullname" . }}-querier"
   replicas: {{ .Values.replicaCount.querier }}
   podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0  # Set to 0 to allow all pods to update in parallel
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
