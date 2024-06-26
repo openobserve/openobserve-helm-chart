@@ -8,6 +8,7 @@ metadata:
 spec:
   serviceName: "{{ include "openobserve.fullname" . }}-querier"
   replicas: {{ .Values.replicaCount.querier }}
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}

@@ -219,6 +219,7 @@ data:
   ZO_PROF_PYROSCOPE_SERVER_URL: "{{ .Values.config.ZO_PROF_PYROSCOPE_SERVER_URL }}"
   ZO_PROF_PYROSCOPE_PROJECT_NAME: "{{ .Values.config.ZO_PROF_PYROSCOPE_PROJECT_NAME }}"
   ZO_ENTRY_PER_SCHEMA_VERSION_ENABLED: "{{ .Values.config.ZO_ENTRY_PER_SCHEMA_VERSION_ENABLED }}"
+  ZO_QUICK_MODE_ENABLED: "{{ .Values.config.ZO_QUICK_MODE_ENABLED }}"
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"  
   O2_OPENFGA_ENABLED: "{{ .Values.enterprise.openfga.enabled }}"

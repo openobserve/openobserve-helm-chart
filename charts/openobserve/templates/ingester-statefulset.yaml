@@ -9,6 +9,7 @@ spec:
   {{- if not .Values.autoscaling.ingester.enabled }}
   replicas: {{ .Values.replicaCount.ingester }}
   {{- end }}
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
