@@ -293,9 +293,9 @@ config:
   ZO_PROF_PYROSCOPE_PROJECT_NAME: "openobserve"
   ZO_ENTRY_PER_SCHEMA_VERSION_ENABLED: "true"
   ZO_QUICK_MODE_ENABLED: "false"
-  ZO_QUERY_GROUP_BASE_SPEED: "1024" # MB/s/core
-  ZO_QUERY_PARTITION_MIN_SECS: "600" # seconds
-  ZO_QUERY_PARTITION_BY_SECS: "10" # In how many seconds we want to get the results per partition
+  ZO_QUERY_GROUP_BASE_SPEED: "768" # MB/s/core
+  ZO_QUERY_PARTITION_BY_SECS: "1" # In how many seconds we want to get the results per partition
+  ZO_QUERY_PARTITION_MIN_SECS: "600" # seconds. This is the minimum time range for a partition
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
 
