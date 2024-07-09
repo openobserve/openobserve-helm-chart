@@ -1,14 +1,18 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "openobserve.fullname" . }}-querier
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.querier.enabled }}
+  serviceName: "{{ include "openobserve.fullname" . }}-querier"
   replicas: {{ .Values.replicaCount.querier }}
-  {{- end }}
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0  # Set to 0 to allow all pods to update in parallel
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
@@ -40,7 +44,7 @@ spec:
               sleep 5;
             done;
           ']
-        {{- end }} 
+        {{- end }}
         {{- if .Values.nats.enabled }}
         - name: check-nats
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
@@ -50,7 +54,7 @@ spec:
               sleep 2;
             done;
           ']
-         {{- end }} 
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -68,17 +72,17 @@ spec:
               containerPort: {{ .Values.config.ZO_GRPC_PORT }}
           {{- if .Values.probes.querier.enabled }}
           livenessProbe:
-           httpGet:
-             path: /healthz
-             port: {{ .Values.config.ZO_HTTP_PORT }}
-           initialDelaySeconds: {{ .Values.probes.querier.initialDelaySeconds | default 60 }}
-           failureThreshold: {{ .Values.probes.querier.failureThreshold | default 3 }}
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.querier.initialDelaySeconds | default 60 }}
+            failureThreshold: {{ .Values.probes.querier.failureThreshold | default 3 }}
           readinessProbe:
-           httpGet:
-             path: /healthz
-             port: {{ .Values.config.ZO_HTTP_PORT }}
-           initialDelaySeconds: {{ .Values.probes.querier.initialDelaySeconds | default 60 }}
-           failureThreshold: {{ .Values.probes.querier.failureThreshold | default 3 }}
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.querier.initialDelaySeconds | default 60 }}
+            failureThreshold: {{ .Values.probes.querier.failureThreshold | default 3 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.querier | nindent 12 }}
@@ -93,7 +97,9 @@ spec:
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
-            
+          volumeMounts:
+            - name: cache
+              mountPath: /data
       {{- with .Values.nodeSelector.querier }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -106,3 +112,15 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: cache
+      spec:
+        accessModes:
+          {{- range .Values.ingester.persistence.accessModes }}
+            - {{ . | quote }}
+          {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.querier.persistence.size }}
+        storageClassName: {{ .Values.querier.persistence.storageClass }}
