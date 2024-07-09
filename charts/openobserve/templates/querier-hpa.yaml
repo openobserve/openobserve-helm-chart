@@ -9,7 +9,7 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
+    kind: StatefulSet
     name: {{ include "openobserve.fullname" . }}-querier
   minReplicas: {{ .Values.autoscaling.querier.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.querier.maxReplicas }}
