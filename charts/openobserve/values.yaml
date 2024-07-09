@@ -98,8 +98,12 @@ auth:
   AZURE_STORAGE_ACCOUNT_NAME: ""
   ZO_META_POSTGRES_DSN: ""
   ZO_META_MYSQL_DSN: ""
+  ZO_TRACING_HEADER_KEY: "Authorization"
   ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
   ZO_RUM_CLIENT_TOKEN: ""
+  ZO_REPORT_USER_NAME: ""
+  ZO_REPORT_USER_PASSWORD: ""
+  
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -299,6 +303,17 @@ config:
   ZO_QUERY_PARTITION_MIN_SECS: "600" # seconds. This is the minimum time range for a partition
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
+  ZO_SHOW_STREAM_DATES_DOCS_NUM: true
+  ZO_INGEST_BLOCKED_STREAMS: ""
+  ZO_INGEST_INFER_SCHEMA_PER_REQUEST: "true"
+  ZO_REPORT_SERVER_URL: "localhost:5082"
+  ZO_REPORT_SERVER_SKIP_TLS_VERIFY: "false"
+  ZO_CONCATENATED_SCHEMA_FIELD_NAME: "_all"
+  ZO_SCHEMA_CACHE_COMPRESS_ENABLED: "false"
+  ZO_SKIP_FORMAT_BULK_STREAM_NAME: false
+  ZO_BULK_RESPONSE_INCLUDE_ERRORS_ONLY: false
+  ZO_ALLOW_USER_DEFINED_SCHEMAS: "true"
+  ZO_MEM_TABLE_STREAMS: ""
 
 
 # Add extra environment variables to all pods, useful for overriding secrets
@@ -443,6 +458,11 @@ nats:
       enabled: true
       podMonitor:
         enabled: true
+    natsBox:
+      container:
+        image:
+          repository: natsio/nats-box
+          tag: 0.14.3-nonroot
 
 etcd:
   enabled: false # if true then etcd will be deployed as part of openobserve
