@@ -202,7 +202,7 @@ data:
   ZO_PRINT_KEY_SQL: "{{ .Values.config.ZO_PRINT_KEY_SQL }}"
   ZO_INGESTER_SERVICE_URL: "{{ .Values.config.ZO_INGESTER_SERVICE_URL }}"
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "{{ .Values.config.ZO_IGNORE_FILE_RETENTION_BY_STREAM }}"
-  ZO_RUM_ENABLED: "{{ .Values.config.ZO_RUM_ENABLED }}"2
+  ZO_RUM_ENABLED: "{{ .Values.config.ZO_RUM_ENABLED }}"
   ZO_RUM_APPLICATION_ID: "{{ .Values.config.ZO_RUM_APPLICATION_ID }}"
   ZO_RUM_SERVICE: "{{ .Values.config.ZO_RUM_SERVICE }}"
   ZO_RUM_ENV: "{{ .Values.config.ZO_RUM_ENV }}"
