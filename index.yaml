@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.10.5
-    created: "2024-07-10T04:29:48.594717-07:00"
+    created: "2024-07-12T15:32:42.410419-07:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 9211a3a1d20d22b81dfd1208277cf7df69078057479f0d82f48702cc331ab0b3
+    digest: f73813da204cc6ad0f06d5a794e14aac23a4378792b96f4d2820e1d051da2347
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2517,9 +2517,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.99.0
-    created: "2024-07-10T04:29:48.5959-07:00"
+    created: "2024-07-12T15:32:42.411507-07:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 49cb646104b82601b97d1d66f9dbe24d20533ae9d999d86620ed5a40cc572348
+    digest: 1f65229eaa6641bf48b4dde4b3244ff945d0a4c00a23cbc841e168f646088d7e
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2924,6 +2924,26 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.10.5
+    created: "2024-07-12T15:32:42.413316-07:00"
+    dependencies:
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 5ae97e255a918f4de0099b10523307b0e61b5fa89964e9c6ecc787c5bab99c3a
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-standalone
+    type: application
+    urls:
+    - openobserve-standalone-0.10.8.tgz
+    version: 0.10.8
+  - apiVersion: v2
+    appVersion: v0.10.5
     created: "2024-07-10T04:29:48.597681-07:00"
     dependencies:
     - condition: minio.enabled
@@ -3162,4 +3182,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-07-10T04:29:48.589064-07:00"
+generated: "2024-07-12T15:32:42.404639-07:00"

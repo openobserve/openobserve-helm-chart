@@ -125,7 +125,7 @@ config:
   ZO_QUICK_MODE_FILE_LIST_INTERVAL: "300"
   ZO_BLOOM_FILTER_ENABLED: "true"
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
-  ZO_BLOOM_FILTER_ON_ALL_FIELDS : "false"
+  ZO_BLOOM_FILTER_ON_ALL_FIELDS: "false"
   ZO_ENABLE_INVERTED_INDEX: "false"
   ZO_INVERTED_INDEX_SPLIT_CHARS: ""
   ZO_QUERY_ON_STREAM_SELECTION: "true"
@@ -159,8 +159,8 @@ config:
   ZO_ROUTE_MAX_CONNECTIONS: "1024"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_HTTP_WORKER_MAX_BLOCKING: "0"
-  ZO_ACTIX_REQ_TIMEOUT: "30" # in second 
-  ZO_ACTIX_KEEP_ALIVE: "30" # in second 
+  ZO_ACTIX_REQ_TIMEOUT: "30" # in second
+  ZO_ACTIX_KEEP_ALIVE: "30" # in second
   ZO_ACTIX_SHUTDOWN_TIMEOUT: "10" # in second
   ZO_INGEST_ALLOWED_UPTO: "24"
   ZO_INGEST_FLATTEN_LEVEL: "3"
@@ -242,7 +242,6 @@ config:
   ZO_ENTRY_PER_SCHEMA_VERSION_ENABLED: "true"
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
-
 
 # Add extra environment variables to all pods, useful for overriding secrets
 extraEnv: []
@@ -360,7 +359,8 @@ zplane:
         paths:
           - path: /
             pathType: ImplementationSpecific
-    tls: []
+    tls:
+      []
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
@@ -369,3 +369,4 @@ probes:
   enabled: true
   initialDelaySeconds: 10
   failureThreshold: 3
+  path: /healthz
