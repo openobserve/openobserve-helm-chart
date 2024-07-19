@@ -566,6 +566,9 @@ postgres:
   enabled: true
   pgadmin:
     enabled: true
+    image:
+      repository: dpage/pgadmin4
+      tag: latest
     PGADMIN_DEFAULT_EMAIL: hello@openobserve.ai
     PGADMIN_DEFAULT_PASSWORD: Batman123
   spec:
