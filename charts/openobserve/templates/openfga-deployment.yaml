@@ -34,7 +34,7 @@ spec:
               memory: 200Mi
       containers:
         - name: openfga
-          image: openfga/openfga
+          image: {{ .Values.enterprise.openfga.image.repository }}:{{ .Values.enterprise.openfga.image.tag }}
           imagePullPolicy: IfNotPresent
           command: ['/openfga', 'run']
           env:

@@ -27,7 +27,7 @@ spec:
       # terminationGracePeriodSeconds: 0
       containers:
         - name: pgadmin
-          image: dpage/pgadmin4:latest
+          image: "{{ .Values.postgres.pgadmin.image.repository }}:{{ .Values.postgres.pgadmin.image.tag }}"
           env:
             - name: PGADMIN_DEFAULT_EMAIL
               value: {{ .Values.postgres.pgadmin.PGADMIN_DEFAULT_EMAIL }}
