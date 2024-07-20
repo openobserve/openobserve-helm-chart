@@ -42,6 +42,13 @@ spec:
             mountPath: /var/lib/pgadmin
           - name: log
             mountPath: /var/log/pgadmin
+          resources:
+            requests:
+              memory: {{ .Values.postgres.pgadmin.resources.requests.memory }}
+              cpu: {{ .Values.postgres.pgadmin.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.postgres.pgadmin.resources.limits.memory }}
+              cpu: {{ .Values.postgres.pgadmin.resources.limits.cpu }}
   volumeClaimTemplates:
   - metadata:
       name: data

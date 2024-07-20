@@ -563,6 +563,13 @@ postgres:
     image:
       repository: dpage/pgadmin4
       tag: latest
+    resources:
+      requests:
+        memory: 200Mi
+        cpu: 10m
+      limits:
+        memory: 250Mi
+        cpu: 100m
     PGADMIN_DEFAULT_EMAIL: hello@openobserve.ai
     PGADMIN_DEFAULT_PASSWORD: Batman123
   spec:
