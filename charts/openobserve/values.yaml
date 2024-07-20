@@ -72,7 +72,7 @@ ingester:
       enabled: false
 
 querier:
-  persistence:  # If enabled it will be used for disk cache. Highly recommend to enable this for production
+  persistence: # If enabled it will be used for disk cache. Highly recommend to enable this for production
     enabled: true
     size: 100Gi
     storageClass: ""
@@ -104,6 +104,9 @@ auth:
   ZO_REPORT_USER_NAME: ""
   ZO_REPORT_USER_PASSWORD: ""
   
+  
+
+
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -163,7 +166,7 @@ config:
   ZO_QUICK_MODE_FILE_LIST_INTERVAL: "300"
   ZO_BLOOM_FILTER_ENABLED: "true"
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
-  ZO_BLOOM_FILTER_ON_ALL_FIELDS : "false"
+  ZO_BLOOM_FILTER_ON_ALL_FIELDS: "false"
   ZO_ENABLE_INVERTED_INDEX: "false"
   ZO_INVERTED_INDEX_SPLIT_CHARS: ""
   ZO_QUERY_ON_STREAM_SELECTION: "true"
@@ -196,8 +199,8 @@ config:
   ZO_ROUTE_MAX_CONNECTIONS: "1024"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_HTTP_WORKER_MAX_BLOCKING: "0"
-  ZO_ACTIX_REQ_TIMEOUT: "30"      # in second 
-  ZO_ACTIX_KEEP_ALIVE: "30"       # in second 
+  ZO_ACTIX_REQ_TIMEOUT: "30" # in second
+  ZO_ACTIX_KEEP_ALIVE: "30" # in second
   ZO_ACTIX_SHUTDOWN_TIMEOUT: "10" # in second
   ZO_INGEST_ALLOWED_UPTO: "24"
   ZO_INGEST_FLATTEN_LEVEL: "3"
@@ -257,7 +260,7 @@ config:
   ZO_NATS_CONNECT_TIMEOUT: "5"
   ZO_NATS_COMMAND_TIMEOUT: "10"
   ZO_NATS_LOCK_WAIT_TIMEOUT: "600"
-  # ZO_S3_PROVIDER: "minio" # Need to set this up only if minio is being for object storage. Will be set automatically if enabled minio is being used.valid values are s3, azure, minio
+  ZO_S3_PROVIDER: "s3" # Valid values are s3, azure, minio, gcs
   ZO_S3_SERVER_URL: "" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_REGION_NAME: "us-east-2" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "o2-dev-bucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
@@ -314,7 +317,6 @@ config:
   ZO_BULK_RESPONSE_INCLUDE_ERRORS_ONLY: false
   ZO_ALLOW_USER_DEFINED_SCHEMAS: "true"
   ZO_MEM_TABLE_STREAMS: ""
-
 
 # Add extra environment variables to all pods, useful for overriding secrets
 extraEnv: []
@@ -442,7 +444,7 @@ nats:
       password: ""
     jetstream:
       enabled: true
-      fileStore: 
+      fileStore:
         enabled: true
         pvc:
           enabled: true
@@ -546,12 +548,13 @@ zplane:
         paths:
           - path: /
             pathType: ImplementationSpecific
-    tls: []
+    tls:
+      []
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
 
-# Postgres is used for storing openobserve metadata. 
+# Postgres is used for storing openobserve metadata.
 # Make sure to install cloudnative-pg operator before enabling this
 # https://github.com/cloudnative-pg/cloudnative-pg/blob/main/docs/src/installation_upgrade.md
 # kubectl apply --server-side -f \
@@ -575,7 +578,7 @@ postgres:
   spec:
     password: Batman123 # password # username is hardcoded to openobserve, db is hardcoded to app
     enableSuperuserAccess: true # if true then superuser access will be enabled. You can get the password from appropriate secret once the postgres is deployed
-    instances: 2  # creates a primary and a replica. replica will become primary if the primary fails
+    instances: 2 # creates a primary and a replica. replica will become primary if the primary fails
     storage:
       size: 10Gi
     postgresql:
@@ -643,14 +646,14 @@ enterprise:
         refreshTokens:
           validIfNotUsedFor: 30m
       staticClients:
-      - id: o2-client
-        redirectURIs:
-        - https://openobserve.example.com/config/redirect
-        name: o2-client
-        secret: ZXhhbXBsZS1hcHAtc2VjcmV0 # This should be base64 encoded value of client secret.Gets mapped to O2_DEX_CLIENT_SECRET
+        - id: o2-client
+          redirectURIs:
+            - https://openobserve.example.com/config/redirect
+          name: o2-client
+          secret: ZXhhbXBsZS1hcHAtc2VjcmV0 # This should be base64 encoded value of client secret.Gets mapped to O2_DEX_CLIENT_SECRET
       oauth2:
         responseTypes:
-        - code
+          - code
         skipApprovalScreen: true
       connectors:
         # - type: google
@@ -691,8 +694,8 @@ enterprise:
               baseDN: ou=teams,dc=o2,dc=ai
               filter: "(objectClass=groupOfUniqueNames)"
               userMatchers:
-              - userAttr: DN
-                groupAttr: uniqueMember
+                - userAttr: DN
+                  groupAttr: uniqueMember
               nameAttr: entryDN
     image:
       repository: dexidp/dex
@@ -721,6 +724,9 @@ enterprise:
         - secretName: dex.example.com
           hosts:
             - dex.example.com  
+            - dex.example.com  
+    
+            - dex.example.com
     
 
 probes:
