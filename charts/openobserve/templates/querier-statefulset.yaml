@@ -7,9 +7,7 @@ metadata:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
   serviceName: "{{ include "openobserve.fullname" . }}-querier"
-  {{- if not .Values.autoscaling.querier.enabled }}
   replicas: {{ .Values.replicaCount.querier }}
-  {{- end }}
   podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
