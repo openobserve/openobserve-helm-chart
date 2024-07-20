@@ -6,7 +6,9 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.autoscaling.compactor.enabled }}
   replicas: {{ .Values.replicaCount.compactor }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
