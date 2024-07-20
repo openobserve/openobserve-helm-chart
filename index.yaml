@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.10.5
-    created: "2024-07-20T03:14:00.808257-07:00"
+    created: "2024-07-20T03:46:07.689177-07:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: a39b07b5e0667414d6fd16c189f1bafe708e99770dc6925c4df731f20d97da8f
+    digest: 139b2faed1691c1f1c54259c90e7ca461330514d5879c342038a7092db44dd60
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2685,9 +2685,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.99.0
-    created: "2024-07-20T03:14:00.809402-07:00"
+    created: "2024-07-20T03:46:07.690363-07:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 259a00f82b01007654504f3fa60c81047d36d14867be73475f68aa7e967d0000
+    digest: 7e3d42a31d232a718975aefbe3ace064961b113d9501d9e95159e36c0136e6db
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3092,7 +3092,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.10.5
-    created: "2024-07-20T03:14:00.811104-07:00"
+    created: "2024-07-20T03:46:07.692295-07:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -3100,7 +3100,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 20cd4a0fb6878ea6b012abb489c1dca0c1f0c10e372b586b98fc1f060ecb3c37
+    digest: 16c30b8725e4283b993c638ed7055999fb23db1dd401ead92aac0ef0d1dad34d
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3350,4 +3350,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-07-20T03:14:00.802657-07:00"
+generated: "2024-07-20T03:46:07.683148-07:00"
