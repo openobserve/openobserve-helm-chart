@@ -88,7 +88,7 @@ entries:
     version: 0.10.45
   - apiVersion: v2
     appVersion: v0.10.5
-    created: "2024-07-20T07:46:22.381139-07:00"
+    created: "2024-07-20T08:58:48.624207-07:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -104,7 +104,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: e07ad9c587a758330d38de42d9f5e191efb22b8184a64e1aabc35e87455cf85a
+    digest: 8fdb499417a933aa3e97a8adcb39b5484f8446daf9c87d3059d0de3d740d48e7
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -2797,9 +2797,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.99.0
-    created: "2024-07-20T08:02:50.542484-07:00"
+    created: "2024-07-20T08:58:48.625338-07:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 500589cb49143a92bc3256b4896cfbac2cf3f5546a50631b7c39015173529cb8
+    digest: bc56a19e39e89cd6584908c43b84ad77aaee367eb69082d2e51dc19175db2255
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3204,7 +3204,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.10.5
-    created: "2024-07-20T08:02:50.543915-07:00"
+    created: "2024-07-20T08:58:48.627038-07:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -3212,7 +3212,7 @@ entries:
       version: 5.0.7
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: de757604037414a01dbf94f8f47951befb52b57f91572c99a60de925c5740225
+    digest: 63d34bbe85b11dfe0440a8edb4bb0c6cb4e44f7dffbc6992eadadcaf8adad8c0
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3462,4 +3462,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-07-20T08:02:50.536513-07:00"
+generated: "2024-07-20T08:58:48.618781-07:00"
