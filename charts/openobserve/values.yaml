@@ -58,7 +58,23 @@ replicaCount:
   compactor: 1
   zplane: 1
 
+compactor:
+  # Compactor specific configuration
+  config:
+    ZO_META_CONNECTION_POOL_MIN_SIZE: "1"
+    ZO_META_CONNECTION_POOL_MAX_SIZE: "1"
+
+router:
+  # Router specific configuration
+  config:
+    ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
+    ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
+
 ingester:
+  # Ingester specific configuration
+  config:
+    ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
+    ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
   headless:
     enabled: false
   persistence:
@@ -72,6 +88,10 @@ ingester:
       enabled: false
 
 querier:
+  # Querier specific configuration
+  config:
+    ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
+    ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
   persistence: # If enabled it will be used for disk cache. Highly recommend to enable this for production
     enabled: true
     size: 100Gi
