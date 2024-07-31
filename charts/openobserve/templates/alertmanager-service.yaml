@@ -18,9 +18,9 @@ spec:
       protocol: TCP
       name: grpc
     - port: {{ .Values.service.report_server_port }}
-      targetPort: report_server
+      targetPort: report-server
       protocol: TCP
-      name: report_server
+      name: report-server
   selector:
     {{- include "openobserve.selectorLabels" . | nindent 4 }}
     role: alertmanager
