@@ -61,8 +61,8 @@ replicaCount:
 compactor:
   # Compactor specific configuration
   config:
-    ZO_META_CONNECTION_POOL_MIN_SIZE: "1"
-    ZO_META_CONNECTION_POOL_MAX_SIZE: "1"
+    ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
+    ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
 
 router:
   # Router specific configuration
