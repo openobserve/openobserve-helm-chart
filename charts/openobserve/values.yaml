@@ -58,6 +58,12 @@ replicaCount:
   compactor: 1
   zplane: 1
 
+alertmanager:
+  # Alertmanager specific configuration
+  config:
+    ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
+    ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
+
 compactor:
   # Compactor specific configuration
   config:
