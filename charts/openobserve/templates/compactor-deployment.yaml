@@ -71,13 +71,13 @@ spec:
            httpGet:
              path: /healthz
              port: {{ .Values.config.ZO_HTTP_PORT }}
-           initialDelaySeconds: {{ .Values.probes.compactor.initialDelaySeconds | default 60 }}
+           initialDelaySeconds: {{ .Values.probes.compactor.initialDelaySeconds | default 10 }}
            failureThreshold: {{ .Values.probes.compactor.failureThreshold | default 3 }}
           readinessProbe:
            httpGet:
              path: /healthz
              port: {{ .Values.config.ZO_HTTP_PORT }}
-           initialDelaySeconds: {{ .Values.probes.compactor.initialDelaySeconds | default 60 }}
+           initialDelaySeconds: {{ .Values.probes.compactor.initialDelaySeconds | default 10 }}
            failureThreshold: {{ .Values.probes.compactor.failureThreshold | default 3 }}
           {{- end }}
           resources:

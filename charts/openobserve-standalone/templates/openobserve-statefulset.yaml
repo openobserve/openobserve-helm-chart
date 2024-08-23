@@ -66,13 +66,13 @@ spec:
            httpGet:
              path: {{ .Values.probes.path | default "/healthz" }}
              port: {{ .Values.config.ZO_HTTP_PORT }}
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 60 }}
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
            failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
           readinessProbe:
            httpGet:
              path: {{ .Values.probes.path | default "/healthz" }}
              port: {{ .Values.config.ZO_HTTP_PORT }}
-           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 60 }}
+           initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
            failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
           {{- end }}
           resources:
