@@ -19,10 +19,12 @@ spec:
       role: querier
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
+        checksum/specific-config: {{ include (print $.Template.BasePath "/querier-configmap.yaml") . | sha256sum }}
+        checksum/generic-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: querier
