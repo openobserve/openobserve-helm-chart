@@ -270,5 +270,6 @@ data:
   O2_SEARCH_GROUP_LONG_MAX_CONCURRENCY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_LONG_MAX_CONCURRENCY }}"
   O2_SEARCH_GROUP_SHORT_MAX_CPU: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_SHORT_MAX_CPU }}"
   O2_SEARCH_GROUP_SHORT_MAX_MEMORY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_SHORT_MAX_MEMORY }}"
+  O2_SEARCH_GROUP_SHORT_MAX_CONCURRENCY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_SHORT_MAX_CONCURRENCY }}"
   O2_SEARCH_GROUP_BASE_SPEED: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SPEED }}"
   O2_SEARCH_GROUP_BASE_SECS: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SECS }}"
