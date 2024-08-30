@@ -211,6 +211,7 @@ config:
   ZO_S3_CONNECT_TIMEOUT: "10" # in seconds
   ZO_S3_REQUEST_TIMEOUT: "3600" # in seconds
   ZO_S3_ALLOW_INVALID_CERTIFICATES: "false"
+  ZO_S3_MAX_RETRIES: "10"
   ZO_USAGE_REPORTING_ENABLED: "false"
   ZO_USAGE_REPORTING_MODE: "local"
   ZO_USAGE_REPORTING_URL: "http://localhost:5080/api/_meta/usage/_json"
