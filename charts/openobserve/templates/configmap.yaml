@@ -262,6 +262,7 @@ data:
   O2_CUSTOM_SLACK_URL: "{{ .Values.enterprise.parameters.O2_CUSTOM_SLACK_URL }}"
   O2_CUSTOM_DOCS_URL: "{{ .Values.enterprise.parameters.O2_CUSTOM_DOCS_URL }}"
   O2_CUSTOM_HIDE_MENUS: "{{ .Values.enterprise.parameters.O2_CUSTOM_HIDE_MENUS }}"
+  O2_CUSTOM_HIDE_SELF_LOGO: "{{ .Values.enterprise.parameters.O2_CUSTOM_HIDE_SELF_LOGO }}"
   O2_SUPER_CLUSTER_ENABLED: "{{ .Values.enterprise.parameters.O2_SUPER_CLUSTER_ENABLED }}"
   O2_SUPER_CLUSTER_PUBLIC_ADDR: "{{ .Values.enterprise.parameters.O2_SUPER_CLUSTER_PUBLIC_ADDR }}"
   O2_SUPER_CLUSTER_PUBLIC_PORT: "{{ .Values.enterprise.parameters.O2_SUPER_CLUSTER_PUBLIC_PORT }}"

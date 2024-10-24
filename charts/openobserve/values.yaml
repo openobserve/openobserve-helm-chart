@@ -6,11 +6,11 @@ image:
   oss:
     repository: public.ecr.aws/zinclabs/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.12.1"
+    tag: "v0.13.0"
   enterprise:
     repository: public.ecr.aws/zinclabs/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.12.1"
+    tag: "v0.13.0"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
@@ -624,6 +624,7 @@ enterprise:
     O2_CUSTOM_SLACK_URL: ""
     O2_CUSTOM_DOCS_URL: ""
     O2_CUSTOM_HIDE_MENUS: ""
+    O2_CUSTOM_HIDE_SELF_LOGO: ""
     O2_SUPER_CLUSTER_ENABLED: "false"
     O2_SUPER_CLUSTER_PUBLIC_ADDR: ""
     O2_SUPER_CLUSTER_PUBLIC_PORT: ""
