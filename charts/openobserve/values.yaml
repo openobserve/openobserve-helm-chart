@@ -6,11 +6,11 @@ image:
   oss:
     repository: public.ecr.aws/zinclabs/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.13.0"
+    tag: "v0.13.0-rc2"
   enterprise:
     repository: public.ecr.aws/zinclabs/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.13.0"
+    tag: "v0.13.0-rc2"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
@@ -238,7 +238,7 @@ config:
   ZO_COMPACT_LOOKBACK_HOURS: "0"
   ZO_COMPACT_SYNC_TO_DB_INTERVAL: "600"
   ZO_COMPACT_STRATEGY: "file_time"
-  ZO_COMPACT_MAX_FILE_SIZE: "256"
+  ZO_COMPACT_MAX_FILE_SIZE: "512"
   ZO_COMPACT_DATA_RETENTION_DAYS: "3650"
   ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
   ZO_COMPACT_BATCH_SIZE: "500"
