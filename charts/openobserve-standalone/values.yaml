@@ -6,7 +6,7 @@ image:
   repository: public.ecr.aws/zinclabs/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.12.1"
+  tag: "v0.13.0-rc2"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -125,6 +125,7 @@ config:
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
   ZO_ENABLE_INVERTED_INDEX: "true"
   ZO_INVERTED_INDEX_SPLIT_CHARS: ""
+  ZO_FULL_TEXT_SEARCH_TYPE: "prefix"
   ZO_QUERY_ON_STREAM_SELECTION: "true"
   ZO_DISTINCT_VALUES_INTERVAL: "10"
   ZO_DISTINCT_VALUES_HOURLY: "false"
@@ -175,9 +176,10 @@ config:
   ZO_COMPACT_LOOKBACK_HOURS: "0"
   ZO_COMPACT_SYNC_TO_DB_INTERVAL: "600"
   ZO_COMPACT_STRATEGY: "file_time"
-  ZO_COMPACT_MAX_FILE_SIZE: "256"
+  ZO_COMPACT_MAX_FILE_SIZE: "512"
   ZO_COMPACT_DATA_RETENTION_DAYS: "3650"
   ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
+  ZO_COMPACT_BATCH_SIZE: "100"
   ZO_COMPACT_BLOCKED_ORGS: ""
   ZO_MEMORY_CACHE_ENABLED: "true"
   ZO_MEMORY_CACHE_STRATEGY: "lru"
