@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: {{ include "openobserve.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
     prometheus.io/scrape: "true"
