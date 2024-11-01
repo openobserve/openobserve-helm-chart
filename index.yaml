@@ -60,6 +60,34 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.13.1
+    created: "2024-11-02T00:16:49.807969+08:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.11.4
+    - condition: nats.enabled
+      name: nats
+      repository: https://nats-io.github.io/k8s/helm/charts/
+      version: 1.2.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: a707bf44cd668578d8ea3aec10b773693b54485a1fde1c429215a1fbf79c355a
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.13.2.tgz
+    version: 0.13.2
+  - apiVersion: v2
+    appVersion: v0.13.1
     created: "2024-10-31T23:44:28.958811+08:00"
     dependencies:
     - condition: etcd.enabled
@@ -3329,9 +3357,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.105.0
-    created: "2024-10-31T23:44:28.959883+08:00"
+    created: "2024-11-02T00:16:49.808933+08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 303eca3a8ec4e181fda65a1048987157faa2b8e7d98edcc7e3694d724e9266ca
+    digest: f39bddd77c05895c4dcef41980f307a6d3d2fce002b78806c90f057cb6a536b8
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3806,6 +3834,26 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.13.1
+    created: "2024-11-02T00:16:49.810719+08:00"
+    dependencies:
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.0.7
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: f050cee070978198b8b256ea5b845cf49cbad145a9dbce66938b6f526681395f
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-standalone
+    type: application
+    urls:
+    - openobserve-standalone-0.13.2.tgz
+    version: 0.13.2
+  - apiVersion: v2
+    appVersion: v0.13.1
     created: "2024-10-31T23:44:28.961573+08:00"
     dependencies:
     - condition: minio.enabled
@@ -4184,4 +4232,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-10-31T23:44:28.952997+08:00"
+generated: "2024-11-02T00:16:49.802802+08:00"
