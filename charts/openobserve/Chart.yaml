@@ -25,7 +25,7 @@ appVersion: "v0.13.1"
 
 dependencies:
   - name: etcd
-    version: "8.11.4"
+    version: "10.4.2"
     repository: "https://charts.bitnami.com/bitnami"
     condition: etcd.enabled
   - name: nats
@@ -33,7 +33,7 @@ dependencies:
     repository: "https://nats-io.github.io/k8s/helm/charts/"
     condition: nats.enabled
   - name: minio
-    version: "5.0.7"
+    version: "5.3.0"
     repository: "https://charts.min.io"
     condition: minio.enabled
 
