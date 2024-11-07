@@ -1,4 +1,4 @@
-apiVersion: opentelemetry.io/v1alpha1
+apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
   name: {{ include "openobserve-collector.fullname" . }}-agent
@@ -39,11 +39,16 @@ spec:
       readOnly: true
       mountPath: /var/lib/docker/containers
   resources: {{ .Values.gateway.resources | toYaml | nindent 4 }}
-  config: |
-    receivers: {{ .Values.agent.receivers | toYaml | nindent 6 }}
-    connectors: {{ .Values.agent.connectors | toYaml | nindent 6 }}
-    processors: {{ .Values.agent.processors | toYaml | nindent 6 }}
-    extensions: {{ .Values.agent.extensions | toYaml | nindent 6 }}
-    exporters: {{ .Values.exporters | toYaml | nindent 6 }}
-    service: {{ .Values.agent.service | toYaml | nindent 6 }}
-  
+  config:
+    receivers:
+{{ toYaml .Values.agent.receivers | indent 6 }}
+    connectors:
+{{ toYaml .Values.agent.connectors | indent 6 }}
+    processors:
+{{ toYaml .Values.agent.processors | indent 6 }}
+    extensions:
+{{ toYaml .Values.agent.extensions | indent 6 }}
+    exporters:
+{{ toYaml .Values.exporters | indent 6 }}
+    service:
+{{ toYaml .Values.agent.service | indent 6 }}

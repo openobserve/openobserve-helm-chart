@@ -8,8 +8,9 @@ metadata:
 rules:
 - nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
   verbs: ["get", "list", "watch"]
-- apiGroups: [ ""]
+- apiGroups: [""]
   resources:
+  - configmaps
   - endpoints
   - events
   - namespaces
