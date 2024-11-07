@@ -1,0 +1,65 @@
+{{- if .Values.autoinstrumentation.enabled }}
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: openobserve
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  exporter:
+    endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4318
+  propagators:
+    {{- toYaml .Values.autoinstrumentation.propagators | nindent 4 }}
+  sampler:
+    {{- toYaml .Values.autoinstrumentation.sampler | nindent 4 }}
+  env:
+    {{- toYaml .Values.autoinstrumentation.env | nindent 4 }}
+
+  dotnet:
+    {{- if .Values.autoinstrumentation.dotnet.image }}
+    image: {{ .Values.autoinstrumentation.dotnet.image | quote }}
+    {{- end }}
+    env:
+      {{- toYaml .Values.autoinstrumentation.dotnet.env | nindent 6 | default "[]" }}
+
+  go:
+    {{- if .Values.autoinstrumentation.go.image }}
+    image: {{ .Values.autoinstrumentation.go.image | quote }}
+    {{- end }}
+    env:
+      {{- toYaml .Values.autoinstrumentation.go.env | nindent 6 | default "[]" }}
+
+  python:
+    {{- if .Values.autoinstrumentation.python.image }}
+    image: {{ .Values.autoinstrumentation.python.image | quote }}
+    {{- end }}
+    env:
+      {{- toYaml .Values.autoinstrumentation.python.env | nindent 6 | default "[]" }}
+
+  java:
+    {{- if .Values.autoinstrumentation.java.image }}
+    image: {{ .Values.autoinstrumentation.java.image | quote }}
+    {{- end }}
+    env:
+      {{- toYaml .Values.autoinstrumentation.java.env | nindent 6 | default "[]" }}
+
+  nodejs:
+    {{- if .Values.autoinstrumentation.nodejs.image }}
+    image: {{ .Values.autoinstrumentation.nodejs.image | quote }}
+    {{- end }}
+    env:
+      {{- toYaml .Values.autoinstrumentation.nodejs.env | nindent 6 | default "[]" }}
+
+  apacheHttpd:
+    {{- if .Values.autoinstrumentation.apacheHttpd.image }}
+    image: {{ .Values.autoinstrumentation.apacheHttpd.image | quote }}
+    {{- end }}
+    env:
+      {{- toYaml .Values.autoinstrumentation.apacheHttpd.env | nindent 6 | default "[]" }}
+
+  nginx:
+    {{- if .Values.autoinstrumentation.nginx.image }}
+    image: {{ .Values.autoinstrumentation.nginx.image | quote }}
+    {{- end }}
+    env:
+      {{- toYaml .Values.autoinstrumentation.nginx.env | nindent 6 | default "[]" }}
+{{- end }}

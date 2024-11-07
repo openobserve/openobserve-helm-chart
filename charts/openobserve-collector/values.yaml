@@ -48,21 +48,72 @@ opentelemetry-operator:
     # auto-instrumentation can be enabled for go which is disabled by default. go auto-instrumentation uses eBPF and requires privileged mode.
     featureGates: "--operator.autoinstrumentation.go=true"
 
-## Auto-Instrumentation resource to be installed in the cluster
-## Can be used by setting the following to the pod/namespace annotations:
-##  Java: instrumentation.opentelemetry.io/inject-java: "true"
-##  NodeJS: instrumentation.opentelemetry.io/inject-nodejs: "true"
-##  Python: instrumentation.opentelemetry.io/inject-python: "true"
-##  DotNet: instrumentation.opentelemetry.io/inject-dotnet: "true"
-##  Go: instrumentation.opentelemetry.io/inject-go: "true" , instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/path/to/container/executable"
-##  OpenTelemetry SDK environment variables only: instrumentation.opentelemetry.io/inject-sdk: "true"
+# autoinstrumentation is the configuration for open-telemetry auto-instrumentation
 autoinstrumentation:
+  # enabled is a boolean flag to enable or disable auto-instrumentation
   enabled: true
-  ## The collector name to send traces to
-  collectorTarget: traces
+  # propagators is a list of propagators to be used by the auto-instrumentation
   propagators:
     - tracecontext
     - baggage
+  # sampler is the configuration for the sampler to be used by the auto-instrumentation
+  sampler:
+    #  type is the type of sampler to be used by the auto-instrumentation
+    type: parentbased_traceidratio
+    # argument is the argument to be used by the sampler
+    argument: "1"
+  # env is a list of global environment variables to be passed to the auto-instrumentation
+  env:
+    - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+      value: http/protobuf
+    - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
+      value: http/protobuf
+    #- name: OTEL_LOGS_EXPORTER # DOES'NT WORK
+    #  value: otlp_proto_http
+  # dotnet is the configuration for the dotnet auto-instrumentation
+  dotnet:
+    # image is the image to be used for the dotnet auto-instrumentation
+    image: {}
+    # env is a list of environment variables to be passed to the dotnet auto-instrumentation
+    env: []
+  # go is the configuration for the go auto-instrumentation
+  go:
+    # image is the image to be used for the go auto-instrumentation
+    image: {}
+    # env is a list of environment variables to be passed to the go auto-instrumentation
+    env: []
+  # python is the configuration for the python auto-instrumentation
+  python:
+    # image is the image to be used for the python auto-instrumentation
+    image: {}
+    # env is a list of environment variables to be passed to the python auto-instrumentation
+    env:
+      - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+        value: "false" # set to true to enable auto instrumentation for logs
+  # java is the configuration for the java auto-instrumentation
+  java:
+    # image is the image to be used for the java auto-instrumentation
+    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.9.0
+    # env is a list of environment variables to be passed to the java auto-instrumentation
+    env: []
+  # nodejs is the configuration for the nodejs auto-instrumentation
+  nodejs:
+    # image is the image to be used for the nodejs auto-instrumentation
+    image: {}
+    # env is a list of environment variables to be passed to the nodejs auto-instrumentation
+    env: []
+  # apacheHttpd is the configuration for the apacheHttpd auto-instrumentation
+  apacheHttpd:
+    # image is the image to be used for the apacheHttpd auto-instrumentation
+    image: {}
+    # env is a list of environment variables to be passed to the apacheHttpd auto-instrumentation
+    env: []
+  # nginx is the configuration for the nginx auto-instrumentation
+  nginx:
+    # image is the image to be used for the nginx auto-instrumentation
+    image: {}
+    # env is a list of environment variables to be passed to the nginx auto-instrumentation
+    env: []
 
 podAndServiceMonitor:
   # Specifies whether PodMonitor and ServiceMonitor CRs should be created
