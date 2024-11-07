@@ -1,4 +1,4 @@
-apiVersion: opentelemetry.io/v1alpha1
+apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
   name: {{ include "openobserve-collector.fullname" . }}-gateway
@@ -40,11 +40,16 @@ spec:
   # namespace: openobserve-collector
   # name: prometheus
   # port: 8888
-  config: |
-    receivers: {{ .Values.gateway.receivers | toYaml | nindent 6 }}
-    connectors: {{ .Values.gateway.connectors | toYaml | nindent 6 }}
-    processors: {{ .Values.gateway.processors | toYaml | nindent 6 }}
-    extensions: {{ .Values.gateway.extensions | toYaml | nindent 6 }}
-    exporters: {{ .Values.exporters | toYaml | nindent 6 }}
-    service: {{ .Values.gateway.service | toYaml | nindent 6 }}
-  
+  config:
+    receivers:
+{{ toYaml .Values.gateway.receivers | indent 6 }}
+    connectors:
+{{ toYaml .Values.gateway.connectors | indent 6 }}
+    processors:
+{{ toYaml .Values.gateway.processors | indent 6 }}
+    extensions:
+{{ toYaml .Values.gateway.extensions | indent 6 }}
+    exporters:
+{{ toYaml .Values.exporters | indent 6 }}
+    service:
+{{ toYaml .Values.gateway.service | indent 6 }}
