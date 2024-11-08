@@ -590,7 +590,7 @@ zplane:
 postgres:
   enabled: true
   pgadmin:
-    enabled: true
+    enabled: false
     image:
       repository: dpage/pgadmin4
       tag: latest
