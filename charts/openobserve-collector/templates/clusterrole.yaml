@@ -33,6 +33,8 @@ rules:
   resources:
   - servicemonitors
   - podmonitors
+  - probes
+  - scrapeconfigs
   verbs: ["*"]
 - apiGroups: ["apps"]
   resources:
