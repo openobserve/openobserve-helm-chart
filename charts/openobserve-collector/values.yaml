@@ -63,11 +63,7 @@ autoinstrumentation:
     # argument is the argument to be used by the sampler
     argument: "1"
   # env is a list of global environment variables to be passed to the auto-instrumentation
-  env:
-    - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
-      value: http/protobuf
-    - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
-      value: http/protobuf
+  env: []
     #- name: OTEL_LOGS_EXPORTER # DOES'NT WORK
     #  value: otlp_proto_http
   # dotnet is the configuration for the dotnet auto-instrumentation
@@ -88,12 +84,16 @@ autoinstrumentation:
     image: {}
     # env is a list of environment variables to be passed to the python auto-instrumentation
     env:
+      - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL # see https://opentelemetry.io/docs/kubernetes/operator/automatic/#python
+        value: http/protobuf
+      - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
+        value: http/protobuf
       - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
         value: "false" # set to true to enable auto instrumentation for logs
   # java is the configuration for the java auto-instrumentation
   java:
     # image is the image to be used for the java auto-instrumentation
-    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-java:2.9.0
+    image: {}
     # env is a list of environment variables to be passed to the java auto-instrumentation
     env: []
   # nodejs is the configuration for the nodejs auto-instrumentation
