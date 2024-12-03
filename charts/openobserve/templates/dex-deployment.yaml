@@ -59,7 +59,6 @@ spec:
             timeoutSeconds: {{ .Values.probes.dex.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.dex.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.dex.config.readinessProbe.failureThreshold | default 3 }}
-            terminationGracePeriodSeconds: {{ .Values.probes.dex.config.readinessProbe.terminationGracePeriodSeconds | default 30 }}
           {{- end }}
           resources:
             {{- toYaml .Values.enterprise.dex.resources | nindent 12 }}

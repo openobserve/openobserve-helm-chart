@@ -88,7 +88,6 @@ spec:
             timeoutSeconds: {{ .Values.probes.router.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.router.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.router.config.readinessProbe.failureThreshold | default 3 }}
-            terminationGracePeriodSeconds: {{ .Values.probes.router.config.readinessProbe.terminationGracePeriodSeconds | default 30 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.router | nindent 12 }}

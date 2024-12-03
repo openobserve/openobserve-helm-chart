@@ -76,7 +76,6 @@ spec:
             timeoutSeconds: {{ .Values.probes.reportserver.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.reportserver.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.reportserver.config.readinessProbe.failureThreshold | default 3 }}
-            terminationGracePeriodSeconds: {{ .Values.probes.reportserver.config.readinessProbe.terminationGracePeriodSeconds | default 30 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.reportserver | nindent 12 }}

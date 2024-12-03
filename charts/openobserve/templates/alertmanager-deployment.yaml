@@ -88,7 +88,6 @@ spec:
             timeoutSeconds: {{ .Values.probes.alertmanager.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.failureThreshold | default 3 }}
-            terminationGracePeriodSeconds: {{ .Values.probes.alertmanager.config.readinessProbe.terminationGracePeriodSeconds | default 30 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.alertmanager | nindent 12 }}

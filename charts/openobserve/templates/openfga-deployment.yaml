@@ -73,7 +73,6 @@ spec:
             timeoutSeconds: {{ .Values.probes.openfga.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.openfga.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.openfga.config.readinessProbe.failureThreshold | default 3 }}
-            terminationGracePeriodSeconds: {{ .Values.probes.openfga.config.readinessProbe.terminationGracePeriodSeconds | default 30 }}
           {{- end }}
           resources:
             limits:
