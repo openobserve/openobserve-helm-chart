@@ -6,6 +6,10 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
     prometheus.io/scrape: "true"
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
