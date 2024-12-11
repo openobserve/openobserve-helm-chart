@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.14.0
-    created: "2024-12-11T23:00:00.70088+08:00"
+    created: "2024-12-11T23:02:26.466521+08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,7 @@ entries:
       version: 5.3.0
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: cbbd7764d6f4fcc10f4fcc656c0a53142bed60524df3f36b47867de846738f8b
+    digest: 4a6ea85311e55eee023c2fb9a863dd8309d7cb556d15907a4e72388fb57a1be4
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3581,9 +3581,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.113.0
-    created: "2024-12-11T23:00:00.702648+08:00"
+    created: "2024-12-11T23:02:26.467628+08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: 074bb28640f9e756933966062b6275af2f27cbc9861a363a89ee12ac81612bdd
+    digest: be65b15226cfcdef99fa4e5fafa69b14167a57c1bd4af5dc9e1139120fd8c0d6
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -4086,7 +4086,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.14.0
-    created: "2024-12-11T23:00:00.70427+08:00"
+    created: "2024-12-11T23:02:26.46925+08:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -4094,7 +4094,7 @@ entries:
       version: 5.3.0
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: fdcabeac0faeb0dc2655d89446c67a7d8c56ccc6071c5021638692ef379dfbb0
+    digest: f96f197c23c829de2032cebeeed88c1a31f2e9ff99a71011263896260d8f3632
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -4604,4 +4604,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-12-11T23:00:00.694825+08:00"
+generated: "2024-12-11T23:02:26.460569+08:00"
