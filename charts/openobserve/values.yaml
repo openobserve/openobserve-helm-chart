@@ -114,7 +114,7 @@ querier:
       - ReadWriteOnce
 
 reportserver:
-  enabled: false #if true then reportserver will be deployed as part of openobserve
+  enabled: true #if true then reportserver will be deployed as part of openobserve
   # Additional volumes on the output Deployment definition.
   volumes: []
   # - name: foo
