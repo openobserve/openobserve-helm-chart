@@ -59,8 +59,8 @@ replicaCount:
   router: 1
   alertmanager: 1
   compactor: 1
-  zplane: 1
-  reportserver: 1
+  zplane: 0
+  reportserver: 0
 
 alertmanager:
   # Alertmanager specific configuration
