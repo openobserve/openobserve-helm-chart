@@ -3,6 +3,7 @@
 Following charts are available in this repository:
 
 - [openobserve](charts/openobserve/README.md)
+- [openobserve-standalone](charts/openobserve-standalone/README.md)
 - [openobserve-collector](charts/openobserve-collector/README.md)
 
 
