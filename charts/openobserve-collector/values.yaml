@@ -336,15 +336,15 @@ agent:
     pipelines:
       logs:
         receivers: [filelog/std]
-        processors: [batch, k8sattributes]
+        processors: [batch, attributes, k8sattributes]
         exporters: [otlphttp/openobserve]
       metrics:
         receivers: [kubeletstats]
-        processors: [batch, k8sattributes]
+        processors: [batch, attributes, k8sattributes]
         exporters: [otlphttp/openobserve]
       traces:
         receivers: [otlp]
-        processors: [batch, k8sattributes]
+        processors: [batch, attributes, k8sattributes]
         exporters: [otlphttp/openobserve]
 
 gateway:
@@ -654,13 +654,13 @@ gateway:
     pipelines:
       logs/k8s_events:
         receivers: [k8s_events]
-        processors: [batch, k8sattributes, resourcedetection]
+        processors: [batch, attributes, k8sattributes, resourcedetection]
         exporters: [otlphttp/openobserve_k8s_events]
       metrics:
         receivers: [k8s_cluster, spanmetrics, servicegraph]
-        processors: [batch, k8sattributes, resourcedetection]
+        processors: [batch, attributes, k8sattributes, resourcedetection]
         exporters: [otlphttp/openobserve]
       traces:
         receivers: [otlp]
-        processors: [batch, k8sattributes, resourcedetection]
+        processors: [batch, attributes, k8sattributes, resourcedetection]
         exporters: [otlphttp/openobserve, spanmetrics, servicegraph]
