@@ -67,10 +67,12 @@ alertmanager:
   config:
     ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
     ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
+    ZO_ACTIX_REQ_TIMEOUT: "30"
 
 compactor:
   # Compactor specific configuration
   config:
+    ZO_COMPACT_MAX_FILE_SIZE: "512"
     ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
     ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
     ZO_ACTIX_REQ_TIMEOUT: "30"
