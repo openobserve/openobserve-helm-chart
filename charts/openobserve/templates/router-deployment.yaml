@@ -54,7 +54,7 @@ spec:
           ']
          {{- end }} 
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name }}-router
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           {{- if .Values.enterprise.enabled }}
