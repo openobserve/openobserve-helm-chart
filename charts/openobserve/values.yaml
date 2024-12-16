@@ -205,7 +205,7 @@ config:
   ZO_FEATURE_QUICK_MODE_FIELDS: "" # default fields for quick mode
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_hash"
   ZO_FEATURE_PER_THREAD_LOCK: "false"
-  ZO_RESULT_CACHE_ENABLED: "true" # Enable result cache for query results
+  ZO_RESULT_CACHE_ENABLED: "false" # Enable result cache for query results
   ZO_USE_MULTIPLE_RESULT_CACHE: "false" # Enable to use mulple result caches for query results
   ZO_RESULT_CACHE_SELECTION_STRATEGY: "overlap" # Strategy to use for result cache, default is both , possible value - both,overlap , duration
   ZO_RESULT_CACHE_DISCARD_DURATION: "60" # Discard data of last n seconds from cached results
