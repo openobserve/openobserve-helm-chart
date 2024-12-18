@@ -11,8 +11,12 @@ data:
   ZO_META_CONNECTION_POOL_MIN_SIZE: "{{ .Values.router.config.ZO_META_CONNECTION_POOL_MIN_SIZE }}"
   ZO_META_CONNECTION_POOL_MAX_SIZE: "{{ .Values.router.config.ZO_META_CONNECTION_POOL_MAX_SIZE }}"
   ZO_ACTIX_REQ_TIMEOUT: "{{ .Values.router.config.ZO_ACTIX_REQ_TIMEOUT }}"
+  RUST_LOG: "{{ .Values.router.config.RUST_LOG }}"
+  RUST_BACKTRACE: "{{ .Values.router.config.RUST_BACKTRACE }}"
   {{- else }}
   ZO_META_CONNECTION_POOL_MIN_SIZE: "{{ .Values.config.ZO_META_CONNECTION_POOL_MIN_SIZE }}"
   ZO_META_CONNECTION_POOL_MAX_SIZE: "{{ .Values.config.ZO_META_CONNECTION_POOL_MAX_SIZE }}"
   ZO_ACTIX_REQ_TIMEOUT: "{{ .Values.config.ZO_ACTIX_REQ_TIMEOUT }}"
+  RUST_LOG: "{{ .Values.config.RUST_LOG }}"
+  RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   {{- end }}

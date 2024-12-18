@@ -243,7 +243,7 @@ data:
   ZO_QUERY_PARTITION_MIN_SECS: "{{ .Values.config.ZO_QUERY_PARTITION_MIN_SECS }}"
   ZO_QUERY_PARTITION_BY_SECS: "{{ .Values.config.ZO_QUERY_PARTITION_BY_SECS }}"
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
-  RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"  
+  RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   O2_OPENFGA_ENABLED: "{{ .Values.enterprise.openfga.enabled }}"
   O2_OPENFGA_BASE_URL: "http://{{ include "openobserve.fullname" . }}-openfga.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8080"
   O2_DEX_ENABLED: "{{ .Values.enterprise.dex.enabled }}"

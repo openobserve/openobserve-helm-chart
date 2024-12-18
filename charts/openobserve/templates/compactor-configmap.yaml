@@ -12,9 +12,13 @@ data:
   ZO_META_CONNECTION_POOL_MIN_SIZE: "{{ .Values.compactor.config.ZO_META_CONNECTION_POOL_MIN_SIZE }}"
   ZO_META_CONNECTION_POOL_MAX_SIZE: "{{ .Values.compactor.config.ZO_META_CONNECTION_POOL_MAX_SIZE }}"
   ZO_ACTIX_REQ_TIMEOUT: "{{ .Values.compactor.config.ZO_ACTIX_REQ_TIMEOUT }}"
+  RUST_LOG: "{{ .Values.compactor.config.RUST_LOG }}"
+  RUST_BACKTRACE: "{{ .Values.compactor.config.RUST_BACKTRACE }}"
   {{- else }}
   ZO_COMPACT_MAX_FILE_SIZE: "{{ .Values.config.ZO_COMPACT_MAX_FILE_SIZE }}"
   ZO_META_CONNECTION_POOL_MIN_SIZE: "{{ .Values.config.ZO_META_CONNECTION_POOL_MIN_SIZE }}"
   ZO_META_CONNECTION_POOL_MAX_SIZE: "{{ .Values.config.ZO_META_CONNECTION_POOL_MAX_SIZE }}"
   ZO_ACTIX_REQ_TIMEOUT: "{{ .Values.config.ZO_ACTIX_REQ_TIMEOUT }}"
+  RUST_LOG: "{{ .Values.config.RUST_LOG }}"
+  RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   {{- end }}
