@@ -126,8 +126,9 @@ config:
   ZO_BLOOM_FILTER_ENABLED: "true"
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
   ZO_ENABLE_INVERTED_INDEX: "true"
-  ZO_INVERTED_INDEX_STORE_FORMAT: ""
-  ZO_INVERTED_INDEX_SEARCH_FORMAT: ""
+  ZO_INVERTED_INDEX_STORE_FORMAT: "tantivy" # InvertedIndex store format, parquet(default), tantivy, both
+  ZO_INVERTED_INDEX_SEARCH_FORMAT: "tantivy"  # InvertedIndex search format, parquet(default), tantivy.
+  ZO_INVERTED_INDEX_TANTIVY_MODE: "puffin"  # Tantivy search mode, puffin or mmap, default is puffin.
   ZO_INVERTED_INDEX_COUNT_OPTIMIZER_ENABLED: "true"
   ZO_FEATURE_QUERY_REMOVE_FILTER_WITH_INDEX: "true"
   ZO_INVERTED_INDEX_SPLIT_CHARS: ""
