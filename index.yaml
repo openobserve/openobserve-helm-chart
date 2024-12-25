@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.14.0
-    created: "2024-12-24T19:37:57.985122+08:00"
+    created: "2024-12-25T12:51:19.385018-08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,7 @@ entries:
       version: 5.3.0
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 7c697e0fe3b58350f1584a8e4d7b982f78c747cc61c57cb4a5f8ea76e7a20032
+    digest: 164f8d28b2ead17fb8f0cc5ee14c4caaf098c9e09885c691909e07ba77da82d9
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3833,6 +3833,20 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.113.0
+    created: "2024-12-25T12:51:19.385833-08:00"
+    description: An opinionated installation of OTEL Collector for OpenObserve
+    digest: 8611fb2afe91bd2129b03babe52c4575fb76c2ca107707aaf17608b7a081a35b
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve-collector
+    type: application
+    urls:
+    - openobserve-collector-0.3.19.tgz
+    version: 0.3.19
+  - apiVersion: v2
+    appVersion: 0.113.0
     created: "2024-12-24T19:37:57.986076+08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
     digest: dcf901c2d6bc43c16eb544cc66395b8bc3cba472d49a133de1baf2100ad6838a
@@ -4380,7 +4394,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.14.0
-    created: "2024-12-24T19:37:57.987586+08:00"
+    created: "2024-12-25T12:51:19.387073-08:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -4388,7 +4402,7 @@ entries:
       version: 5.3.0
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 8335a0ac83a1b0f1d229f0e43927e5883d39df24d9813fabf6a48e60ffa9de4c
+    digest: 02c9d1893abd678c2dca8164f494ed5351af005f0692c11f709f1d7890137f80
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -4898,4 +4912,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-12-24T19:37:57.978773+08:00"
+generated: "2024-12-25T12:51:19.38001-08:00"
