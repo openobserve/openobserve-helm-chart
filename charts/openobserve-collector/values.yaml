@@ -654,7 +654,7 @@ gateway:
     pipelines:
       logs/k8s_events:
         receivers: [k8s_events]
-        processors: [batch, attributes, k8sattributes, resourcedetection, prometheus]
+        processors: [batch, attributes, k8sattributes, resourcedetection]
         exporters: [otlphttp/openobserve_k8s_events]
       metrics:
         receivers: [k8s_cluster, spanmetrics, servicegraph]
