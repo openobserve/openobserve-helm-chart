@@ -187,6 +187,7 @@ config:
   ZO_DATA_IDX_DIR: ""
   ZO_DATA_STREAM_DIR: ""
   ZO_DATA_CACHE_DIR: ""
+  ZO_MMDB_DATA_DIR: ""
   ZO_UI_ENABLED: "true"
   ZO_UI_SQL_BASE64_ENABLED: "false"
   ZO_WEB_URL: ""
@@ -395,7 +396,6 @@ config:
   ZO_DEFAULT_SCRAPE_INTERVAL: "15"
   ZO_CIRCUIT_BREAKER_ENABLED: "false"
   ZO_CIRCUIT_BREAKER_RATIO: "100"
-  ZO_MMDB_DATA_DIR: "./data/openobserve/mmdb/"
   ZO_MMDB_DISABLE_DOWNLOAD: "false"
   ZO_MMDB_UPDATE_DURATION: "86400"  # Everyday to test
   ZO_MMDB_GEOLITE_CITYDB_URL: "https://geoip.zinclabs.dev/GeoLite2-City.mmdb"
