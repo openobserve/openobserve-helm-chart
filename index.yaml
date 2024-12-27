@@ -60,7 +60,7 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.14.0
-    created: "2024-12-27T01:52:36.496809-08:00"
+    created: "2024-12-27T01:53:57.35541-08:00"
     dependencies:
     - condition: etcd.enabled
       name: etcd
@@ -76,7 +76,7 @@ entries:
       version: 5.3.0
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 7de74440e05dbf92f169cac4ce5c297d9483de235f63f933b45935e7c7d28816
+    digest: 37e595776394858a3f3953aef0f69a44ed9f9385dccca0337a0069b8b4158eba
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -3833,9 +3833,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.113.0
-    created: "2024-12-27T01:52:36.498778-08:00"
+    created: "2024-12-27T01:53:57.35625-08:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: ace64c98ecf980ab9b432a30a0ea08bb362d7ae7a8bb2a5fc619240b3d8bf098
+    digest: d17b96430bb0bb99404ff42a2ee4adffd9a6887823265ee017b6288228263171
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -4422,7 +4422,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.14.0
-    created: "2024-12-27T01:52:36.500109-08:00"
+    created: "2024-12-27T01:53:57.357419-08:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -4430,7 +4430,7 @@ entries:
       version: 5.3.0
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: b42eb5bb789b4bc8f4e1a07fb8aea6aefeddf35bc3044ba336f75cea096db157
+    digest: caffb975f7a6cae6521646d1dd1de2b353e70f4020654f1257602fe1850cd72e
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -4940,4 +4940,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2024-12-27T01:52:36.491898-08:00"
+generated: "2024-12-27T01:53:57.35075-08:00"
