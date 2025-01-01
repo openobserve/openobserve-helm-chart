@@ -12,3 +12,5 @@ values_testing.yaml
 # local test development files
 t_*.*
 .idea
+
+.vscode/
