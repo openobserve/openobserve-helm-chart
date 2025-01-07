@@ -584,7 +584,7 @@ etcd:
   image:
     registry: docker.io
     repository: bitnami/etcd
-    tag: 3.5.8-debian-11-r4
+    tag: 3.5.16-debian-12-r2
     pullPolicy: IfNotPresent
     digest: ""
   auth:
