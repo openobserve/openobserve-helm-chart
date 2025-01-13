@@ -111,9 +111,11 @@ spec:
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
+          {{- if .Values.querier.persistence.enabled }}
           volumeMounts:
             - name: cache
               mountPath: /data
+          {{- end }}
       {{- with .Values.nodeSelector.querier }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -126,15 +128,17 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- if .Values.querier.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: cache
       spec:
         accessModes:
-          {{- range .Values.ingester.persistence.accessModes }}
+          {{- range .Values.querier.persistence.accessModes }}
             - {{ . | quote }}
           {{- end }}
         resources:
           requests:
             storage: {{ .Values.querier.persistence.size }}
         storageClassName: {{ .Values.querier.persistence.storageClass }}
+  {{- end }}
