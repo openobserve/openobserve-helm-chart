@@ -415,6 +415,8 @@ config:
   ZO_SELF_METRIC_CONSUMPTION_ACCEPTLIST: "" # only these metrics will be self-consumed, comma separated
   ZO_SWAGGER_ENABLED: "true"
   ZO_WEBSOCKET_ENABLED: "true"
+  ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "100"
+  ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "100"
 
 # Add extra environment variables to all pods, useful for overriding secrets
 extraEnv: []
