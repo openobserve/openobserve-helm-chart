@@ -211,8 +211,8 @@ config:
   ZO_FEATURE_QUICK_MODE_FIELDS: "" # default fields for quick mode
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_hash"
   ZO_FEATURE_PER_THREAD_LOCK: "false"
-  ZO_RESULT_CACHE_ENABLED: "false" # Enable result cache for query results
-  ZO_USE_MULTIPLE_RESULT_CACHE: "false" # Enable to use mulple result caches for query results
+  ZO_RESULT_CACHE_ENABLED: "true" # Enable result cache for query results
+  ZO_USE_MULTIPLE_RESULT_CACHE: "true" # Enable to use mulple result caches for query results
   ZO_RESULT_CACHE_SELECTION_STRATEGY: "overlap" # Strategy to use for result cache, default is both , possible value - both,overlap , duration
   ZO_RESULT_CACHE_DISCARD_DURATION: "60" # Discard data of last n seconds from cached results
   ZO_CONSISTENT_HASH_VNODES: "100"
@@ -414,7 +414,7 @@ config:
   ZO_SELF_METRIC_CONSUMPTION_INTERVAL: "60" # self-consume metrics interval, unit seconds
   ZO_SELF_METRIC_CONSUMPTION_ACCEPTLIST: "" # only these metrics will be self-consumed, comma separated
   ZO_SWAGGER_ENABLED: "true"
-  ZO_WEBSOCKET_ENABLED: "false"
+  ZO_WEBSOCKET_ENABLED: "true"
 
 # Add extra environment variables to all pods, useful for overriding secrets
 extraEnv: []
@@ -446,7 +446,12 @@ ingress:
     cert-manager.io/issuer: letsencrypt
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    # nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1" # Enable HTTP/1.1 for WebSockets
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
+    nginx.ingress.kubernetes.io/proxy-set-headers: |
+      Upgrade $http_upgrade;
+      Connection "Upgrade";
+    # nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive # keep-alive should be disabled for websockets to work
     # nginx.ingress.kubernetes.io/proxy-connect-timeout: '600'
     # nginx.ingress.kubernetes.io/proxy-send-timeout: '600'
     # nginx.ingress.kubernetes.io/proxy-read-timeout: '600'
