@@ -217,10 +217,12 @@ config:
   ZO_RESULT_CACHE_DISCARD_DURATION: "60" # Discard data of last n seconds from cached results
   ZO_CONSISTENT_HASH_VNODES: "100"
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "0"
+  ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "100"
+  ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "200"
+  ZO_QUICK_MODE_ENABLED: "false"
+  ZO_QUICK_MODE_FORCE_ENABLED: "true"
   ZO_QUICK_MODE_NUM_FIELDS: "500"
   ZO_QUICK_MODE_STRATEGY: ""
-  ZO_QUICK_MODE_FILE_LIST_ENABLED: "false"
-  ZO_QUICK_MODE_FILE_LIST_INTERVAL: "300"
   ZO_BLOOM_FILTER_ENABLED: "true"
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
   ZO_ENABLE_INVERTED_INDEX: "true"
@@ -370,7 +372,6 @@ config:
   ZO_PROF_PYROSCOPE_SERVER_URL: "http://localhost:4040"
   ZO_PROF_PYROSCOPE_PROJECT_NAME: "openobserve"
   ZO_ENTRY_PER_SCHEMA_VERSION_ENABLED: "true"
-  ZO_QUICK_MODE_ENABLED: "false"
   ZO_QUERY_GROUP_BASE_SPEED: "768" # MB/s/core
   ZO_QUERY_PARTITION_BY_SECS: "1" # In how many seconds we want to get the results per partition
   ZO_QUERY_PARTITION_MIN_SECS: "600" # seconds. This is the minimum time range for a partition
@@ -415,8 +416,6 @@ config:
   ZO_SELF_METRIC_CONSUMPTION_ACCEPTLIST: "" # only these metrics will be self-consumed, comma separated
   ZO_SWAGGER_ENABLED: "true"
   ZO_WEBSOCKET_ENABLED: "true"
-  ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "100"
-  ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "100"
 
 # Add extra environment variables to all pods, useful for overriding secrets
 extraEnv: []
