@@ -61,8 +61,20 @@ headless:
 
 # Credentials for authentication
 auth:
+  # Either specify root user credentials here, or use an existing secret.
+
+  # OpenObserve root user email
   ZO_ROOT_USER_EMAIL: "root@example.com"
+  # OpenObserve root user password
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+
+  existingRootUserSecret:
+    # Existing secret with OpenObserve root user credentials.
+    name: ""
+    # Email key to be retrieved from existing secret
+    emailKey: "ZO_ROOT_USER_EMAIL"
+    # Password key to be retrieved from existing secret
+    passwordKey: "ZO_ROOT_USER_PASSWORD"
 
   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
   ZO_S3_ACCESS_KEY: ""
