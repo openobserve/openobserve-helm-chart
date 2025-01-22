@@ -74,6 +74,9 @@ data:
   ZO_UI_SQL_BASE64_ENABLED: "{{ .Values.config.ZO_UI_SQL_BASE64_ENABLED }}"
   ZO_WEB_URL: "{{ .Values.config.ZO_WEB_URL }}"
   ZO_BASE_URI: "{{ .Values.config.ZO_BASE_URI }}"
+  ZO_HEALTH_CHECK_ENABLED: "{{ .Values.config.ZO_HEALTH_CHECK_ENABLED }}"
+  ZO_HEALTH_CHECK_TIMEOUT: "{{ .Values.config.ZO_HEALTH_CHECK_TIMEOUT }}"
+  ZO_HEALTH_CHECK_FAILED_TIMES: "{{ .Values.config.ZO_HEALTH_CHECK_FAILED_TIMES }}"
   ZO_CLUSTER_COORDINATOR: "{{ .Values.config.ZO_CLUSTER_COORDINATOR }}"
   ZO_QUEUE_STORE: "{{ .Values.config.ZO_QUEUE_STORE }}"
   {{- if .Values.postgres.enabled }}
