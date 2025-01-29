@@ -771,6 +771,9 @@ enterprise:
           inCluster: true
       web:
         http: 0.0.0.0:5556
+      frontend:
+        issuer: "OpenObserve"
+        logoURL: "https://cloud.openobserve.ai/web/src/assets/images/common/open_observe_logo.svg"
       expiry:
         idTokens: 10m
         refreshTokens:
