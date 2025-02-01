@@ -17,7 +17,11 @@ data:
   ZO_HTTP_IPV6_ENABLED: "{{ .Values.config.ZO_HTTP_IPV6_ENABLED }}"
   ZO_GRPC_PORT: "{{ .Values.config.ZO_GRPC_PORT }}"
   ZO_GRPC_ADDR: "{{ .Values.config.ZO_GRPC_ADDR }}"
-  ZO_GRPC_TIMEOUT: "{{ .Values.config.ZO_GRPC_TIMEOUT }}"
+  {{- /* ZO_GRPC_CONNECT_TIMEOUT or ZO_GRPC_TIMEOUT are accepted for backwards compatibility. */}}
+  ZO_GRPC_CONNECT_TIMEOUT: "{{
+    toString .Values.config.ZO_GRPC_CONNECT_TIMEOUT | eq "600"
+      | ternary (.Values.config.ZO_GRPC_TIMEOUT | default "600") .Values.config.ZO_GRPC_CONNECT_TIMEOUT 
+  }}"
   ZO_GRPC_MAX_MESSAGE_SIZE: "{{ .Values.config.ZO_GRPC_MAX_MESSAGE_SIZE }}"
   ZO_GRPC_ORG_HEADER_KEY: "{{ .Values.config.ZO_GRPC_ORG_HEADER_KEY }}"
   ZO_GRPC_STREAM_HEADER_KEY: "{{ .Values.config.ZO_GRPC_STREAM_HEADER_KEY }}"
