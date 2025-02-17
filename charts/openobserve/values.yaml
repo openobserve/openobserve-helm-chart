@@ -219,7 +219,7 @@ config:
   ZO_USE_MULTIPLE_RESULT_CACHE: "true" # Enable to use mulple result caches for query results
   ZO_RESULT_CACHE_SELECTION_STRATEGY: "overlap" # Strategy to use for result cache, default is both , possible value - both,overlap , duration
   ZO_RESULT_CACHE_DISCARD_DURATION: "60" # Discard data of last n seconds from cached results
-  ZO_CONSISTENT_HASH_VNODES: "100"
+  ZO_CONSISTENT_HASH_VNODES: "1000"
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "0"
   ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "100"
   ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "200"
