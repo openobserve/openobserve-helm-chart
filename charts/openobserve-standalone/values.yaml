@@ -110,8 +110,6 @@ config:
   ZO_META_TRANSACTION_LOCK_TIMEOUT: "600" # seconds
   ZO_COLUMN_TIMESTAMP: "_timestamp"
   ZO_COLS_PER_RECORD_LIMIT: "200"
-  ZO_WIDENING_SCHEMA_EVOLUTION: "true"
-  ZO_SKIP_SCHEMA_VALIDATION: "false"
   ZO_FEATURE_FULLTEXT_EXTRA_FIELDS: ""
   ZO_FEATURE_INDEX_EXTRA_FIELDS: ""
   ZO_FEATURE_DISTINCT_EXTRA_FIELDS: ""
@@ -137,8 +135,6 @@ config:
   ZO_INVERTED_INDEX_TANTIVY_MODE: "puffin"  # Tantivy search mode, puffin or mmap, default is puffin.
   ZO_INVERTED_INDEX_COUNT_OPTIMIZER_ENABLED: "true"
   ZO_FEATURE_QUERY_REMOVE_FILTER_WITH_INDEX: "true"
-  ZO_INVERTED_INDEX_SPLIT_CHARS: ""
-  ZO_FULL_TEXT_SEARCH_TYPE: "prefix"
   ZO_QUERY_ON_STREAM_SELECTION: "true"
   ZO_DISTINCT_VALUES_INTERVAL: "10"
   ZO_DISTINCT_VALUES_HOURLY: "false"
@@ -176,6 +172,7 @@ config:
   ZO_ACTIX_REQ_TIMEOUT: "30" # in second
   ZO_ACTIX_KEEP_ALIVE: "30" # in second
   ZO_ACTIX_SHUTDOWN_TIMEOUT: "10" # in second
+  ZO_ACTIX_SLOW_LOG_THRESHOLD: "5" # in second
   ZO_INGEST_ALLOWED_UPTO: "24"
   ZO_INGEST_FLATTEN_LEVEL: "3"
   ZO_LOGS_FILE_RETENTION: "hourly"
@@ -217,7 +214,6 @@ config:
   ZO_S3_REGION_NAME: "us-east-2" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "o2-dev-bucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_PREFIX: ""
-  ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
   ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "false"
   ZO_S3_FEATURE_HTTP1_ONLY: "false"
   ZO_S3_FEATURE_HTTP2_ONLY: "false"
@@ -227,6 +223,7 @@ config:
   ZO_S3_ALLOW_INVALID_CERTIFICATES: "false"
   ZO_S3_MAX_RETRIES: "10"
   ZO_S3_MAX_IDLE_PER_HOST: "0"
+  ZO_S3_CONNECTION_KEEPALIVE_TIMEOUT: "20"
   ZO_USAGE_REPORTING_ENABLED: "false"
   ZO_USAGE_REPORTING_MODE: "local"
   ZO_USAGE_REPORTING_URL: "http://localhost:5080/api/_meta/usage/_json"
