@@ -416,7 +416,7 @@ config:
   ZO_SELF_METRIC_CONSUMPTION_INTERVAL: "60" # self-consume metrics interval, unit seconds
   ZO_SELF_METRIC_CONSUMPTION_ACCEPTLIST: "" # only these metrics will be self-consumed, comma separated
   ZO_SWAGGER_ENABLED: "true"
-  ZO_WEBSOCKET_ENABLED: "true"
+  ZO_WEBSOCKET_ENABLED: "false"
   ZO_MIN_AUTO_REFRESH_INTERVAL: "5"
 
 # Add extra environment variables to all pods, useful for overriding secrets
