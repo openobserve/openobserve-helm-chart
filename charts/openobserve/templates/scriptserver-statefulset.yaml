@@ -1,0 +1,61 @@
+{{- if .Values.scriptserver.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openobserve.fullname" . }}-scriptserver
+  namespace: {{ .Values.scriptserver.namespaces.executor | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    name: openobserve
+spec:
+  serviceName: {{ include "openobserve.fullname" . }}-scriptserver
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "openobserve.selectorLabels" . | nindent 6 }}
+      name: openobserve
+      app: openobserve
+      role: scriptserver
+  template:
+    metadata:
+      labels:
+        {{- include "openobserve.selectorLabels" . | nindent 8 }}
+        name: openobserve
+        app: openobserve
+        role: scriptserver
+    spec:
+      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: data
+          emptyDir: {}
+      containers:
+        - name: openobserve
+          image: "{{ .Values.image.oss.repository }}:{{ .Values.image.oss.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ZO_NODE_ROLE
+              value: "scriptserver"
+            - name: ZO_DATA_DIR
+              value: "/data/"
+            {{- range $key, $value := .Values.config }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.auth }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- with .Values.scriptserver.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.scriptserver.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.ZO_HTTP_PORT }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+{{- end }} 

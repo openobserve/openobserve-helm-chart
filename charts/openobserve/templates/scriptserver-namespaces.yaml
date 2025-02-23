@@ -1,0 +1,17 @@
+{{- if .Values.scriptserver.enabled -}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.scriptserver.namespaces.executor }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    role: script-executor
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.scriptserver.namespaces.playground }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    role: script-playground
+{{- end }} 
