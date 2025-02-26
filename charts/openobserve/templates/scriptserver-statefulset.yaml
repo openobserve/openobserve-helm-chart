@@ -32,7 +32,7 @@ spec:
           emptyDir: {}
       containers:
         - name: openobserve
-          image: "{{ .Values.image.oss.repository }}:{{ .Values.image.oss.tag }}"
+          image: "{{ .Values.image.enterprise.repository }}:{{ .Values.image.enterprise.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: ZO_NODE_ROLE
