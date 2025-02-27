@@ -6,7 +6,7 @@ image:
   repository: public.ecr.aws/zinclabs/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.14.0"
+  tag: "v0.14.3"
   busybox:
     repository: busybox
     tag: 1.37.0
@@ -108,7 +108,6 @@ config:
   ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
   ZO_META_TRANSACTION_RETRIES: "3"
   ZO_META_TRANSACTION_LOCK_TIMEOUT: "600" # seconds
-  ZO_COLUMN_TIMESTAMP: "_timestamp"
   ZO_COLS_PER_RECORD_LIMIT: "200"
   ZO_FEATURE_FULLTEXT_EXTRA_FIELDS: ""
   ZO_FEATURE_INDEX_EXTRA_FIELDS: ""
@@ -120,6 +119,8 @@ config:
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_num"
   ZO_FEATURE_PER_THREAD_LOCK: "false"
   ZO_RESULT_CACHE_ENABLED: "false"
+  ZO_METRICS_CACHE_ENABLED: "true"
+  ZO_METRICS_CACHE_MAX_ENTRIES: "100000"
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "0"
   ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "150"
   ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "200"
@@ -130,11 +131,9 @@ config:
   ZO_BLOOM_FILTER_ENABLED: "true"
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
   ZO_ENABLE_INVERTED_INDEX: "true"
-  ZO_INVERTED_INDEX_STORE_FORMAT: "tantivy" # InvertedIndex store format, parquet(default), tantivy, both
-  ZO_INVERTED_INDEX_SEARCH_FORMAT: "tantivy"  # InvertedIndex search format, parquet(default), tantivy.
-  ZO_INVERTED_INDEX_TANTIVY_MODE: "puffin"  # Tantivy search mode, puffin or mmap, default is puffin.
   ZO_INVERTED_INDEX_COUNT_OPTIMIZER_ENABLED: "true"
   ZO_FEATURE_QUERY_REMOVE_FILTER_WITH_INDEX: "true"
+  ZO_INVERTED_INDEX_CAMEL_CASE_TOKENIZER_DISABLED: "true"
   ZO_QUERY_ON_STREAM_SELECTION: "true"
   ZO_DISTINCT_VALUES_INTERVAL: "10"
   ZO_DISTINCT_VALUES_HOURLY: "false"
@@ -233,7 +232,6 @@ config:
   ZO_PRINT_KEY_CONFIG: "false"
   ZO_PRINT_KEY_EVENT: "false"
   ZO_PRINT_KEY_SQL: "false"
-  ZO_INGESTER_SERVICE_URL: ""
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "false"
   ZO_RUM_ENABLED: "false"
   ZO_RUM_CLIENT_TOKEN: ""
@@ -252,6 +250,8 @@ config:
   ZO_PROF_PYROSCOPE_SERVER_URL: "http://localhost:4040"
   ZO_PROF_PYROSCOPE_PROJECT_NAME: "openobserve"
   ZO_ENTRY_PER_SCHEMA_VERSION_ENABLED: "true"
+  ZO_MIN_AUTO_REFRESH_INTERVAL: "5"
+  ZO_MAX_DASHBOARD_SERIES: "100"
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
 
