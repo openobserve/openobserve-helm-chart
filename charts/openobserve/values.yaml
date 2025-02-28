@@ -170,7 +170,7 @@ auth:
 
   AZURE_STORAGE_ACCOUNT_KEY: ""
   AZURE_STORAGE_ACCOUNT_NAME: ""
-  ZO_META_POSTGRES_DSN: ""
+  ZO_META_POSTGRES_DSN: "postgres://userid:password@host:5432/dbname"
   ZO_META_MYSQL_DSN: ""
   ZO_TRACING_HEADER_KEY: "Authorization"
   ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
