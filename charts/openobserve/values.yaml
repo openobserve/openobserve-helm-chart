@@ -135,6 +135,19 @@ reportserver:
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
+scriptserver:
+  enabled: false # if true then scriptserver will be deployed in action-executor namespace
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  namespaces:
+    executor: action-executor
+    playground: action-playground
+  extraEnv: []
 # Enable the following to use an external secret instead of placing credentials under the auth section in this values.yaml file
 externalSecret:
   enabled: false
@@ -684,7 +697,7 @@ zplane:
 # kubectl apply --server-side -f \
 #   https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/releases/cnpg-1.22.1.yaml
 postgres:
-  enabled: true
+  enabled: false
   pgadmin:
     enabled: false
     image:
