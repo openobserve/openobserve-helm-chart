@@ -61,6 +61,7 @@ replicaCount:
   compactor: 1
   zplane: 0
   reportserver: 0
+  scriptserver: 1
 
 alertmanager:
   # Alertmanager specific configuration
@@ -135,19 +136,6 @@ reportserver:
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
-scriptserver:
-  enabled: false # if true then scriptserver will be deployed in action-executor namespace
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-  namespaces:
-    executor: action-executor
-    playground: action-playground
-  extraEnv: []
 # Enable the following to use an external secret instead of placing credentials under the auth section in this values.yaml file
 externalSecret:
   enabled: false
@@ -539,6 +527,12 @@ autoscaling:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
+  scriptserver:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
 
 nodeSelector:
   ingester: {}
@@ -754,6 +748,26 @@ enterprise:
     O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY: "2"
     O2_SEARCH_GROUP_BASE_SPEED: "1024" # in MB
     O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
+  scriptserver:
+    enabled: false
+    parameters:
+      O2_ACTION_MAX_MEMORY_MIB: "500"
+      O2_ACTION_MIN_MEMORY_MIB: "128"
+      O2_ACTION_MAX_MILLI_CPU: "128"
+      O2_ACTION_MIN_MILLI_CPU: "128"
+      O2_ACTION_NAMESPACE: "action-playground"
+      O2_SCRIPT_SERVER_TOKEN: "test-token"
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    namespaces:
+      executor: action-executor
+      playground: action-playground
+    extraEnv: []
   openfga:
     enabled: false
     parameters:

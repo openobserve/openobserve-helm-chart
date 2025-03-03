@@ -1,15 +1,17 @@
-{{- if .Values.scriptserver.enabled -}}
+{{- if and .Values.enterprise.enabled .Values.enterprise.scriptserver.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "openobserve.fullname" . }}-scriptserver
-  namespace: {{ .Values.scriptserver.namespaces.executor | quote }}
+  namespace: {{ .Values.enterprise.scriptserver.namespaces.executor | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
     name: openobserve
 spec:
   serviceName: {{ include "openobserve.fullname" . }}-scriptserver
-  replicas: 1
+  {{- if not .Values.autoscaling.scriptserver.enabled }}
+  replicas: {{ .Values.replicaCount.scriptserver }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
@@ -47,11 +49,15 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- with .Values.scriptserver.extraEnv }}
+            {{- range $key, $value := .Values.enterprise.scriptserver.parameters }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- with .Values.enterprise.scriptserver.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           resources:
-            {{- toYaml .Values.scriptserver.resources | nindent 12 }}
+            {{- toYaml .Values.enterprise.scriptserver.resources | nindent 12 }}
           ports:
             - name: http
               containerPort: {{ .Values.config.ZO_HTTP_PORT }}
