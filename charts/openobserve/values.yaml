@@ -578,11 +578,11 @@ nats:
       enabled: true
       podMonitor:
         enabled: true
-    natsBox:
-      container:
-        image:
-          repository: natsio/nats-box
-          tag: 0.14.5-nonroot
+  natsBox:
+    container:
+      image:
+        repository: natsio/nats-box
+        tag: 0.14.5-nonroot
 
 etcd:
   enabled: false # if true then etcd will be deployed as part of openobserve
