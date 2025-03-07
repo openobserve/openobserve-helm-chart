@@ -587,6 +587,7 @@ nats:
   config:
     cluster:
       enabled: true
+      replicas: 3
     routeURLs:
       user: ""
       password: ""
