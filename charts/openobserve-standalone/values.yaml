@@ -267,7 +267,9 @@ service:
   type: ClusterIP
   # type: LoadBalancer
   http_port: 5080
+  # http_nodePort: 30580
   grpc_port: 5081
+  # grpc_nodePort: 30581
   annotations: {}
 
 certIssuer:

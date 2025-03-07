@@ -17,9 +17,15 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+      {{- if .Values.service.http_nodePort }}
+      nodePort: {{ .Values.service.http_nodePort }}
+      {{- end }}
     - port: {{ .Values.service.grpc_port }}
       targetPort: grpc
       protocol: TCP
       name: grpc
+      {{- if .Values.service.grpc_nodePort }}
+      nodePort: {{ .Values.service.grpc_nodePort }}
+      {{- end }}
   selector:
     {{- include "openobserve.selectorLabels" . | nindent 4 }}
