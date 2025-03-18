@@ -54,6 +54,11 @@ persistence:
   annotations: {}
   volumePermissions:
     enabled: false
+
+extraVolumeMounts: []
+
+extraVolumes: []
+
 headless:
   enabled: true
   service:
