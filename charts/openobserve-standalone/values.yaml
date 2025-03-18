@@ -282,6 +282,9 @@ service:
 certIssuer:
   enabled: false
 
+secret:
+  annotations: {}
+
 ingress:
   enabled: false
   className: "nginx"
