@@ -1,0 +1,67 @@
+{{- if and .Values.enterprise.enabled .Values.enterprise.scriptserver.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openobserve.fullname" . }}-scriptserver
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    name: openobserve
+spec:
+  serviceName: {{ include "openobserve.fullname" . }}-scriptserver
+  {{- if not .Values.autoscaling.scriptserver.enabled }}
+  replicas: {{ .Values.replicaCount.scriptserver }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "openobserve.selectorLabels" . | nindent 6 }}
+      name: openobserve
+      app: openobserve
+      role: scriptserver
+  template:
+    metadata:
+      labels:
+        {{- include "openobserve.selectorLabels" . | nindent 8 }}
+        name: openobserve
+        app: openobserve
+        role: scriptserver
+    spec:
+      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: data
+          emptyDir: {}
+      containers:
+        - name: openobserve
+          image: "{{ .Values.image.enterprise.repository }}:{{ .Values.image.enterprise.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ZO_NODE_ROLE
+              value: "scriptserver"
+            - name: ZO_DATA_DIR
+              value: "/data/"
+            {{- range $key, $value := .Values.config }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.auth }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.enterprise.scriptserver.parameters }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- with .Values.enterprise.scriptserver.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.enterprise.scriptserver.resources | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.ZO_HTTP_PORT }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+{{- end }} 
