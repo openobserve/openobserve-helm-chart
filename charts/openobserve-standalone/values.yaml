@@ -54,6 +54,11 @@ persistence:
   annotations: {}
   volumePermissions:
     enabled: false
+
+extraVolumeMounts: []
+
+extraVolumes: []
+
 headless:
   enabled: true
   service:
@@ -88,6 +93,10 @@ config:
   ZO_GRPC_MAX_MESSAGE_SIZE: "16"
   ZO_GRPC_ORG_HEADER_KEY: "organization"
   ZO_GRPC_STREAM_HEADER_KEY: "stream-name"
+  ZO_GRPC_TLS_ENABLED: "false"
+  ZO_GRPC_TLS_CERT_DOMAIN: ""
+  ZO_GRPC_TLS_CERT_PATH: ""
+  ZO_GRPC_TLS_KEY_PATH: ""
   ZO_INTERNAL_GRPC_TOKEN: ""
   ZO_TCP_PORT: "5514"
   ZO_UDP_PORT: "5514"
@@ -161,7 +170,7 @@ config:
   ZO_MEM_PERSIST_INTERVAL: "5"
   ZO_ENRICHMENT_TABLE_LIMIT: "10" # size in mb
   ZO_WAL_WRITE_BUFFER_SIZE: "16384"
-  ZO_WAL_FSYNC_DISABLED: "false"  
+  ZO_WAL_FSYNC_DISABLED: "false"
   ZO_QUERY_THREAD_NUM: "0"
   ZO_QUERY_TIMEOUT: "600"
   ZO_ROUTE_TIMEOUT: "600"
@@ -272,6 +281,9 @@ service:
 
 certIssuer:
   enabled: false
+
+secret:
+  annotations: {}
 
 ingress:
   enabled: false
