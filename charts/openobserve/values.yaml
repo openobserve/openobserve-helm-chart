@@ -136,6 +136,23 @@ reportserver:
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
+scriptserver:
+  enabled: true
+  namespaces:
+    executor: "default"
+  # Additional volumes on the output Deployment definition.
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+
+  # Additional volumeMounts on the output Deployment definition.
+  volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
 # Enable the following to use an external secret instead of placing credentials under the auth section in this values.yaml file
 externalSecret:
   enabled: false
@@ -691,7 +708,7 @@ zplane:
 # kubectl apply --server-side -f \
 #   https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/releases/cnpg-1.22.1.yaml
 postgres:
-  enabled: false
+  enabled: true
   pgadmin:
     enabled: false
     image:
@@ -749,7 +766,7 @@ enterprise:
     O2_SEARCH_GROUP_BASE_SPEED: "1024" # in MB
     O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
   scriptserver:
-    enabled: false
+    enabled: true
     parameters:
       O2_ACTION_MAX_MEMORY_MIB: "500"
       O2_ACTION_MIN_MEMORY_MIB: "128"
