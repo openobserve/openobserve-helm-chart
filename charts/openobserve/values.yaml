@@ -61,7 +61,7 @@ replicaCount:
   compactor: 1
   zplane: 0
   reportserver: 0
-  scriptserver: 1
+  scriptserver: 0
 
 alertmanager:
   # Alertmanager specific configuration
@@ -326,6 +326,7 @@ config:
   ZO_DISK_CACHE_RELEASE_SIZE: "0"
   ZO_DISK_CACHE_GC_SIZE: "100"
   ZO_DISK_CACHE_GC_INTERVAL: "0"
+  ZO_ETCD_ADDR: "etcd.openobserve.svc.cluster.local:2379"
   ZO_ETCD_PREFIX: "/zinc/observe/"
   ZO_ETCD_CONNECT_TIMEOUT: "5"
   ZO_ETCD_COMMAND_TIMEOUT: "5"
