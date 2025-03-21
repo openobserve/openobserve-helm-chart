@@ -792,7 +792,7 @@ enterprise:
   openfga:
     enabled: false
     parameters:
-      O2_OPENFGA_LIST_ONLY_PERMITTED: "true"
+      O2_OPENFGA_LIST_ONLY_PERMITTED: "false"
       O2_MAP_GROUP_TO_ROLE: "true"
       O2_MAP_GROUP_TO_ROLE_SKIP_CREATION: "false"
       O2_OPENFGA_PAGE_SIZE: "100"
