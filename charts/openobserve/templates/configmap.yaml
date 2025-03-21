@@ -88,7 +88,6 @@ data:
   {{- else }}
   ZO_META_STORE: "{{ .Values.config.ZO_META_STORE }}"
   {{- end }}
-  ZO_META_MYSQL_DSN: "{{ .Values.config.ZO_META_MYSQL_DSN }}"
   ZO_META_TRANSACTION_RETRIES: "{{ .Values.config.ZO_META_TRANSACTION_RETRIES }}"
   ZO_META_TRANSACTION_LOCK_TIMEOUT: "{{ .Values.config.ZO_META_TRANSACTION_LOCK_TIMEOUT }}"
   ZO_COLS_PER_RECORD_LIMIT: "{{ .Values.config.ZO_COLS_PER_RECORD_LIMIT }}"
