@@ -8,6 +8,11 @@ metadata:
     {{- include "openobserve.labels" . | nindent 4 }}
 data:
   # Report server will call this router URL to visit the dashboards and generate PDFs from them
-  ZO_WEB_URL: "http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.config.ZO_HTTP_PORT }}"
+  O2_ACTION_ENABLED:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_ENABLED }}"
+  O2_ACTION_MAX_MEMORY_MIB:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_MAX_MEMORY_MIB }}"
+  O2_ACTION_MIN_MEMORY_MIB:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_MIN_MEMORY_MIB }}"
+  O2_ACTION_MAX_MILLI_CPU:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_MAX_MILLI_CPU }}"
+  O2_ACTION_MIN_MILLI_CPU:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_MIN_MILLI_CPU }}"
+  O2_SCRIPT_SERVER_TOKEN:  "{{ .Values.enterprise.scriptserver.parameters.O2_SCRIPT_SERVER_TOKEN }}"
 {{- end }}
  
