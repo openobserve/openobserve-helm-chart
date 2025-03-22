@@ -1,32 +1,32 @@
-{{- if and .Values.enterprise.enabled .Values.enterprise.scriptserver.enabled -}}
+{{- if and .Values.enterprise.enabled .Values.enterprise.actions.enabled -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "openobserve.fullname" . }}-scriptserver
+  name: {{ include "openobserve.fullname" . }}-actions
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
     name: openobserve
 spec:
-  serviceName: {{ include "openobserve.fullname" . }}-scriptserver
-  {{- if not .Values.autoscaling.scriptserver.enabled }}
-  replicas: {{ .Values.replicaCount.scriptserver }}
+  serviceName: {{ include "openobserve.fullname" . }}-actions
+  {{- if not .Values.autoscaling.actions.enabled }}
+  replicas: {{ .Values.replicaCount.actions }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
       name: openobserve
       app: openobserve
-      role: scriptserver
+      role: actions
   template:
     metadata:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         name: openobserve
         app: openobserve
-        role: scriptserver
+        role: actions
     spec:
-      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}-scriptserver
+      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}-actions
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
@@ -40,7 +40,7 @@ spec:
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
             - configMapRef:
-                name: {{ include "openobserve.fullname" . }}-scriptserver
+                name: {{ include "openobserve.fullname" . }}-actions
             - secretRef:
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
@@ -54,7 +54,7 @@ spec:
             {{- toYaml . |  nindent 12 }}
             {{- end }}
           resources:
-            {{- toYaml .Values.enterprise.scriptserver.resources | nindent 12 }}
+            {{- toYaml .Values.enterprise.actions.resources | nindent 12 }}
           ports:
             - name: http
               containerPort: {{ .Values.config.ZO_HTTP_PORT }}

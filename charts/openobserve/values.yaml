@@ -61,7 +61,7 @@ replicaCount:
   compactor: 1
   zplane: 0
   reportserver: 1
-  scriptserver: 1
+  actions: 1
 
 alertmanager:
   # Alertmanager specific configuration
@@ -136,7 +136,7 @@ reportserver:
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
-scriptserver:
+actions:
   enabled: true
   # Additional volumes on the output Deployment definition.
   volumes: []
@@ -544,7 +544,7 @@ autoscaling:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  scriptserver:
+  actions:
     enabled: false
     minReplicas: 1
     maxReplicas: 100
@@ -766,7 +766,7 @@ enterprise:
     O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY: "2"
     O2_SEARCH_GROUP_BASE_SPEED: "1024" # in MB
     O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
-  scriptserver:
+  actions:
     enabled: true
     parameters:
       O2_ACTION_MAX_MEMORY_MIB: "500"

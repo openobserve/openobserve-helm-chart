@@ -289,7 +289,7 @@ data:
   O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY }}"
   O2_SEARCH_GROUP_BASE_SPEED: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SPEED }}"
   O2_SEARCH_GROUP_BASE_SECS: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SECS }}"
-  O2_ACTION_ENABLED: "{{ .Values.enterprise.scriptserver.enabled }}"
+  O2_ACTION_ENABLED: "{{ .Values.enterprise.actions.enabled }}"
   ZO_SMTP_ENABLED: "{{ .Values.config.ZO_SMTP_ENABLED }}"
   ZO_SMTP_HOST: "{{ .Values.config.ZO_SMTP_HOST }}"
   ZO_SMTP_PORT: "{{ .Values.config.ZO_SMTP_PORT }}"
