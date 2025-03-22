@@ -137,9 +137,7 @@ reportserver:
   #   readOnly: true
 
 scriptserver:
-  enabled: false
-  namespaces:
-    executor: "default"
+  enabled: true
   # Additional volumes on the output Deployment definition.
   volumes: []
   # - name: foo
@@ -341,7 +339,6 @@ config:
   ZO_ETCD_KEY_FILE: ""
   ZO_ETCD_DOMAIN_NAME: ""
   ZO_ETCD_LOAD_PAGE_SIZE: "100"
-  # ZO_NATS_ADDR: "nats://nats.openobserve.svc.cluster.local:4222"
   ZO_NATS_PREFIX: "o2_"
   ZO_NATS_USER: ""
   ZO_NATS_PASSWORD: ""
