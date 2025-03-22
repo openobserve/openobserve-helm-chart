@@ -137,7 +137,7 @@ reportserver:
   #   readOnly: true
 
 scriptserver:
-  enabled: true
+  enabled: false
   namespaces:
     executor: "default"
   # Additional volumes on the output Deployment definition.
@@ -341,7 +341,7 @@ config:
   ZO_ETCD_KEY_FILE: ""
   ZO_ETCD_DOMAIN_NAME: ""
   ZO_ETCD_LOAD_PAGE_SIZE: "100"
-  ZO_NATS_ADDR: "nats://nats.openobserve.svc.cluster.local:4222"
+  # ZO_NATS_ADDR: "nats://nats.openobserve.svc.cluster.local:4222"
   ZO_NATS_PREFIX: "o2_"
   ZO_NATS_USER: ""
   ZO_NATS_PASSWORD: ""
@@ -744,7 +744,7 @@ postgres:
     backup: {} # All the configuration associated with an object store from https://cloudnative-pg.io/documentation/1.17/backup_recovery/
 
 enterprise:
-  enabled: false
+  enabled: true
   parameters:
     O2_AUDIT_ENABLED: "true"
     O2_AUDIT_BATCH_SIZE: "500"
@@ -784,9 +784,6 @@ enterprise:
       requests:
         cpu: 100m
         memory: 128Mi
-    namespaces:
-      executor: action-executor
-      playground: action-playground
     extraEnv: []
   openfga:
     enabled: false
