@@ -36,25 +36,20 @@ spec:
         - name: openobserve
           image: "{{ .Values.image.enterprise.repository }}:{{ .Values.image.enterprise.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "openobserve.fullname" . }}
+            - configMapRef:
+                name: {{ include "openobserve.fullname" . }}-scriptserver
+            - secretRef:
+                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
             - name: ZO_NODE_ROLE
               value: "scriptserver"
             - name: ZO_DATA_DIR
               value: "/data/"
-            {{- range $key, $value := .Values.config }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- range $key, $value := .Values.auth }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- range $key, $value := .Values.enterprise.scriptserver.parameters }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- with .Values.enterprise.scriptserver.extraEnv }}
-            {{- toYaml . | nindent 12 }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . |  nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.enterprise.scriptserver.resources | nindent 12 }}
