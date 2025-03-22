@@ -10,7 +10,7 @@ image:
   enterprise:
     repository: public.ecr.aws/zinclabs/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.14.4"
+    tag: "v0.14.5-rc5"
   reportserver:
     repository: public.ecr.aws/zinclabs/report-server
     tag: "v0.0.10-rc3-14e738a"
@@ -60,8 +60,8 @@ replicaCount:
   alertmanager: 1
   compactor: 1
   zplane: 0
-  reportserver: 0
-  scriptserver: 0
+  reportserver: 1
+  scriptserver: 1
 
 alertmanager:
   # Alertmanager specific configuration
@@ -122,7 +122,7 @@ querier:
       - ReadWriteOnce
 
 reportserver:
-  enabled: false # if true then reportserver will be deployed as part of openobserve
+  enabled: true # if true then reportserver will be deployed as part of openobserve
   # Additional volumes on the output Deployment definition.
   volumes: []
   # - name: foo

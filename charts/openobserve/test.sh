@@ -1,9 +1,11 @@
 #!/bin/bash
+export TERM=xterm-256color
 
 # Configuration
 NAMESPACE="${1:-openobserve}"    # Use first argument as namespace, default to 'openobserve' if not provided
 RELEASE_NAME="${2:-o2}"          # Use second argument as release name, default to 'o2' if not provided
-
+NAMESPACE="o2"
+RELEASE_NAME="o2"
 # Function to check pod status
 check_pods() {
     local namespace=$1
@@ -109,24 +111,24 @@ kubectl create namespace "$NAMESPACE"
 
 # Install OpenObserve helm chart
 echo "Installing OpenObserve helm chart (Release: ${RELEASE_NAME}) in namespace: ${NAMESPACE}"
-helm --namespace "$NAMESPACE" install "$RELEASE_NAME" . -f v1.yaml
+helm --namespace "$NAMESPACE" upgrade --install "$RELEASE_NAME" . -f values.yaml
 
 # Check pod status
 check_pods "$NAMESPACE"
 exit_status=$?
 
 if [ $exit_status -eq 0 ]; then
-    echo "OpenObserve deployment completed successfully in namespace: ${NAMESPACE}!"
+    echo -e "\033[1;92m OpenObserve deployment completed successfully in namespace: ${NAMESPACE}  \033[0m"
 else
-    echo "OpenObserve deployment encountered issues in namespace: ${NAMESPACE}. Please check the pod status above."
+    echo -e "\033[1;31m OpenObserve deployment encountered issues in namespace: ${NAMESPACE} . Please check the pod status above. \033[0m"
 fi
 
 # Setup trap for Ctrl+C
 trap 'cleanup "$NAMESPACE" "$RELEASE_NAME" $exit_status' INT
 
 # Pause to show results before cleanup
-echo -e "\nTest completed. Press Enter to cleanup or Ctrl+C to keep the deployment..."
-read -r
+# echo -e "\nTest completed. Press Enter to cleanup or Ctrl+C to keep the deployment..."
+# read -r
 
 # Perform cleanup
 cleanup "$NAMESPACE" "$RELEASE_NAME" $exit_status
