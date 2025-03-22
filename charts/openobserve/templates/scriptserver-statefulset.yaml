@@ -48,6 +48,8 @@ spec:
               value: "scriptserver"
             - name: ZO_DATA_DIR
               value: "/data/"
+            - name: O2_ACTION_NAMESPACE
+              value: {{ .Release.Namespace | quote }}
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}

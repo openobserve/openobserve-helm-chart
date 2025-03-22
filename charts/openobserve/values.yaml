@@ -776,8 +776,7 @@ enterprise:
       O2_ACTION_MIN_MEMORY_MIB: "128"
       O2_ACTION_MAX_MILLI_CPU: "128"
       O2_ACTION_MIN_MILLI_CPU: "128"
-      O2_ACTION_NAMESPACE: "action-playground"
-      O2_SCRIPT_SERVER_TOKEN: "test-token"
+      O2_SCRIPT_SERVER_TOKEN: "ghf3543gfd476ioudrs2432ghf"
     resources:
       limits:
         cpu: 1000m

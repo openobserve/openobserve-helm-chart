@@ -36,6 +36,6 @@ roleRef:
   name: {{ include "openobserve.fullname" . }}-scriptserver
 subjects:
 - kind: ServiceAccount
-  name: {{ include "openobserve.serviceAccountName" . }}
-  namespace: {{ .Values.scriptserver.namespaces.executor }}
+  name: {{ include "openobserve.serviceAccountName" . }}-scriptserver
+  namespace: {{ .Release.Namespace | quote }}
 {{- end }} 
