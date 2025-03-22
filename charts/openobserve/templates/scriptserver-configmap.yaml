@@ -1,4 +1,4 @@
-{{- if .Values.scriptserver.enabled -}}
+{{- if and .Values.enterprise.enabled .Values.enterprise.scriptserver.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,8 +7,6 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 data:
-  # Report server will call this router URL to visit the dashboards and generate PDFs from them
-  O2_ACTION_ENABLED:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_ENABLED }}"
   O2_ACTION_MAX_MEMORY_MIB:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_MAX_MEMORY_MIB }}"
   O2_ACTION_MIN_MEMORY_MIB:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_MIN_MEMORY_MIB }}"
   O2_ACTION_MAX_MILLI_CPU:  "{{ .Values.enterprise.scriptserver.parameters.O2_ACTION_MAX_MILLI_CPU }}"

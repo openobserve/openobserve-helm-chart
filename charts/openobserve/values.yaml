@@ -741,7 +741,7 @@ postgres:
     backup: {} # All the configuration associated with an object store from https://cloudnative-pg.io/documentation/1.17/backup_recovery/
 
 enterprise:
-  enabled: false
+  enabled: true
   parameters:
     O2_AUDIT_ENABLED: "true"
     O2_AUDIT_BATCH_SIZE: "500"
@@ -769,7 +769,6 @@ enterprise:
   scriptserver:
     enabled: true
     parameters:
-      O2_ACTION_ENABLED: "true"
       O2_ACTION_MAX_MEMORY_MIB: "500"
       O2_ACTION_MIN_MEMORY_MIB: "128"
       O2_ACTION_MAX_MILLI_CPU: "128"
