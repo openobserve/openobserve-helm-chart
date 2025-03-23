@@ -290,6 +290,7 @@ data:
   O2_SEARCH_GROUP_BASE_SPEED: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SPEED }}"
   O2_SEARCH_GROUP_BASE_SECS: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SECS }}"
   O2_ACTION_ENABLED: "{{ .Values.enterprise.actions.enabled }}"
+  O2_ACTION_CLUSTER_URL: "http://{{ include "openobserve.fullname" . }}-actions.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5080"
   ZO_SMTP_ENABLED: "{{ .Values.config.ZO_SMTP_ENABLED }}"
   ZO_SMTP_HOST: "{{ .Values.config.ZO_SMTP_HOST }}"
   ZO_SMTP_PORT: "{{ .Values.config.ZO_SMTP_PORT }}"
