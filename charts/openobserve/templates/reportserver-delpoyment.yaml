@@ -40,10 +40,7 @@ spec:
             - /bin/sh
             - -c
             - |
-              mkdir -p /data
               chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /data
-              chmod -R 777 /data
-              ls -la /data
           securityContext:
             runAsUser: 0
             runAsNonRoot: false
