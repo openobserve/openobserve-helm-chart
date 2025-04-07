@@ -32,6 +32,21 @@ spec:
       serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: volume-permissions
+          image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /data
+              chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /data
+              chmod -R 777 /data
+              ls -la /data
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
       containers:
         - name: {{ .Chart.Name }}-reportserver
           securityContext:
