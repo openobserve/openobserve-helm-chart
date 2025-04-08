@@ -130,17 +130,14 @@ querier:
 reportserver:
   enabled: true # if true then reportserver will be deployed as part of openobserve
   # Additional volumes on the output Deployment definition.
-  volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
-
+  volumes:
+  - name: data
+    emptyDir:
+      sizeLimit: 5Gi
   # Additional volumeMounts on the output Deployment definition.
-  volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
+  volumeMounts:
+  - name: data
+    mountPath: "/data"
 
 actions:
   enabled: true

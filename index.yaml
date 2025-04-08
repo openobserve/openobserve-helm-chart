@@ -60,6 +60,34 @@ entries:
   openobserve:
   - apiVersion: v2
     appVersion: v0.14.5
+    created: "2025-04-07T20:03:35.839991-07:00"
+    dependencies:
+    - condition: etcd.enabled
+      name: etcd
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.4.2
+    - condition: nats.enabled
+      name: nats
+      repository: https://nats-io.github.io/k8s/helm/charts/
+      version: 1.2.11
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.3.0
+    description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
+      replay etc. Elasticsearch API compatibility.
+    digest: 83997af1942e1591f3d8fc29b4aa4da4bc2e05f97d66b186ab844148abc06f2f
+    maintainers:
+    - email: hello@openobserve.ai
+      name: OpenObserve
+      url: https://openobserve.ai
+    name: openobserve
+    type: application
+    urls:
+    - openobserve-0.14.51.tgz
+    version: 0.14.51
+  - apiVersion: v2
+    appVersion: v0.14.5
     created: "2025-04-07T19:16:59.587496-07:00"
     dependencies:
     - condition: etcd.enabled
@@ -4701,9 +4729,9 @@ entries:
   openobserve-collector:
   - apiVersion: v2
     appVersion: 0.113.0
-    created: "2025-04-07T19:16:59.58883-07:00"
+    created: "2025-04-07T20:03:35.840822-07:00"
     description: An opinionated installation of OTEL Collector for OpenObserve
-    digest: faf629073254684fd62b0ea0f211151c91d8cebd2e39ea41b32c90cccc0183db
+    digest: 3fed25ae440f38bcbf80894781ff78868ee89dae96a450ddf2acd77359b016fe
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -5304,7 +5332,7 @@ entries:
   openobserve-standalone:
   - apiVersion: v2
     appVersion: v0.14.4
-    created: "2025-04-07T19:16:59.589993-07:00"
+    created: "2025-04-07T20:03:35.842165-07:00"
     dependencies:
     - condition: minio.enabled
       name: minio
@@ -5312,7 +5340,7 @@ entries:
       version: 5.3.0
     description: Logs, Metrics and Traces, Dashboards, RUM, Error tracking, Session
       replay etc. Elasticsearch API compatibility.
-    digest: 4255077b414cfd93713d6f7d4fa6f9cea5519345f97dd00a6db26f64e99a90c6
+    digest: 095d546d042e33a55686e39559823f451286bba4384058abdc7aace0dd58d957
     maintainers:
     - email: hello@openobserve.ai
       name: OpenObserve
@@ -5862,4 +5890,4 @@ entries:
     urls:
     - openobserve-standalone-0.7.29.tgz
     version: 0.7.29
-generated: "2025-04-07T19:16:59.582991-07:00"
+generated: "2025-04-07T20:03:35.833756-07:00"

@@ -40,6 +40,7 @@ spec:
             - /bin/sh
             - -c
             - |
+              mkdir -p /data
               chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /data
           securityContext:
             runAsUser: 0
@@ -112,16 +113,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    spec:
-      accessModes:
-      {{- range .Values.ingester.persistence.accessModes }}
-        - {{ . | quote }}
-      {{- end }}
-      storageClassName: {{ .Values.ingester.persistence.storageClass }}
-      resources:
-        requests:
-          storage: {{ .Values.ingester.persistence.size | quote }}
 {{- end }}
