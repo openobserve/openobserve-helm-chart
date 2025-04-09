@@ -129,6 +129,11 @@ querier:
 
 reportserver:
   enabled: true # if true then reportserver will be deployed as part of openobserve
+  extraEnv: # Below env variable are required due to https://github.com/puppeteer/puppeteer/issues/11023#issuecomment-1776247197
+    - name: XDG_CONFIG_HOME
+      value: /tmp/.chromium
+    - name: XDG_CACHE_HOME
+      value: /tmp/.chromium
 
 actions:
   enabled: true
