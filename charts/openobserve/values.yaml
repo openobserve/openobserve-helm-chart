@@ -233,6 +233,7 @@ config:
   ZO_USE_MULTIPLE_RESULT_CACHE: "true" # Enable to use mulple result caches for query results
   ZO_RESULT_CACHE_SELECTION_STRATEGY: "overlap" # Strategy to use for result cache, default is both , possible value - both,overlap , duration
   ZO_RESULT_CACHE_DISCARD_DURATION: "60" # Discard data of last n seconds from cached results
+  ZO_DISK_RESULT_CACHE_MAX_SIZE: "0" # MB, default is 10% of local volume available space and maximum 20GB
   ZO_METRICS_CACHE_ENABLED: "true" # Enable result cache for metrics query
   ZO_METRICS_CACHE_MAX_ENTRIES: "100000"
   ZO_CONSISTENT_HASH_VNODES: "1000"
@@ -309,7 +310,7 @@ config:
   ZO_COMPACT_BATCH_SIZE: "500"
   ZO_COMPACT_BLOCKED_ORGS: ""
   ZO_MEMORY_CACHE_ENABLED: "true"
-  ZO_MEMORY_CACHE_STRATEGY: "lru"
+  ZO_MEMORY_CACHE_STRATEGY: "lru"  # lru, fifo, time_lru https://github.com/openobserve/openobserve/pull/6489
   ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
   ZO_MEMORY_CACHE_MAX_SIZE: "0"
   ZO_MEMORY_CACHE_SKIP_SIZE: "0"
@@ -319,7 +320,7 @@ config:
   ZO_MEMORY_CACHE_DATAFUSION_MEMORY_POOL: ""
   ZO_MEMORY_CACHE_DATAFUSION_MAX_SIZE: "0"
   ZO_DISK_CACHE_ENABLED: "true"
-  ZO_DISK_CACHE_STRATEGY: "lru"
+  ZO_DISK_CACHE_STRATEGY: "lru" # lru, fifo, time_lru https://github.com/openobserve/openobserve/pull/6489
   ZO_DISK_CACHE_MAX_SIZE: "0"
   ZO_DISK_CACHE_SKIP_SIZE: "0"
   ZO_DISK_CACHE_RELEASE_SIZE: "0"
