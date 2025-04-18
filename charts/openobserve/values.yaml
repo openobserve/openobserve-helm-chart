@@ -769,6 +769,8 @@ enterprise:
     O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY: "2"
     O2_SEARCH_GROUP_BASE_SPEED: "1024" # in MB
     O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
+    O2_COMPACT_DOWNSAMPLING_INTERVAL: "3600" # in seconds
+    O2_METRICS_DOWNSAMPLING_RULES: ""
   actions:
     enabled: true
     parameters:
