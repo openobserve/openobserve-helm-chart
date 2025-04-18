@@ -310,8 +310,7 @@ config:
   ZO_COMPACT_BATCH_SIZE: "500"
   ZO_COMPACT_BLOCKED_ORGS: ""
   ZO_MEMORY_CACHE_ENABLED: "true"
-  ZO_MEMORY_CACHE_STRATEGY: "lru"  # lru, fifo, time_lru https://github.com/openobserve/openobserve/pull/6489
-  ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
+  ZO_MEMORY_CACHE_STRATEGY: "lru" # lru, fifo, time_lru https://github.com/openobserve/openobserve/pull/6489
   ZO_MEMORY_CACHE_MAX_SIZE: "0"
   ZO_MEMORY_CACHE_SKIP_SIZE: "0"
   ZO_MEMORY_CACHE_RELEASE_SIZE: "0"
@@ -326,6 +325,10 @@ config:
   ZO_DISK_CACHE_RELEASE_SIZE: "0"
   ZO_DISK_CACHE_GC_SIZE: "100"
   ZO_DISK_CACHE_GC_INTERVAL: "0"
+  ZO_CACHE_LATEST_FILES_ENABLED: "false"
+  ZO_CACHE_LATEST_FILES_PARQUET: "true"
+  ZO_CACHE_LATEST_FILES_INDEX: "true"
+  ZO_CACHE_LATEST_FILES_DELETE_MERGE_FILES: "false"
   ZO_ETCD_ADDR: "etcd.openobserve.svc.cluster.local:2379"
   ZO_ETCD_PREFIX: "/zinc/observe/"
   ZO_ETCD_CONNECT_TIMEOUT: "5"
