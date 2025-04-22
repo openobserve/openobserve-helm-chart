@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "openobserve.fullname" . }}-alertmanager
+  name: {{ include "openobserve.fullname" . }}-alertquerier
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
-  serviceName: "{{ include "openobserve.fullname" . }}-alertmanager"
-  replicas: {{ .Values.replicaCount.alertmanager }}
+  serviceName: "{{ include "openobserve.fullname" . }}-alertquerier"
+  replicas: {{ .Values.replicaCount.alertquerier }}
   podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
@@ -16,18 +16,18 @@ spec:
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
-      role: alertmanager
+      role: alertquerier
   template:
     metadata:
       annotations:
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        checksum/specific-config: {{ include (print $.Template.BasePath "/alertmanager-configmap.yaml") . | sha256sum }}
+        checksum/specific-config: {{ include (print $.Template.BasePath "/alertquerier-configmap.yaml") . | sha256sum }}
         checksum/generic-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
-        role: alertmanager
+        role: alertquerier
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -62,7 +62,7 @@ spec:
           ']
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}-alertmanager
+        - name: {{ .Chart.Name }}-alertquerier
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           {{- if .Values.enterprise.enabled }}
@@ -76,77 +76,75 @@ spec:
               containerPort: {{ .Values.config.ZO_HTTP_PORT }}
             - name: grpc
               containerPort: {{ .Values.config.ZO_GRPC_PORT }}
-            {{- if .Values.reportserver.enabled }}
-            - name: reportserver
-              containerPort: {{ .Values.config.ZO_REPORT_SERVER_HTTP_PORT }}
-            {{- end }}
-          {{- if .Values.probes.alertmanager.enabled }}
+          {{- if .Values.probes.alertquerier.enabled }}
           livenessProbe:
             httpGet:
               path: /healthz
               port: {{ .Values.config.ZO_HTTP_PORT }}
-            initialDelaySeconds: {{ .Values.probes.alertmanager.config.livenessProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.probes.alertmanager.config.livenessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.probes.alertmanager.config.livenessProbe.timeoutSeconds | default 10 }}
-            successThreshold: {{ .Values.probes.alertmanager.config.livenessProbe.successThreshold | default 1 }}
-            failureThreshold: {{ .Values.probes.alertmanager.config.livenessProbe.failureThreshold | default 3 }}
-            terminationGracePeriodSeconds: {{ .Values.probes.alertmanager.config.livenessProbe.terminationGracePeriodSeconds | default 30 }}
+            initialDelaySeconds: {{ .Values.probes.alertquerier.config.livenessProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.alertquerier.config.livenessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.alertquerier.config.livenessProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.alertquerier.config.livenessProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.alertquerier.config.livenessProbe.failureThreshold | default 3 }}
+            terminationGracePeriodSeconds: {{ .Values.probes.alertquerier.config.livenessProbe.terminationGracePeriodSeconds | default 30 }}
           readinessProbe:
             httpGet:
               path: /healthz
               port: {{ .Values.config.ZO_HTTP_PORT }}
-            initialDelaySeconds: {{ .Values.probes.alertmanager.config.readinessProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.probes.alertmanager.config.readinessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.probes.alertmanager.config.readinessProbe.timeoutSeconds | default 10 }}
-            successThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.successThreshold | default 1 }}
-            failureThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ .Values.probes.alertquerier.config.readinessProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.alertquerier.config.readinessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.alertquerier.config.readinessProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.alertquerier.config.readinessProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.alertquerier.config.readinessProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
-            {{- toYaml .Values.resources.alertmanager | nindent 12 }}
+            {{- toYaml .Values.resources.alertquerier | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
             - configMapRef:
-                name: {{ include "openobserve.fullname" . }}-alertmanager
+                name: {{ include "openobserve.fullname" . }}-alertquerier
             - secretRef:
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
             - name: ZO_NODE_ROLE
-              value: "alertmanager"
+              value: "querier"
+            - name: ZO_NODE_ROLE_GROUP
+              value: "background"
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
-            {{- with .Values.alertmanager.extraEnv }}
+            {{- with .Values.alertquerier.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
-          {{- if .Values.alertmanager.persistence.enabled }}
+          {{- if .Values.alertquerier.persistence.enabled }}
           volumeMounts:
             - name: cache
               mountPath: /data
           {{- end }}
-      {{- with .Values.nodeSelector.alertmanager }}
+      {{- with .Values.nodeSelector.alertquerier }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity.alertmanager }}
+      {{- with .Values.affinity.alertquerier }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations.alertmanager }}
+      {{- with .Values.tolerations.alertquerier }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  {{- if .Values.alertmanager.persistence.enabled }}
+  {{- if .Values.alertquerier.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: cache
       spec:
         accessModes:
-          {{- range .Values.alertmanager.persistence.accessModes }}
+          {{- range .Values.alertquerier.persistence.accessModes }}
             - {{ . | quote }}
           {{- end }}
         resources:
           requests:
-            storage: {{ .Values.alertmanager.persistence.size }}
-        storageClassName: {{ .Values.alertmanager.persistence.storageClass }}
+            storage: {{ .Values.alertquerier.persistence.size }}
+        storageClassName: {{ .Values.alertquerier.persistence.storageClass }}
   {{- end }}

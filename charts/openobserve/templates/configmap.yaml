@@ -10,6 +10,7 @@ data:
   ZO_CLUSTER_NAME: "{{ .Values.config.ZO_CLUSTER_NAME }}"
   ZO_INSTANCE_NAME: "{{ .Values.config.ZO_INSTANCE_NAME }}"
   ZO_NODE_ROLE: "{{ .Values.config.ZO_NODE_ROLE }}"
+  ZO_NODE_ROLE_GROUP: "{{ .Values.config.ZO_NODE_ROLE_GROUP }}"
   ZO_LOCAL_MODE: "{{ .Values.config.ZO_LOCAL_MODE }}"
   ZO_LOCAL_MODE_STORAGE: "{{ .Values.config.ZO_LOCAL_MODE_STORAGE }}"
   {{- if not .Values.etcd.enabled }}

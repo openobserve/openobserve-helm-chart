@@ -105,10 +105,10 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "router"
-            {{- with .Values.router.extraEnv }}
+            {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
-            {{- with .Values.extraEnv }}
+            {{- with .Values.router.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
             
