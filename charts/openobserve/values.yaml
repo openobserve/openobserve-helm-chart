@@ -184,8 +184,6 @@ auth:
   AZURE_STORAGE_ACCOUNT_NAME: ""
   ZO_META_POSTGRES_DSN: "postgres://userid:password@host:5432/dbname"
   ZO_META_POSTGRES_RO_DSN: ""
-  ZO_META_MYSQL_DSN: ""
-  ZO_META_MYSQL_RO_DSN: ""
   ZO_TRACING_HEADER_KEY: "Authorization"
   ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
   ZO_RUM_CLIENT_TOKEN: ""
@@ -810,7 +808,7 @@ enterprise:
         memory: 128Mi
     extraEnv: []
   openfga:
-    enabled: false
+    enabled: true
     parameters:
       O2_OPENFGA_LIST_ONLY_PERMITTED: "false"
       O2_MAP_GROUP_TO_ROLE: "true"

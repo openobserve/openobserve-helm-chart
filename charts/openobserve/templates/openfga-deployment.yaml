@@ -27,13 +27,12 @@ spec:
               value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
               {{- else if .Values.auth.ZO_META_POSTGRES_DSN }}
               value: "{{ .Values.auth.ZO_META_POSTGRES_DSN }}"
-              {{- else if .Values.auth.ZO_META_MYSQL_DSN }}
-              value: "{{ .Values.auth.ZO_META_MYSQL_DSN }}"
-              {{- else if .Values.config.ZO_META_MYSQL_DSN }}
-              value: "{{ .Values.config.ZO_META_MYSQL_DSN }}"
               {{- else }}
               value: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
               {{- end }}
+          envFrom:
+            - secretRef:  # postgres detail can be picked up from secret
+                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           resources:
             limits:
               cpu: 200m
