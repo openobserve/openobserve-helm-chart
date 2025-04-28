@@ -193,6 +193,7 @@ data:
   ZO_CACHE_LATEST_FILES_PARQUET: "{{ .Values.config.ZO_CACHE_LATEST_FILES_PARQUET }}"
   ZO_CACHE_LATEST_FILES_INDEX: "{{ .Values.config.ZO_CACHE_LATEST_FILES_INDEX }}"
   ZO_CACHE_LATEST_FILES_DELETE_MERGE_FILES: "{{ .Values.config.ZO_CACHE_LATEST_FILES_DELETE_MERGE_FILES }}"
+  ZO_CACHE_LATEST_FILES_DOWNLOAD_FROM_NODE: "{{ .Values.config.ZO_CACHE_LATEST_FILES_DOWNLOAD_FROM_NODE }}"
   {{- if .Values.minio.enabled }}
   ZO_S3_PROVIDER: "minio"
   ZO_S3_SERVER_URL: "http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:9000"
