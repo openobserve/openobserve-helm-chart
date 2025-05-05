@@ -298,6 +298,8 @@ data:
   O2_SEARCH_GROUP_BASE_SECS: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SECS }}"
   O2_COMPACT_DOWNSAMPLING_INTERVAL: "{{ .Values.enterprise.parameters.O2_COMPACT_DOWNSAMPLING_INTERVAL }}"
   O2_METRICS_DOWNSAMPLING_RULES: "{{ .Values.enterprise.parameters.O2_METRICS_DOWNSAMPLING_RULES }}"
+  O2_RATE_LIMIT_ENABLED: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_ENABLED }}"
+  O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_RULE_REFRESH_INTERVAL }}"
   O2_ACTION_ENABLED: "{{ .Values.enterprise.actions.enabled }}"
   O2_ACTION_CLUSTER_URL: "http://{{ include "openobserve.fullname" . }}-actions.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5080"
   O2_SCRIPT_SERVER_TOKEN: "{{ .Values.config.O2_SCRIPT_SERVER_TOKEN }}"

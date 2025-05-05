@@ -820,6 +820,8 @@ enterprise:
     O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
     O2_COMPACT_DOWNSAMPLING_INTERVAL: "3600" # in seconds
     O2_METRICS_DOWNSAMPLING_RULES: ""
+    O2_RATE_LIMIT_ENABLED: "false"
+    O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds
   actions:
     enabled: true
     parameters:
