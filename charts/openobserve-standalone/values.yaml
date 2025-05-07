@@ -6,7 +6,7 @@ image:
   repository: public.ecr.aws/zinclabs/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.14.6"
+  tag: "v0.14.7"
   busybox:
     repository: busybox
     tag: 1.37.0
