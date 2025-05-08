@@ -346,4 +346,5 @@ data:
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   ZO_PROMETHEUS_ENABLED: "{{ .Values.config.ZO_PROMETHEUS_ENABLED }}"
+  ZO_HISTOGRAM_ENABLED: "{{ .Values.config.ZO_HISTOGRAM_ENABLED }}"
   
