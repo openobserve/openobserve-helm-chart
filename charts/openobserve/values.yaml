@@ -296,7 +296,7 @@ config:
   ZO_DISTINCT_VALUES_HOURLY: "false"
   ZO_TRACING_SEARCH_ENABLED: "false"
   ZO_TRACING_HEADER_KEY: "Authorization"
-  OTEL_OTLP_HTTP_ENDPOINT: ""
+  OTEL_OTLP_HTTP_ENDPOINT: "http://localhost:5080/api/default/v1/traces"
   ZO_TELEMETRY: "true"
   ZO_TELEMETRY_HEARTBEAT: "1800"
   ZO_TELEMETRY_URL: "https://e1.zinclabs.dev"
