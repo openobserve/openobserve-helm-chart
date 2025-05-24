@@ -7,7 +7,7 @@ metadata:
 spec:
   go:
     # image: ghcr.io/openobserve/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.7.0-alpha-5
-    image: ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.20.0
+    image: ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.22.0
   exporter:
     endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4318
   propagators:
