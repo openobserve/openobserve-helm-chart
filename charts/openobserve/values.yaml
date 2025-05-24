@@ -481,7 +481,6 @@ config:
   ZO_MIN_AUTO_REFRESH_INTERVAL: "5"
   ZO_MAX_DASHBOARD_SERIES: "100"
   RUST_LOG: "info"
-  O2_SCRIPT_SERVER_TOKEN: "ghf3543gfd476ioudrs2432ghf"
   RUST_BACKTRACE: "0"
   ZO_PROMETHEUS_ENABLED: "false"
   ZO_HISTOGRAM_ENABLED: "true" # show/hode histogram on logs page by default
@@ -829,6 +828,7 @@ enterprise:
       O2_ACTION_MIN_MEMORY_MIB: "128"
       O2_ACTION_MAX_MILLI_CPU: "128"
       O2_ACTION_MIN_MILLI_CPU: "128"
+      O2_ACTION_CONTAINER_IMAGE: "ghcr.io/astral-sh/uv:bookworm-slim"
     resources: {}
       # limits:
       #   cpu: 1000m
