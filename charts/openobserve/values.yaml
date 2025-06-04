@@ -106,7 +106,7 @@ ingester:
     enabled: false
   persistence:
     enabled: true
-    size: 10Gi
+    size: 100Gi
     storageClass: ""
     accessModes:
       - ReadWriteOnce
