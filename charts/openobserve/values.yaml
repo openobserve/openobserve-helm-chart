@@ -487,7 +487,6 @@ config:
   RUST_BACKTRACE: "0"
   ZO_PROMETHEUS_ENABLED: "false"
   ZO_HISTOGRAM_ENABLED: "true" # show/hode histogram on logs page by default
-  ZO_STREAMING_ENABLED: "true" # enable streaming for logs page
 
 # Add extra environment variables to all pods, useful for overriding secrets
 extraEnv: []

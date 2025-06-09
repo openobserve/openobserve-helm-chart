@@ -349,5 +349,4 @@ data:
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   ZO_PROMETHEUS_ENABLED: "{{ .Values.config.ZO_PROMETHEUS_ENABLED }}"
   ZO_HISTOGRAM_ENABLED: "{{ .Values.config.ZO_HISTOGRAM_ENABLED }}"
-  ZO_STREAMING_ENABLED: "{{ .Values.config.ZO_STREAMING_ENABLED }}"
   
