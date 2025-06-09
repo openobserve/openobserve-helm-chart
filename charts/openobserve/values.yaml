@@ -351,7 +351,7 @@ config:
   ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
   ZO_COMPACT_BATCH_SIZE: "0"
   ZO_COMPACT_BLOCKED_ORGS: ""
-  ZO_MEMORY_CACHE_ENABLED: "true"
+  ZO_MEMORY_CACHE_ENABLED: "false"
   ZO_MEMORY_CACHE_STRATEGY: "lru" # lru, fifo, time_lru https://github.com/openobserve/openobserve/pull/6489
   ZO_MEMORY_CACHE_MAX_SIZE: "0"
   ZO_MEMORY_CACHE_SKIP_SIZE: "0"
@@ -487,6 +487,7 @@ config:
   RUST_BACKTRACE: "0"
   ZO_PROMETHEUS_ENABLED: "false"
   ZO_HISTOGRAM_ENABLED: "true" # show/hode histogram on logs page by default
+  ZO_STREAMING_ENABLED: "true" # enable streaming for logs page
 
 # Add extra environment variables to all pods, useful for overriding secrets
 extraEnv: []
