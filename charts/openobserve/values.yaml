@@ -496,6 +496,7 @@ extraEnv: []
 #       name: s3credentials-secret
 #       key: S3_KEY
 
+# This is for router
 service:
   type: ClusterIP
   # type: LoadBalancer
