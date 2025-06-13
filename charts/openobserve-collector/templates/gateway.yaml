@@ -6,6 +6,7 @@ metadata:
   labels:
     {{- include "openobserve-collector.labels" . | nindent 4 }}
 spec:
+  replicas: {{ .Values.gateway.autoscaling.minReplicas }}
   mode: statefulset
   targetAllocator:
     enabled: {{ .Values.gateway.targetAllocator.enabled }}

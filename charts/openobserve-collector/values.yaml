@@ -20,7 +20,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.113.0"
+  tag: "0.127.0"
 
 imagePullSecrets: []
 nameOverride: ""
