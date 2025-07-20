@@ -121,6 +121,46 @@ spec:
             successThreshold: {{ .Values.probes.ingester.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.ingester.config.readinessProbe.failureThreshold | default 3 }}
           {{- end }}
+          {{- if .Values.autoscaling.ingester.enabled }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - /bin/sh
+                - -c
+                - |
+                  # Get credentials from environment variables
+                  USER_EMAIL="$ZO_ROOT_USER_EMAIL"
+                  USER_PASSWORD="$ZO_ROOT_USER_PASSWORD"
+                  
+                  # Create base64 encoded credentials for Authorization header
+                  AUTH_HEADER=$(echo -n "${USER_EMAIL}:${USER_PASSWORD}" | base64)
+                  
+                  # Disable the node first
+                  echo "Disabling ingester node..."
+                  curl -X PUT "http://localhost:{{ .Values.config.ZO_HTTP_PORT }}/node/enable?value=false" \
+                    -H "Authorization: Basic ${AUTH_HEADER}" 
+                  
+                  # returns 200 if successful and "true" if the node is disabled
+
+                  # Flush all data from memory to WAL. This does not flush data from ingester to s3.
+                  echo "Flushing data from ingester..."
+                  curl -X PUT "http://localhost:{{ .Values.config.ZO_HTTP_PORT }}/node/flush" \
+                    -H "Authorization: Basic ${AUTH_HEADER}" 
+                  
+                  # returns 200 if successful and "true" if the node is flushed
+
+                  # We need another API to check if all the data has been moved to s3 or /flush should become async and move files to s3 as well
+                  # e.g /node/wal_status
+                  # Need to build this API. Until then, we will wait for 900 seconds.
+
+                  # Wait for 900 seconds after flush to ensure data is moved to s3
+                  # 15 minutes for now, since file movement to s3 may take up to 10 minutes
+                  echo "Waiting 900 seconds to flush data..."
+                  sleep 900
+                  
+                  echo "Pre-stop hook completed"
+          {{- end }}
           resources:
             {{- toYaml .Values.resources.ingester | nindent 12 }}
           envFrom:
