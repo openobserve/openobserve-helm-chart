@@ -145,8 +145,12 @@ spec:
 
                   # Flush all data from memory to WAL. This does not flush data from ingester to s3.
                   echo "Flushing data from ingester..."
-                  curl -X PUT "http://localhost:{{ .Values.config.ZO_HTTP_PORT }}/node/flush" \
-                    -H "Authorization: Basic ${AUTH_HEADER}" 
+                  RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "http://localhost:{{ .Values.config.ZO_HTTP_PORT }}/node/flush" \
+                    -H "Authorization: Basic ${AUTH_HEADER}")
+                  if [ "$RESPONSE" -ne 200 ]; then
+                    echo "Error: Failed to flush data from ingester. HTTP response code: $RESPONSE"
+                    exit 1
+                  fi
                   
                   # returns 200 if successful and "true" if the node is flushed
 
