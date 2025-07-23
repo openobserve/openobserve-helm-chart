@@ -3,6 +3,7 @@ zinc*.tgz
 charts/etcd-8.10.1.tgz
 
 artifacts/
+charts/openobserve-aws-marketplace/charts
 
 # test files
 install.sh
