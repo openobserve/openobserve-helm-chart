@@ -68,6 +68,7 @@ headless:
 auth:
   ZO_ROOT_USER_EMAIL: "root@example.com"
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  ZO_ROOT_USER_TOKEN: ""
 
   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
   ZO_S3_ACCESS_KEY: ""
