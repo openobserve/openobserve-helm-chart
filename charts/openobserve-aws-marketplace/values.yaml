@@ -6,11 +6,11 @@ image:
   oss:
     repository: 709825985650.dkr.ecr.us-east-1.amazonaws.com/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.14.6-rc5-d73bafd"
+    tag: "v0.14.7-ee2adf9"
   enterprise:
     repository: 709825985650.dkr.ecr.us-east-1.amazonaws.com/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.14.6-rc5-d73bafd"
+    tag: "v0.14.7-ee2adf9"
   reportserver:
     repository: 709825985650.dkr.ecr.us-east-1.amazonaws.com/openobserve/openobserve-enterprise
     tag: "report-server-v0.11.0-70baf7a-combined"
