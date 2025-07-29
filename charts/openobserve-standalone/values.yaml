@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: public.ecr.aws/zinclabs/openobserve
+  repository: o2cr.ai/openobserve/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "v0.14.7"
@@ -372,7 +372,7 @@ minio:
 zplane:
   enabled: false # if true then zPlane will be deployed as part of openobserve
   image:
-    repository: public.ecr.aws/zinclabs/zplane
+    repository: o2cr.ai/openobserve/zplane
     tag: 0.1.6
     pullPolicy: IfNotPresent
   service:
