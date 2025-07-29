@@ -4,15 +4,15 @@
 
 image:
   oss:
-    repository: public.ecr.aws/zinclabs/openobserve
+    repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
     tag: "v0.14.7"
   enterprise:
-    repository: public.ecr.aws/zinclabs/openobserve-enterprise
+    repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
     tag: "v0.14.7"
   reportserver:
-    repository: public.ecr.aws/zinclabs/report-server
+    repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
@@ -747,7 +747,7 @@ minio:
 zplane:
   enabled: false # if true then zPlane will be deployed as part of openobserve
   image:
-    repository: public.ecr.aws/zinclabs/zplane
+    repository: o2cr.ai/openobserve/zplane
     tag: 0.1.6
     pullPolicy: IfNotPresent
   service:
