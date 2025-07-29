@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- with .Values.podAnnotations }}
+        {{- with .Values.podAnnotations.querier }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
         checksum/specific-config: {{ include (print $.Template.BasePath "/querier-configmap.yaml") . | sha256sum }}

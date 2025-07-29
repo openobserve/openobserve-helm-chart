@@ -15,7 +15,7 @@ spec:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.enterprise.dex.podAnnotations }}
+      {{- with .Values.podAnnotations.dex }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

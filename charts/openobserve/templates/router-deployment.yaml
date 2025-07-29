@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- with .Values.podAnnotations }}
+        {{- with .Values.podAnnotations.router }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
         checksum/specific-config: {{ include (print $.Template.BasePath "/router-configmap.yaml") . | sha256sum }}

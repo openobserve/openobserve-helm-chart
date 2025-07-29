@@ -14,7 +14,7 @@ spec:
       role: zplane
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.podAnnotations.zplane }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
