@@ -22,6 +22,7 @@ spec:
           env:
             - name: OPENFGA_DATASTORE_ENGINE
               value: postgres
+            {{- if not .Values.externalSecret.enabled }}
             {{- if .Values.postgres.enabled }}
             - name: OPENFGA_DATASTORE_URI
               value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
@@ -31,6 +32,7 @@ spec:
             {{- else if .Values.config.ZO_META_POSTGRES_DSN }}
             - name: OPENFGA_DATASTORE_URI
               value: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
+            {{- end }}
             {{- end }}
           envFrom:
             - secretRef:  # postgres detail can be picked up from secret if not found anywhere else
@@ -47,6 +49,7 @@ spec:
           env:
             - name: OPENFGA_DATASTORE_ENGINE
               value: postgres
+            {{- if not .Values.externalSecret.enabled }}
             {{- if .Values.postgres.enabled }}
             - name: OPENFGA_DATASTORE_URI
               value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
@@ -56,6 +59,7 @@ spec:
             {{- else if .Values.config.ZO_META_POSTGRES_DSN }}
             - name: OPENFGA_DATASTORE_URI
               value: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
+            {{- end }}
             {{- end }}
             - name: OPENFGA_LOG_FORMAT
               value: json
