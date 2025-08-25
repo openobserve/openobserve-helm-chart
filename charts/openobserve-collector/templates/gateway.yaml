@@ -22,6 +22,10 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: spec.nodeName
+    - name: K8S_NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
   {{- with .Values.gateway.tolerations }}
   tolerations:
     {{- toYaml . | nindent 8 }}
