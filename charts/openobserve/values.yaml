@@ -34,7 +34,16 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
+podAnnotations:
+  ingester: {}
+  querier: {}
+  compactor: {}
+  router: {}
+  alertmanager: {}
+  dex: {}
+  reportserver: {}
+  alertquerier: {}
+  zplane: {}
 
 labels: {}
 
@@ -951,7 +960,6 @@ enterprise:
       tag: v2.37.0
       pullPolicy: IfNotPresent
     extraEnv: []
-    podAnnotations: {}
     ingress:
       enabled: true
       className: "nginx"
