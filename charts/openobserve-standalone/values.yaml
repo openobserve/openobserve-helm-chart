@@ -6,7 +6,7 @@ image:
   repository: o2cr.ai/openobserve/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.14.7"
+  tag: "v0.15.0"
   busybox:
     repository: busybox
     tag: 1.37.0
@@ -130,6 +130,7 @@ config:
   ZO_FEATURE_PER_THREAD_LOCK: "false"
   ZO_FEATURE_QUERY_STREAMING_AGGS: "false"
   ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "100000"
+  ZO_CACHE_DELAY_SECS: "300"
   ZO_RESULT_CACHE_ENABLED: "false"
   ZO_METRICS_CACHE_ENABLED: "true"
   ZO_METRICS_CACHE_MAX_ENTRIES: "100000"
@@ -180,6 +181,7 @@ config:
   ZO_QUERY_TIMEOUT: "600"
   ZO_ROUTE_TIMEOUT: "600"
   ZO_ROUTE_MAX_CONNECTIONS: "1024"
+  ZO_ROUTE_STRATEGY: "workload"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_HTTP_WORKER_MAX_BLOCKING: "0"
   ZO_ACTIX_REQ_TIMEOUT: "30" # in second

@@ -6,11 +6,11 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.14.7"
+    tag: "v0.15.0"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.14.7"
+    tag: "v0.15.0"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
@@ -285,7 +285,7 @@ config:
   ZO_RESULT_CACHE_ENABLED: "true" # Enable result cache for query results
   ZO_USE_MULTIPLE_RESULT_CACHE: "true" # Enable to use mulple result caches for query results
   ZO_RESULT_CACHE_SELECTION_STRATEGY: "overlap" # Strategy to use for result cache, default is both , possible value - both,overlap , duration
-  ZO_RESULT_CACHE_DISCARD_DURATION: "60" # Discard data of last n seconds from cached results
+  ZO_CACHE_DELAY_SECS: "300" # Discard data of last n seconds from cached results
   ZO_DISK_RESULT_CACHE_MAX_SIZE: "0" # MB, default is 10% of local volume available space and maximum 20GB
   ZO_METRICS_CACHE_ENABLED: "true" # Enable result cache for metrics query
   ZO_METRICS_CACHE_MAX_ENTRIES: "100000"
@@ -338,6 +338,7 @@ config:
   ZO_ROUTE_TIMEOUT: "600"
   ZO_QUERY_DEFAULT_LIMIT: "1000"
   ZO_ROUTE_MAX_CONNECTIONS: "1024"
+  ZO_ROUTE_STRATEGY: "workload"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_HTTP_WORKER_MAX_BLOCKING: "0"
   ZO_ACTIX_REQ_TIMEOUT: "30" # in second
@@ -402,6 +403,7 @@ config:
   ZO_NATS_PASSWORD: ""
   ZO_NATS_REPLICAS: "3"
   ZO_NATS_QUEUE_MAX_AGE: "60" # days for queue message max age
+  ZO_NATS_QUEUE_MAX_SIZE: "2048" # max size of queue message
   ZO_NATS_CONNECT_TIMEOUT: "5"
   ZO_NATS_COMMAND_TIMEOUT: "10"
   ZO_NATS_LOCK_WAIT_TIMEOUT: "600"
