@@ -31,8 +31,6 @@ data:
   ZO_GRPC_TLS_CERT_PATH: "{{ .Values.config.ZO_GRPC_TLS_CERT_PATH }}"
   ZO_GRPC_TLS_KEY_PATH: "{{ .Values.config.ZO_GRPC_TLS_KEY_PATH }}"
   ZO_INTERNAL_GRPC_TOKEN: "{{ .Values.config.ZO_INTERNAL_GRPC_TOKEN }}"
-  ZO_TCP_PORT: "{{ .Values.config.ZO_TCP_PORT }}"
-  ZO_UDP_PORT: "{{ .Values.config.ZO_UDP_PORT }}"
   ZO_DATA_DIR: "{{ .Values.config.ZO_DATA_DIR }}"
   ZO_DATA_DB_DIR: "{{ .Values.config.ZO_DATA_DB_DIR }}"
   ZO_DATA_WAL_DIR: "{{ .Values.config.ZO_DATA_WAL_DIR }}"
