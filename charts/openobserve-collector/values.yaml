@@ -609,39 +609,6 @@ gateway:
     #   # Memory Ballast size should be max 1/3 to 1/2 of memory. It's a large buffer that is pre-allocated in the memory to help stabilize and reduce the garbage collection (GC) pressure on the Go runtime.
     #   size_mib: 512
   connectors:
-    spanmetrics:
-      histogram:
-        explicit:
-          buckets:
-            [
-              100us,
-              1ms,
-              2ms,
-              6ms,
-              10ms,
-              100ms,
-              250ms,
-              500ms,
-              1000ms,
-              1400ms,
-              2000ms,
-              5s,
-              10s,
-              30s,
-              60s,
-              120s,
-              300s,
-              600s,
-            ]
-      dimensions:
-        - name: http.method
-          default: GET
-        - name: http.status_code
-      exemplars:
-        enabled: true
-      dimensions_cache_size: 1000
-      aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
-      metrics_flush_interval: 15s
     servicegraph:
       latency_histogram_buckets: [1, 2, 3, 4, 5]
       dimensions:
@@ -657,10 +624,10 @@ gateway:
         processors: [batch, attributes, k8sattributes, resourcedetection]
         exporters: [otlphttp/openobserve_k8s_events]
       metrics:
-        receivers: [k8s_cluster, spanmetrics, servicegraph]
+        receivers: [k8s_cluster, servicegraph]
         processors: [batch, attributes, k8sattributes, resourcedetection]
         exporters: [otlphttp/openobserve]
       traces:
         receivers: [otlp]
         processors: [batch, attributes, k8sattributes, resourcedetection]
-        exporters: [otlphttp/openobserve, spanmetrics, servicegraph]
+        exporters: [otlphttp/openobserve, servicegraph]
