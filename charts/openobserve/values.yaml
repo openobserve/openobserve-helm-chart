@@ -682,7 +682,7 @@ nats:
     container:
       image:
         repository: natsio/nats-box
-        tag: 0.17.0-nonroot
+        tag: 0.18.0-nonroot
 
 etcd:
   enabled: false # if true then etcd will be deployed as part of openobserve
