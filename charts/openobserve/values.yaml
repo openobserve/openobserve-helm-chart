@@ -577,6 +577,7 @@ resources:
   alertmanager: {}
   dex: {}
   reportserver: {}
+  openfga: {}
 
 # autoscaling:
 #   enabled: false
@@ -853,7 +854,8 @@ enterprise:
       O2_ACTION_MAX_MILLI_CPU: "128"
       O2_ACTION_MIN_MILLI_CPU: "128"
       O2_ACTION_CONTAINER_IMAGE: "ghcr.io/astral-sh/uv:bookworm-slim"
-    resources: {}
+    resources:
+      {}
       # limits:
       #   cpu: 1000m
       #   memory: 1Gi
