@@ -38,13 +38,20 @@ spec:
             - secretRef:  # postgres detail can be picked up from secret if not found anywhere else
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           resources:
+            {{- if .Values.resources.openfga }}
+            {{- toYaml .Values.resources.openfga | nindent 12 }}
+            {{- else }}
             limits:
               cpu: 200m
               memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            {{- end }}
       containers:
         - name: openfga
           image: {{ .Values.enterprise.openfga.image.repository }}:{{ .Values.enterprise.openfga.image.tag }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .Values.enterprise.openfga.image.pullPolicy }}
           command: ['/openfga', 'run']
           env:
             - name: OPENFGA_DATASTORE_ENGINE
@@ -93,7 +100,14 @@ spec:
             failureThreshold: {{ .Values.probes.openfga.config.readinessProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
+            {{- if .Values.resources.openfga }}
+            {{- toYaml .Values.resources.openfga | nindent 12 }}
+            {{- else }}
             limits:
               cpu: 200m
               memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            {{- end }}
 {{- end }}
