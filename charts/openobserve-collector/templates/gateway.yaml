@@ -11,6 +11,10 @@ spec:
   targetAllocator:
     enabled: {{ .Values.gateway.targetAllocator.enabled }}
     serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
+    {{- with .Values.gateway.targetAllocator.resources }}
+    resources:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
     prometheusCR:
       enabled: true
       serviceMonitorSelector: {}
