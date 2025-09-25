@@ -64,4 +64,11 @@ rules:
   resources:
   - endpointslices
   verbs: ["get", "list", "watch"]
+{{- if .Values.rbac.extraRules }}
+{{- range .Values.rbac.extraRules }}
+- apiGroups: {{ .apiGroups | toYaml | nindent 4 }}
+  resources: {{ .resources | toYaml | nindent 4 }}
+  verbs: {{ .verbs | toYaml | nindent 4 }}
+{{- end }}
+{{- end }}
 {{- end }}

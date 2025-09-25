@@ -36,6 +36,14 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# If additional custom RBAC rules are needed for the collector, they can be added here
+# Example use case: To allow the collector to access the custom resources from the third-party API groups
+rbac:
+  extraRules:
+    - apiGroups: ["thirdparty.api.group"]
+      resources: ["customresourcename"]
+      verbs: ["get", "list", "watch"]
+
 labels: {}
 
 # If Opentelemetry operator should be installed with the chart. If you already have the operator installed, set enabled to false. Refer https://opentelemetry.io/docs/kubernetes/operator/ and https://opentelemetry.io/docs/kubernetes/helm/operator/
@@ -86,7 +94,7 @@ securityContext:
 
 agent:
   enabled: true
-  tolerations: 
+  tolerations:
     - key: "exampleKey1"
       operator: "Equal"
       value: "true"
@@ -115,14 +123,14 @@ agent:
             scrape_interval: 5s
             static_configs:
               - targets: ["0.0.0.0:8888"]
-   
+
     filelog/std:
       include: [/var/log/pods/*/*/*.log]
       exclude:
         # Exclude logs from all containers named otel-collector or otc-container (otel-contrib)
-        - /var/log/pods/*/otel-collector/*.log  # named otel-collector
-        - /var/log/pods/*/otc-container/*.log   # named otc-container (for otel-contrib containers)
-        - /var/log/pods/*/openobserve-ingester/*.log     # avoid cyclical logs as ingester logs can be massive
+        - /var/log/pods/*/otel-collector/*.log # named otel-collector
+        - /var/log/pods/*/otc-container/*.log # named otc-container (for otel-contrib containers)
+        - /var/log/pods/*/openobserve-ingester/*.log # avoid cyclical logs as ingester logs can be massive
       start_at: end
       include_file_path: true
       include_file_name: false
@@ -235,10 +243,10 @@ agent:
               - sysfs
               - tracefs
         load: {}
-    #     memory: {}
+        #     memory: {}
         network: {}
-    #     paging: {}
-    #     processes: {}
+        #     paging: {}
+        #     processes: {}
         process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 15s
@@ -385,7 +393,7 @@ gateway:
       metrics:
         k8s.container.cpu_limit: # redundant
           enabled: false
-        k8s.container.cpu_request:  # redundant
+        k8s.container.cpu_request: # redundant
           enabled: false
         k8s.container.memory_limit: # redundant
           enabled: false
@@ -408,7 +416,8 @@ gateway:
     # Most folks don't need prometheus receiver since default dashboards get data from kubeletstats receiver, so it's commented out by default
     prometheus:
       config:
-        scrape_configs: []
+        scrape_configs:
+          []
           # - job_name: "kubeApiServer"
           #   sample_limit: 10000
           #   # Default to scraping over https. If required, just disable this or change to `http`.
@@ -455,78 +464,78 @@ gateway:
           #     credentials_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
           #     type: Bearer
           #   kubernetes_sd_configs:
-              # - role: node
-            # static_configs:
-            #   - targets:
-            #       - ${K8S_NODE_NAME}:10250
-            # metric_relabel_configs:
-            #   - action: labeldrop
-            #     regex: name # dropping id results in error - inconsistent timestamps on metric points for metric container_fs_reads_total, container_fs_writes_bytes_total, etc
-            #   # Drop less useful container CPU metrics.
-            #   - action: drop
-            #     regex: container_cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)
-            #     replacement: "$1"
-            #     separator: ";"
-            #     source_labels:
-            #       - __name__
-            #   # Drop less useful container / always zero filesystem metrics.
-            #   - action: drop
-            #     regex: container_fs_(io_current|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)
-            #     separator: ";"
-            #     source_labels:
-            #       - __name__
-            #   # Drop less useful / always zero container memory metrics.
-            #   - action: drop
-            #     regex: container_memory_(mapped_file|swap)
-            #     replacement: "$1"
-            #     separator: ";"
-            #     source_labels:
-            #       - __name__
-            #   # Drop less useful container process metrics.
-            #   - action: drop
-            #     regex: container_(file_descriptors|tasks_state|threads_max)
-            #     replacement: "$1"
-            #     separator: ";"
-            #     source_labels:
-            #       - __name__
-            #   # Drop container spec metrics that overlap with kube-state-metrics.
-            #   - action: drop
-            #     regex: container_spec.*
-            #     replacement: "$1"
-            #     separator: ";"
-            #     source_labels:
-            #       - __name__
-            #   # Drop cgroup metrics with no pod.
-            #   - action: drop
-            #     regex: ".+;"
-            #     replacement: "$1"
-            #     separator: ";"
-            #     source_labels:
-            #       - id
-            #       - pod
-            # relabel_configs:
-            #   - action: replace
-            #     regex: "(.*)"
-            #     replacement: https-metrics
-            #     separator: ";"
-            #     target_label: endpoint
-            #   - action: replace
-            #     replacement: "kubelet"
-            #     target_label: job
-            #   - action: replace
-            #     regex: "(.*)"
-            #     replacement: "${1}"
-            #     separator: ";"
-            #     source_labels:
-            #       - __meta_kubernetes_node_name
-            #     target_label: node
-            #   - action: replace
-            #     regex: "(.*)"
-            #     replacement: "$1"
-            #     separator: ";"
-            #     source_labels:
-            #       - __metrics_path__
-            #     target_label: metrics_path
+          # - role: node
+          # static_configs:
+          #   - targets:
+          #       - ${K8S_NODE_NAME}:10250
+          # metric_relabel_configs:
+          #   - action: labeldrop
+          #     regex: name # dropping id results in error - inconsistent timestamps on metric points for metric container_fs_reads_total, container_fs_writes_bytes_total, etc
+          #   # Drop less useful container CPU metrics.
+          #   - action: drop
+          #     regex: container_cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)
+          #     replacement: "$1"
+          #     separator: ";"
+          #     source_labels:
+          #       - __name__
+          #   # Drop less useful container / always zero filesystem metrics.
+          #   - action: drop
+          #     regex: container_fs_(io_current|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)
+          #     separator: ";"
+          #     source_labels:
+          #       - __name__
+          #   # Drop less useful / always zero container memory metrics.
+          #   - action: drop
+          #     regex: container_memory_(mapped_file|swap)
+          #     replacement: "$1"
+          #     separator: ";"
+          #     source_labels:
+          #       - __name__
+          #   # Drop less useful container process metrics.
+          #   - action: drop
+          #     regex: container_(file_descriptors|tasks_state|threads_max)
+          #     replacement: "$1"
+          #     separator: ";"
+          #     source_labels:
+          #       - __name__
+          #   # Drop container spec metrics that overlap with kube-state-metrics.
+          #   - action: drop
+          #     regex: container_spec.*
+          #     replacement: "$1"
+          #     separator: ";"
+          #     source_labels:
+          #       - __name__
+          #   # Drop cgroup metrics with no pod.
+          #   - action: drop
+          #     regex: ".+;"
+          #     replacement: "$1"
+          #     separator: ";"
+          #     source_labels:
+          #       - id
+          #       - pod
+          # relabel_configs:
+          #   - action: replace
+          #     regex: "(.*)"
+          #     replacement: https-metrics
+          #     separator: ";"
+          #     target_label: endpoint
+          #   - action: replace
+          #     replacement: "kubelet"
+          #     target_label: job
+          #   - action: replace
+          #     regex: "(.*)"
+          #     replacement: "${1}"
+          #     separator: ";"
+          #     source_labels:
+          #       - __meta_kubernetes_node_name
+          #     target_label: node
+          #   - action: replace
+          #     regex: "(.*)"
+          #     replacement: "$1"
+          #     separator: ";"
+          #     source_labels:
+          #       - __metrics_path__
+          #     target_label: metrics_path
 
   processors:
     resourcedetection:
