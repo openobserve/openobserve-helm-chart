@@ -38,11 +38,12 @@ serviceAccount:
 
 # If additional custom RBAC rules are needed for the collector, they can be added here
 # Example use case: To allow the collector to access the custom resources from the third-party API groups
-rbac:
-  extraRules:
-    - apiGroups: ["thirdparty.api.group"]
-      resources: ["customresourcename"]
-      verbs: ["get", "list", "watch"]
+rbac: {}
+# rbac:
+#   extraRules:
+#     - apiGroups: ["thirdparty.api.group"]
+#       resources: ["customresourcename"]
+#       verbs: ["get", "list", "watch"]
 
 labels: {}
 
