@@ -64,4 +64,11 @@ rules:
   resources:
   - endpointslices
   verbs: ["get", "list", "watch"]
+{{- if .Values.rbac.extraRules }}
+{{- range .Values.rbac.extraRules }}
+- apiGroups: {{ .apiGroups | toJson }}
+  resources: {{ .resources | toJson }}
+  verbs: {{ .verbs | toJson }}
+{{- end }}
+{{- end }}
 {{- end }}
