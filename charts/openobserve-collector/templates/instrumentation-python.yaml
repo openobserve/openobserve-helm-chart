@@ -12,7 +12,7 @@ spec:
     - baggage
   sampler:
     type: parentbased_traceidratio
-    argument: "1"
+    argument: {{ .Values.autoinstrumentation.samplingRate | quote }}
   python:
     env:
       - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
@@ -22,6 +22,6 @@ spec:
       - name: OTEL_LOGS_EXPORTER
         value: otlp_proto_http
       - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
-        value: "false" # set to true to enable auto instrumentation for logs
+        value: {{ .Values.autoinstrumentation.pythonLogsEnabled | quote }}
   
 {{- end }}
