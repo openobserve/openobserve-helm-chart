@@ -65,8 +65,7 @@ autoinstrumentation:
 agent:
   enabled: true
   tolerations: []
-  resources:
-    {}
+  resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -78,18 +77,6 @@ agent:
     #   cpu: 100m
     #   memory: 128Mi
   receivers:
-    otlp:
-      protocols:
-        grpc: {}
-        http: {}
-    prometheus:
-      config:
-        scrape_configs:
-          - job_name: "otel-collector"
-            scrape_interval: 5s
-            static_configs:
-              - targets: ["0.0.0.0:8888"]
-
     filelog/std:
       include: [/var/log/pods/*/*/*.log]
       exclude:
@@ -97,7 +84,7 @@ agent:
         - /var/log/pods/*/otel-collector/*.log # named otel-collector
         - /var/log/pods/*/otc-container/*.log # named otc-container (for otel-contrib containers)
         - /var/log/pods/*/openobserve-ingester/*.log # avoid cyclical logs as ingester logs can be massive
-      start_at: end
+      start_at: beginning
       include_file_path: true
       include_file_name: false
       operators:
@@ -202,7 +189,7 @@ agent:
         network: {}
         #     paging: {}
         #     processes: {}
-        process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
+        #     process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 30s
       auth_type: "serviceAccount"
@@ -311,19 +298,20 @@ agent:
     pipelines:
       logs:
         receivers: [filelog/std]
-        processors: [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+        processors:
+          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve]
       metrics:
         receivers: [kubeletstats, hostmetrics]
-        processors: [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+        processors:
+          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve]
 
 gateway:
   enabled: true
   targetAllocator:
     enabled: false
-    resources:
-      {}
+    resources: {}
       # We usually recommend not to specify default resources and to leave this as a conscious
       # choice for the user. This also increases chances charts run on environments with little
       # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -337,8 +325,7 @@ gateway:
   affinity: {}
   nodeSelector: {}
   tolerations: []
-  resources:
-    {}
+  resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -512,7 +499,25 @@ gateway:
     #   size_mib: 512
   connectors:
     servicegraph:
-      latency_histogram_buckets: [2ms, 4ms, 6ms, 8ms, 10ms, 50ms, 100ms, 200ms, 400ms, 800ms, 1s, 1400ms, 2s, 5s, 10s, 15s]
+      latency_histogram_buckets:
+        [
+          2ms,
+          4ms,
+          6ms,
+          8ms,
+          10ms,
+          50ms,
+          100ms,
+          200ms,
+          400ms,
+          800ms,
+          1s,
+          1400ms,
+          2s,
+          5s,
+          10s,
+          15s,
+        ]
       dimensions:
         - http.method
       store:
@@ -523,17 +528,21 @@ gateway:
     pipelines:
       logs/k8s_events:
         receivers: [k8sobjects/events]
-        processors: [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+        processors:
+          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve_k8s_events]
       logs/k8s_pods:
         receivers: [k8sobjects/pods]
-        processors: [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+        processors:
+          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve]
       metrics:
         receivers: [k8s_cluster, servicegraph, prometheus]
-        processors: [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+        processors:
+          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve]
       traces:
         receivers: [otlp]
-        processors: [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+        processors:
+          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve, servicegraph]
