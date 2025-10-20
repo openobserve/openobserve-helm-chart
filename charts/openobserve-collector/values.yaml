@@ -78,14 +78,26 @@ agent:
     #   cpu: 100m
     #   memory: 128Mi
   receivers:
+    otlp:
+      protocols:
+        grpc: {}
+        http: {}
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: "otel-collector"
+            scrape_interval: 5s
+            static_configs:
+              - targets: ["0.0.0.0:8888"]
+
     filelog/std:
       include: [/var/log/pods/*/*/*.log]
       exclude:
         # Exclude logs from all containers named otel-collector or otc-container (otel-contrib)
-        - /var/log/pods/*/otel-collector/*.log  # named otel-collector
-        - /var/log/pods/*/otc-container/*.log   # named otc-container (for otel-contrib containers)
-        - /var/log/pods/*/openobserve-ingester/*.log     # avoid cyclical logs as ingester logs can be massive
-      start_at: beginning
+        - /var/log/pods/*/otel-collector/*.log # named otel-collector
+        - /var/log/pods/*/otc-container/*.log # named otc-container (for otel-contrib containers)
+        - /var/log/pods/*/openobserve-ingester/*.log # avoid cyclical logs as ingester logs can be massive
+      start_at: end
       include_file_path: true
       include_file_name: false
       operators:
@@ -186,11 +198,11 @@ agent:
               - sysfs
               - tracefs
         load: {}
-    #     memory: {}
+        #     memory: {}
         network: {}
-    #     paging: {}
-    #     processes: {}
-    #     process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
+        #     paging: {}
+        #     processes: {}
+        process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 30s
       auth_type: "serviceAccount"
@@ -310,6 +322,18 @@ gateway:
   enabled: true
   targetAllocator:
     enabled: false
+    resources:
+      {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 50m
+      #   memory: 64Mi
   affinity: {}
   nodeSelector: {}
   tolerations: []
@@ -344,7 +368,7 @@ gateway:
       metrics:
         k8s.container.cpu_limit: # redundant
           enabled: false
-        k8s.container.cpu_request:  # redundant
+        k8s.container.cpu_request: # redundant
           enabled: false
         k8s.container.memory_limit: # redundant
           enabled: false
