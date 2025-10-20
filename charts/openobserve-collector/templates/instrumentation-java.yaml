@@ -12,7 +12,7 @@ spec:
     - baggage
   sampler:
     type: parentbased_traceidratio
-    argument: "1"
+    argument: {{ .Values.autoinstrumentation.samplingRate | quote }}
   java:
     env:
       - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
