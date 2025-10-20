@@ -287,7 +287,7 @@ config:
   ZO_CACHE_DELAY_SECS: "300" # Discard data of last n seconds from cached results
   ZO_DISK_RESULT_CACHE_MAX_SIZE: "0" # MB, default is 10% of local volume available space and maximum 20GB
   ZO_METRICS_CACHE_ENABLED: "true" # Enable result cache for metrics query
-  ZO_METRICS_CACHE_MAX_ENTRIES: "100000"
+  ZO_METRICS_CACHE_MAX_ENTRIES: "10000"
   ZO_CONSISTENT_HASH_VNODES: "1000"
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "0"
   ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "500"
