@@ -1,4 +1,4 @@
-# OpenObserve helm chart
+# OpenObserve Helm Chart
 
 ## Amazon EKS
 
@@ -11,7 +11,7 @@ You must set a minimum of 2 values:
 1. IAM role for the serviceAccount to gain AWS IAM credentials to access s3
    - serviceAccount.annotations."eks.amazonaws.com/role-arn"
 
-## Install
+## Installation
 
 Install the Cloud Native PostgreSQL Operator. This is a prerequisite for openobserve helm chart. This helm chart sets up a postgres database cluster (1 primary + 1 replica) and uses it as metadata store of OpenObserve.
 ```shell
