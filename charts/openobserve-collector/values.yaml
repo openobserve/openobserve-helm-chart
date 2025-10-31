@@ -145,7 +145,10 @@ agent:
       root_path: /hostfs
       collection_interval: 30s
       scrapers:
-        cpu: {}
+        cpu:
+          metrics:
+            system.cpu.utilization:
+              enabled: true
         disk: {}
         filesystem:
           exclude_mount_points:
@@ -185,7 +188,10 @@ agent:
               - sysfs
               - tracefs
         load: {}
-        #     memory: {}
+        memory:
+          metrics:
+            system.memory.utilization:
+              enabled: true
         network: {}
         #     paging: {}
         #     processes: {}
@@ -208,6 +214,8 @@ agent:
         k8s.pod.cpu.usage:
           enabled: true
         k8s.node.cpu.usage:
+          enabled: true
+        k8s.node.cpu.time:
           enabled: true
         container.cpu.usage:
           enabled: true
