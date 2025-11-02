@@ -6,11 +6,11 @@ exporters:
   otlphttp/openobserve:
     endpoint: https://api.openobserve.ai/api/default/
     headers:
-      Authorization: Basic < base64 encoded auth >
+      Authorization: Basic CHANGEME_BASE64_ENCODED_AUTH
   otlphttp/openobserve_k8s_events:
     endpoint: https://api.openobserve.ai/api/default/
     headers:
-      Authorization: Basic < base64 encoded auth >
+      Authorization: Basic CHANGEME_BASE64_ENCODED_AUTH
       stream-name: k8s_events
 
 k8sCluster: "cluster1"
@@ -19,7 +19,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.136.0"
+  tag: "0.138.0"
 
 nameOverride: ""
 fullnameOverride: ""
@@ -317,6 +317,8 @@ agent:
 
 gateway:
   enabled: true
+  # Number of replicas when autoscaler is not used
+  replicas: 1
   targetAllocator:
     enabled: false
     resources: {}
@@ -344,12 +346,30 @@ gateway:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+  # Autoscaler configuration for the OpenTelemetry Operator
+  # When enabled (by setting any field), the operator will create a HorizontalPodAutoscaler
+  # Note: Autoscaling requires resources.requests to be set for CPU/memory metrics to work
+  autoscaler: {}
+    # minReplicas: 1
+    # maxReplicas: 10
+    # targetCPUUtilization: 80
+    # targetMemoryUtilization: 80
+    # # Advanced: Custom HPA behavior (optional)
+    # behavior:
+    #   scaleDown:
+    #     stabilizationWindowSeconds: 300
+    #     policies:
+    #     - type: Percent
+    #       value: 50
+    #       periodSeconds: 15
+    #   scaleUp:
+    #     stabilizationWindowSeconds: 0
+    #     policies:
+    #     - type: Percent
+    #       value: 100
+    #       periodSeconds: 15
+    # # Advanced: Custom metrics (optional)
+    # metrics: []
   receivers:
     otlp:
       protocols:
