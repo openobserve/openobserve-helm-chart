@@ -403,6 +403,7 @@ config:
   ZO_NATS_REPLICAS: "3"
   ZO_NATS_QUEUE_MAX_AGE: "60" # days for queue message max age
   ZO_NATS_QUEUE_MAX_SIZE: "2048" # max size of queue message
+  ZO_NATS_EVENT_STORAGE: "file" # file or memory
   ZO_NATS_CONNECT_TIMEOUT: "5"
   ZO_NATS_COMMAND_TIMEOUT: "10"
   ZO_NATS_LOCK_WAIT_TIMEOUT: "600"
