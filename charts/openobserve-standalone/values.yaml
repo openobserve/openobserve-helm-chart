@@ -6,7 +6,7 @@ image:
   repository: o2cr.ai/openobserve/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.15.2"
+  tag: "v0.16.0"
   busybox:
     repository: busybox
     tag: 1.37.0
@@ -123,7 +123,7 @@ config:
   ZO_FEATURE_QUERY_QUEUE_ENABLED: "true"
   ZO_FEATURE_QUICK_MODE_FIELDS: "" # default fields for quick mode
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_num"
-  ZO_FEATURE_PER_THREAD_LOCK: "false"
+  ZO_FEATURE_SHARED_MEMTABLE_ENABLED: "false"
   ZO_FEATURE_QUERY_STREAMING_AGGS: "true"
   ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "10000"
   ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES: "10000"
@@ -176,11 +176,13 @@ config:
   ZO_QUERY_THREAD_NUM: "0"
   ZO_QUERY_INDEX_THREAD_NUM: "0"
   ZO_QUERY_TIMEOUT: "600"
+  ZO_GRPC_INGEST_TIMEOUT: "600"
   ZO_ROUTE_TIMEOUT: "600"
   ZO_ROUTE_MAX_CONNECTIONS: "1024"
   ZO_ROUTE_STRATEGY: "workload"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_HTTP_WORKER_MAX_BLOCKING: "0"
+  ZO_HTTP_ACCESS_LOG_FORMAT: ""
   ZO_ACTIX_REQ_TIMEOUT: "30" # in second
   ZO_ACTIX_KEEP_ALIVE: "30" # in second
   ZO_ACTIX_SHUTDOWN_TIMEOUT: "10" # in second
@@ -282,7 +284,8 @@ config:
   ZO_SWAGGER_ENABLED: "true"
   ZO_STREAMING_ENABLED: "true"
   ZO_PROMETHEUS_ENABLED: "false"
-  ZO_HISTOGRAM_ENABLED: "true" # show/hode histogram on logs page by default
+  ZO_HISTOGRAM_ENABLED: "true" # show/hide histogram on logs page by default
+  ZO_SGRAPH_ENABLED: "true"
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
 

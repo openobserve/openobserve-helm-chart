@@ -6,11 +6,11 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.15.2"
+    tag: "v0.16.0"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.15.2"
+    tag: "v0.16.0"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
@@ -277,7 +277,7 @@ config:
   ZO_FEATURE_QUERY_QUEUE_ENABLED: "true"
   ZO_FEATURE_QUICK_MODE_FIELDS: "" # default fields for quick mode
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_hash"
-  ZO_FEATURE_PER_THREAD_LOCK: "false"
+  ZO_FEATURE_SHARED_MEMTABLE_ENABLED: "false"
   ZO_FEATURE_QUERY_STREAMING_AGGS: "true"
   ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "10000"
   ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES: "10000"
@@ -334,12 +334,14 @@ config:
   ZO_QUERY_INDEX_THREAD_NUM: "0"
   ZO_QUERY_TIMEOUT: "600"
   ZO_QUERY_INGESTER_TIMEOUT: "0"
+  ZO_GRPC_INGEST_TIMEOUT: "600"
   ZO_ROUTE_TIMEOUT: "600"
   ZO_QUERY_DEFAULT_LIMIT: "1000"
   ZO_ROUTE_MAX_CONNECTIONS: "1024"
   ZO_ROUTE_STRATEGY: "workload"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_HTTP_WORKER_MAX_BLOCKING: "0"
+  ZO_HTTP_ACCESS_LOG_FORMAT: ""
   ZO_ACTIX_REQ_TIMEOUT: "30" # in second
   ZO_ACTIX_KEEP_ALIVE: "30" # in second
   ZO_ACTIX_SHUTDOWN_TIMEOUT: "10" # in second
@@ -403,6 +405,8 @@ config:
   ZO_NATS_REPLICAS: "3"
   ZO_NATS_QUEUE_MAX_AGE: "60" # days for queue message max age
   ZO_NATS_QUEUE_MAX_SIZE: "2048" # max size of queue message
+  ZO_NATS_V211_SUPPORT: "false"
+  ZO_NATS_KV_WATCH_MODULES: ""
   ZO_NATS_EVENT_STORAGE: "file" # file or memory
   ZO_NATS_CONNECT_TIMEOUT: "5"
   ZO_NATS_COMMAND_TIMEOUT: "10"
@@ -491,7 +495,8 @@ config:
   ZO_MIN_AUTO_REFRESH_INTERVAL: "5"
   ZO_MAX_DASHBOARD_SERIES: "100"
   ZO_PROMETHEUS_ENABLED: "false"
-  ZO_HISTOGRAM_ENABLED: "true" # show/hode histogram on logs page by default
+  ZO_HISTOGRAM_ENABLED: "true" # show/hide histogram on logs page by default
+  ZO_SGRAPH_ENABLED: "true"
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
 
