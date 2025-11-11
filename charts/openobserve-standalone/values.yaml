@@ -6,7 +6,7 @@ image:
   repository: o2cr.ai/openobserve/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.16.0"
+  tag: "v0.16.1"
   busybox:
     repository: busybox
     tag: 1.37.0
