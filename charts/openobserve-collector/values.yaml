@@ -2,16 +2,19 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-exporters:
-  otlphttp/openobserve:
-    endpoint: https://api.openobserve.ai/api/default/
-    headers:
-      Authorization: Basic CHANGEME_BASE64_ENCODED_AUTH
-  otlphttp/openobserve_k8s_events:
-    endpoint: https://api.openobserve.ai/api/default/
-    headers:
-      Authorization: Basic CHANGEME_BASE64_ENCODED_AUTH
-      stream-name: k8s_events
+# Define your exporters here
+# Example:
+# exporters:
+#   otlphttp/my_exporter:
+#     endpoint: https://your-endpoint.com/api/default/
+#     headers:
+#       Authorization: Basic YOUR_BASE64_ENCODED_AUTH
+#   otlphttp/openobserve_k8s_events:
+#     endpoint: https://api.openobserve.ai/api/default/
+#     headers:
+#       Authorization: Basic CHANGEME_BASE64_ENCODED_AUTH
+#       stream-name: k8s_events
+exporters: {}
 
 k8sCluster: "cluster1"
 
@@ -308,12 +311,12 @@ agent:
         receivers: [filelog/std]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve]
+        exporters: [] # Define your exporters in the exporters section above
       metrics:
         receivers: [kubeletstats, hostmetrics]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve]
+        exporters: [] # Define your exporters in the exporters section above
 
 gateway:
   enabled: true
@@ -558,19 +561,19 @@ gateway:
         receivers: [k8sobjects/events]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve_k8s_events]
+        exporters: [] # Define your exporters in the exporters section above
       logs/k8s_pods:
         receivers: [k8sobjects/pods]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve]
+        exporters: [] # Define your exporters in the exporters section above
       metrics:
         receivers: [k8s_cluster, servicegraph, prometheus]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve]
+        exporters: [] # Define your exporters in the exporters section above
       traces:
         receivers: [otlp]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve, servicegraph]
+        exporters: [servicegraph] # Define your exporters in the exporters section above
