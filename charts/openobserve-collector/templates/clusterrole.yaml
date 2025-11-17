@@ -64,6 +64,10 @@ rules:
   resources:
   - endpointslices
   verbs: ["get", "list", "watch"]
+- apiGroups: ["events.k8s.io"]
+  resources:
+  - events
+  verbs: ["get", "list", "watch"]
 {{- if .Values.rbac.extraRules }}
 {{- range .Values.rbac.extraRules }}
 - apiGroups: {{ .apiGroups | toJson }}
