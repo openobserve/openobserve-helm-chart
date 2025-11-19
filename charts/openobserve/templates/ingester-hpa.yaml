@@ -1,4 +1,4 @@
-{{- if .Values.autoscaling.ingester.enabled }}
+{{- if and .Values.autoscaling.ingester.enabled .Values.enterprise.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

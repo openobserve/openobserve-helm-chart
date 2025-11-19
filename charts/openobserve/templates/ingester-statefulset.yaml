@@ -129,41 +129,90 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  # Get credentials from environment variables
+                  echo "=========================================="
+                  echo "PreStop Hook Started: $(date)"
+                  echo "Pod: $HOSTNAME"
+                  echo "=========================================="
+
+                  # Get credentials from environment
                   USER_EMAIL="$ZO_ROOT_USER_EMAIL"
                   USER_PASSWORD="$ZO_ROOT_USER_PASSWORD"
-                  
-                  # Create base64 encoded credentials for Authorization header
                   AUTH_HEADER=$(echo -n "${USER_EMAIL}:${USER_PASSWORD}" | base64)
-                  
-                  # Disable the node first
-                  echo "Disabling ingester node..."
-                  curl -X PUT "http://localhost:{{ .Values.config.ZO_HTTP_PORT }}/node/enable?value=false" \
-                    -H "Authorization: Basic ${AUTH_HEADER}" 
-                  
-                  # returns 200 if successful and "true" if the node is disabled
+                  PORT="${ZO_HTTP_PORT:-5080}"
 
-                  # Flush all data from memory to WAL. This does not flush data from ingester to s3.
-                  echo "Flushing data from ingester..."
-                  RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "http://localhost:{{ .Values.config.ZO_HTTP_PORT }}/node/flush" \
+                  # Step 1: Disable the node (triggers drain mode)
+                  echo "[$(date)] Step 1: Calling PUT /node/enable?value=false to disable node..."
+                  DISABLE_RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
+                    -X PUT "http://localhost:${PORT}/node/enable?value=false" \
                     -H "Authorization: Basic ${AUTH_HEADER}")
-                  if [ "$RESPONSE" -ne 200 ]; then
-                    echo "Error: Failed to flush data from ingester. HTTP response code: $RESPONSE"
+
+                  HTTP_CODE=$(echo "$DISABLE_RESPONSE" | grep "HTTP_CODE:" | cut -d: -f2)
+                  BODY=$(echo "$DISABLE_RESPONSE" | grep -v "HTTP_CODE:")
+
+                  echo "[$(date)] Response (HTTP $HTTP_CODE): $BODY"
+
+                  if [ "$HTTP_CODE" != "200" ]; then
+                    echo "[$(date)] ERROR: Failed to disable node"
                     exit 1
                   fi
-                  
-                  # returns 200 if successful and "true" if the node is flushed
 
-                  # We need another API to check if all the data has been moved to s3 or /flush should become async and move files to s3 as well
-                  # e.g /node/wal_status
-                  # Need to build this API. Until then, we will wait for 900 seconds.
+                  echo "[$(date)] ✓ Node disabled - drain mode activated"
+                  echo ""
 
-                  # Wait for 900 seconds after flush to ensure data is moved to s3
-                  # 15 minutes for now, since file movement to s3 may take up to 10 minutes
-                  echo "Waiting 900 seconds to flush data..."
-                  sleep 900
-                  
-                  echo "Pre-stop hook completed"
+                  # Step 2: Poll drain status until ready for shutdown
+                  echo "[$(date)] Step 2: Monitoring drain status via GET /node/drain_status..."
+
+                  START_TIME=$(date +%s)
+                  MAX_WAIT=1000  # ~16 minutes (leave buffer for k8s)
+                  POLL_INTERVAL=5
+
+                  while true; do
+                    CURRENT_TIME=$(date +%s)
+                    ELAPSED=$((CURRENT_TIME - START_TIME))
+
+                    if [ $ELAPSED -ge $MAX_WAIT ]; then
+                      echo "[$(date)] WARNING: Drain timeout after ${ELAPSED}s"
+                      echo "[$(date)] Exiting to allow Kubernetes to terminate pod"
+                      break
+                    fi
+
+                    # Call drain_status API
+                    STATUS=$(curl -s "http://localhost:${PORT}/node/drain_status" \
+                      -H "Authorization: Basic ${AUTH_HEADER}")
+
+                    if [ $? -ne 0 ]; then
+                      echo "[$(date)] ERROR: Failed to get drain status"
+                      sleep $POLL_INTERVAL
+                      continue
+                    fi
+
+                    # Parse JSON response (without jq dependency)
+                    READY=$(echo "$STATUS" | grep -o '"readyForShutdown":[^,}]*' | cut -d: -f2 | tr -d ' ')
+                    PENDING=$(echo "$STATUS" | grep -o '"pendingParquetFiles":[^,}]*' | cut -d: -f2 | tr -d ' ')
+                    IS_DRAINING=$(echo "$STATUS" | grep -o '"isDraining":[^,}]*' | cut -d: -f2 | tr -d ' ')
+                    MEMORY_FLUSHED=$(echo "$STATUS" | grep -o '"memoryFlushed":[^,}]*' | cut -d: -f2 | tr -d ' ')
+
+                    echo "[$(date)] [${ELAPSED}s] Status:"
+                    echo "  - isDraining: $IS_DRAINING"
+                    echo "  - memoryFlushed: $MEMORY_FLUSHED"
+                    echo "  - pendingParquetFiles: $PENDING"
+                    echo "  - readyForShutdown: $READY"
+
+                    # Check if ready for shutdown
+                    if [ "$READY" = "true" ]; then
+                      echo ""
+                      echo "=========================================="
+                      echo "[$(date)] ✓ DRAIN COMPLETED in ${ELAPSED}s"
+                      echo "=========================================="
+                      echo "All parquet files uploaded to S3"
+                      echo "Pod is safe to terminate"
+                      break
+                    fi
+
+                    sleep $POLL_INTERVAL
+                  done
+
+                  echo "[$(date)] PreStop hook completed. Pod will now terminate."
           {{- end }}
           resources:
             {{- toYaml .Values.resources.ingester | nindent 12 }}
