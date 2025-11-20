@@ -10,7 +10,7 @@ image:
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.16.1"
+    tag: "v0.16.2"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
@@ -1028,14 +1028,14 @@ probes:
         timeoutSeconds: 5
         successThreshold: 1
         failureThreshold: 3
-        terminationGracePeriodSeconds: 30
+        terminationGracePeriodSeconds: 1200 # 20 minutes for now, since we are using pre-stop hook to flush data and it takes up to 10 minutes to flush data to s3
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
         failureThreshold: 3
-        terminationGracePeriodSeconds: 30
+        terminationGracePeriodSeconds: 1200 # 20 minutes for now, since we are using pre-stop hook to flush data and it takes up to 10 minutes to flush data to s3
   querier:
     enabled: false
     config:
