@@ -49,11 +49,11 @@ exporters:
   otlphttp/openobserve:
     endpoint: http://o2-openobserve-router.openobserve.svc.cluster.local:5080/api/default
     headers:
-      Authorization: Basic <token>
+      Authorization: "Basic <token>"
   otlphttp/openobserve_k8s_events:
     endpoint: http://o2-openobserve-router.openobserve.svc.cluster.local:5080/api/default
     headers:
-      Authorization: Basic <token>
+      Authorization: "Basic <token>"
       stream-name: k8s_events
 
 # Configure agent pipelines to use the exporters
