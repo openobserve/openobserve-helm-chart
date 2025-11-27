@@ -37,6 +37,56 @@ kubectl create ns openobserve-collector
 helm --namespace openobserve-collector -f values.yaml install o2c openobserve/openobserve-collector
 ```
 
+## Configuration
+
+To send data to OpenObserve, you need to configure both the exporters and the pipeline exporters in your `values.yaml` file.
+
+### Example values.yaml
+
+```yaml
+# Define your exporters
+exporters:
+  otlphttp/openobserve:
+    endpoint: http://o2-openobserve-router.openobserve.svc.cluster.local:5080/api/default
+    headers:
+      Authorization: Basic <token>
+  otlphttp/openobserve_k8s_events:
+    endpoint: http://o2-openobserve-router.openobserve.svc.cluster.local:5080/api/default
+    headers:
+      Authorization: Basic <token>
+      stream-name: k8s_events
+
+# Configure agent pipelines to use the exporters
+agent:
+  service:
+    pipelines:
+      logs:
+        exporters:
+          - otlphttp/openobserve
+      metrics:
+        exporters:
+          - otlphttp/openobserve
+
+# Configure gateway pipelines to use the exporters
+gateway:
+  service:
+    pipelines:
+      logs/k8s_events:
+        exporters:
+          - otlphttp/openobserve_k8s_events
+      logs/k8s_pods:
+        exporters:
+          - otlphttp/openobserve
+      metrics:
+        exporters:
+          - otlphttp/openobserve
+      traces:
+        exporters:
+          - otlphttp/openobserve
+          - servicegraph
+```
+
+Replace `<token>` with your base64-encoded OpenObserve credentials (format: `base64(user:password)`).
 
 ## Development
 
