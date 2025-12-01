@@ -14,9 +14,13 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: spec.nodeName
+    - name: K8S_NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
   {{- with .Values.agent.tolerations }}
   tolerations:
-    {{- toYaml . | nindent 8 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   volumes:
     - name: hostfs
@@ -38,22 +42,25 @@ spec:
     - name: varlibdockercontainers
       readOnly: true
       mountPath: /var/lib/docker/containers
-  resources: {{ .Values.gateway.resources | toYaml | nindent 4 }}
+  {{- with .Values.agent.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   config:
     receivers:
-{{ toYaml .Values.agent.receivers | indent 6 }}
+      {{- toYaml .Values.agent.receivers | nindent 6 }}
     connectors:
-{{ toYaml .Values.agent.connectors | indent 6 }}
+      {{- toYaml .Values.agent.connectors | nindent 6 }}
     processors:
       attributes:
         actions:
           - key: k8s_cluster
             action: insert
             value: {{ .Values.k8sCluster | quote }}
-{{ toYaml .Values.agent.processors | indent 6 }}
+      {{- toYaml .Values.agent.processors | nindent 6 }}
     extensions:
-{{ toYaml .Values.agent.extensions | indent 6 }}
+      {{- toYaml .Values.agent.extensions | nindent 6 }}
     exporters:
-{{ toYaml .Values.exporters | indent 6 }}
+      {{- toYaml .Values.exporters | nindent 6 }}
     service:
-{{ toYaml .Values.agent.service | indent 6 }}
+      {{- toYaml .Values.agent.service | nindent 6 }}

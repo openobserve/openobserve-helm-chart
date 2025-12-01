@@ -1,27 +1,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "openobserve.fullname" . }}-ingester
+  name: {{ include "openobserve.fullname" . }}-alertquerier
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
     prometheus.io/scrape: "true"
-    role: ingester
-  {{- with .Values.serviceIngester.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    role: alertquerier
 spec:
-  type: {{ .Values.serviceIngester.type }}
+  # type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.serviceIngester.http_port }}
+    - port: {{ .Values.service.http_port }}
       targetPort: http
       protocol: TCP
       name: http
-    - port: {{ .Values.serviceIngester.grpc_port }}
+    - port: {{ .Values.service.grpc_port }}
       targetPort: grpc
       protocol: TCP
       name: grpc
   selector:
     {{- include "openobserve.selectorLabels" . | nindent 4 }}
-    role: ingester
+    role: alertquerier

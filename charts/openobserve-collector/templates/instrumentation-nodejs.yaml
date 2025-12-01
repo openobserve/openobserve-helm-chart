@@ -6,12 +6,16 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 spec:
   exporter:
-    endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4317
+    endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4318
   propagators:
     - tracecontext
     - baggage
   sampler:
     type: parentbased_traceidratio
-    argument: "1"
+    argument: {{ .Values.autoinstrumentation.samplingRate | quote }}
+  nodejs:
+    env:
+      - name: OTEL_EXPORTER_OTLP_PROTOCOL
+        value: http/protobuf
 
 {{- end }}

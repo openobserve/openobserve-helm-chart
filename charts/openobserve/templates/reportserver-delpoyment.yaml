@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- with .Values.podAnnotations }}
+        {{- with .Values.podAnnotations.reportserver }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
         checksum/specific-config: {{ include (print $.Template.BasePath "/reportserver-configmap.yaml") . | sha256sum }}
@@ -53,6 +53,9 @@ spec:
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
+            {{- with .Values.reportserver.extraEnv }}
+            {{- toYaml . |  nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.config.ZO_HTTP_PORT }}
@@ -80,14 +83,6 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources.reportserver | nindent 12 }}
-          {{- with .Values.reportserver.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.reportserver.volumes }}
-      volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       {{- with .Values.nodeSelector.reportserver }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

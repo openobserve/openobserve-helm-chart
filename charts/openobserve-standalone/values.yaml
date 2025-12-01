@@ -3,10 +3,10 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: public.ecr.aws/zinclabs/openobserve
+  repository: o2cr.ai/openobserve/openobserve
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.14.0"
+  tag: "v0.20.1"
   busybox:
     repository: busybox
     tag: 1.37.0
@@ -54,6 +54,11 @@ persistence:
   annotations: {}
   volumePermissions:
     enabled: false
+
+extraVolumeMounts: []
+
+extraVolumes: []
+
 headless:
   enabled: true
   service:
@@ -67,6 +72,7 @@ auth:
   ZO_ROOT_USER_EMAIL: "root@example.com"
   # OpenObserve root user password
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  ZO_ROOT_USER_TOKEN: ""
 
   existingRootUserSecret:
     # Existing secret with OpenObserve root user credentials.
@@ -96,13 +102,16 @@ config:
   ZO_HTTP_IPV6_ENABLED: "false"
   ZO_GRPC_PORT: "5081"
   ZO_GRPC_ADDR: ""
-  ZO_GRPC_TIMEOUT: "600"
+  ZO_GRPC_CONNECT_TIMEOUT: "600"
   ZO_GRPC_MAX_MESSAGE_SIZE: "16"
+  ZO_GRPC_CHANNEL_CACHE_DISABLED: "false"
   ZO_GRPC_ORG_HEADER_KEY: "organization"
   ZO_GRPC_STREAM_HEADER_KEY: "stream-name"
+  ZO_GRPC_TLS_ENABLED: "false"
+  ZO_GRPC_TLS_CERT_DOMAIN: ""
+  ZO_GRPC_TLS_CERT_PATH: ""
+  ZO_GRPC_TLS_KEY_PATH: ""
   ZO_INTERNAL_GRPC_TOKEN: ""
-  ZO_TCP_PORT: "5514"
-  ZO_UDP_PORT: "5514"
   ZO_DATA_DIR: "./data/"
   ZO_DATA_DB_DIR: ""
   ZO_DATA_WAL_DIR: ""
@@ -115,27 +124,27 @@ config:
   ZO_BASE_URI: ""
   ZO_META_STORE: "sqlite"
   ZO_META_POSTGRES_DSN: ""
-  ZO_META_MYSQL_DSN: ""
   ZO_META_CONNECTION_POOL_MIN_SIZE: "0"
   ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
   ZO_META_TRANSACTION_RETRIES: "3"
   ZO_META_TRANSACTION_LOCK_TIMEOUT: "600" # seconds
-  ZO_COLUMN_TIMESTAMP: "_timestamp"
   ZO_COLS_PER_RECORD_LIMIT: "200"
-  ZO_WIDENING_SCHEMA_EVOLUTION: "true"
-  ZO_SKIP_SCHEMA_VALIDATION: "false"
   ZO_FEATURE_FULLTEXT_EXTRA_FIELDS: ""
   ZO_FEATURE_INDEX_EXTRA_FIELDS: ""
   ZO_FEATURE_DISTINCT_EXTRA_FIELDS: ""
-  ZO_FEATURE_FILELIST_DEDUP_ENABLED: "false"
   ZO_FEATURE_QUERY_QUEUE_ENABLED: "true"
-  ZO_FEATURE_QUERY_INFER_SCHEMA: "false"
   ZO_FEATURE_QUICK_MODE_FIELDS: "" # default fields for quick mode
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_num"
-  ZO_FEATURE_PER_THREAD_LOCK: "false"
+  ZO_FEATURE_SHARED_MEMTABLE_ENABLED: "false"
+  ZO_FEATURE_QUERY_STREAMING_AGGS: "true"
+  ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "10000"
+  ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES: "10000"
+  ZO_CACHE_DELAY_SECS: "300"
   ZO_RESULT_CACHE_ENABLED: "false"
+  ZO_METRICS_CACHE_ENABLED: "true"
+  ZO_METRICS_CACHE_MAX_ENTRIES: "10000"
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "0"
-  ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "100"
+  ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "150"
   ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "200"
   ZO_QUICK_MODE_ENABLED: "false"
   ZO_QUICK_MODE_FORCE_ENABLED: "true"
@@ -144,13 +153,9 @@ config:
   ZO_BLOOM_FILTER_ENABLED: "true"
   ZO_BLOOM_FILTER_DEFAULT_FIELDS: ""
   ZO_ENABLE_INVERTED_INDEX: "true"
-  ZO_INVERTED_INDEX_STORE_FORMAT: "tantivy" # InvertedIndex store format, parquet(default), tantivy, both
-  ZO_INVERTED_INDEX_SEARCH_FORMAT: "tantivy"  # InvertedIndex search format, parquet(default), tantivy.
-  ZO_INVERTED_INDEX_TANTIVY_MODE: "puffin"  # Tantivy search mode, puffin or mmap, default is puffin.
-  ZO_INVERTED_INDEX_COUNT_OPTIMIZER_ENABLED: "true"
   ZO_FEATURE_QUERY_REMOVE_FILTER_WITH_INDEX: "true"
-  ZO_INVERTED_INDEX_SPLIT_CHARS: ""
-  ZO_FULL_TEXT_SEARCH_TYPE: "prefix"
+  ZO_INVERTED_INDEX_COUNT_OPTIMIZER_ENABLED: "true"
+  ZO_INVERTED_INDEX_CAMEL_CASE_TOKENIZER_DISABLED: "false"
   ZO_QUERY_ON_STREAM_SELECTION: "true"
   ZO_DISTINCT_VALUES_INTERVAL: "10"
   ZO_DISTINCT_VALUES_HOURLY: "false"
@@ -175,19 +180,25 @@ config:
   ZO_MEM_DUMP_THREAD_NUM: "0"
   ZO_MEM_TABLE_MAX_SIZE: "0"
   ZO_MEM_TABLE_BUCKET_NUM: "0"
-  ZO_MEM_PERSIST_INTERVAL: "5"
+  ZO_MEM_PERSIST_INTERVAL: "2"
   ZO_ENRICHMENT_TABLE_LIMIT: "10" # size in mb
   ZO_WAL_WRITE_BUFFER_SIZE: "16384"
-  ZO_WAL_FSYNC_DISABLED: "false"  
+  ZO_WAL_FSYNC_DISABLED: "false"
+  ZO_WAL_WRITE_QUEUE_ENABLED: "false"
   ZO_QUERY_THREAD_NUM: "0"
+  ZO_QUERY_INDEX_THREAD_NUM: "0"
   ZO_QUERY_TIMEOUT: "600"
+  ZO_GRPC_INGEST_TIMEOUT: "600"
   ZO_ROUTE_TIMEOUT: "600"
   ZO_ROUTE_MAX_CONNECTIONS: "1024"
+  ZO_ROUTE_STRATEGY: "workload"
   ZO_HTTP_WORKER_NUM: "0"
   ZO_HTTP_WORKER_MAX_BLOCKING: "0"
+  ZO_HTTP_ACCESS_LOG_FORMAT: ""
   ZO_ACTIX_REQ_TIMEOUT: "30" # in second
   ZO_ACTIX_KEEP_ALIVE: "30" # in second
   ZO_ACTIX_SHUTDOWN_TIMEOUT: "10" # in second
+  ZO_ACTIX_SLOW_LOG_THRESHOLD: "5" # in second
   ZO_INGEST_ALLOWED_UPTO: "24"
   ZO_INGEST_FLATTEN_LEVEL: "3"
   ZO_LOGS_FILE_RETENTION: "hourly"
@@ -199,17 +210,16 @@ config:
   ZO_PROMETHEUS_HA_CLUSTER: "cluster"
   ZO_PROMETHEUS_HA_REPLICA: "__replica__"
   ZO_COMPACT_ENABLED: "true"
-  ZO_COMPACT_INTERVAL: "60"
+  ZO_COMPACT_INTERVAL: "10"
   ZO_COMPACT_SYNC_TO_DB_INTERVAL: "600"
   ZO_COMPACT_STRATEGY: "file_time"
   ZO_COMPACT_MAX_FILE_SIZE: "512"
   ZO_COMPACT_DATA_RETENTION_DAYS: "3650"
   ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
-  ZO_COMPACT_BATCH_SIZE: "100"
+  ZO_COMPACT_BATCH_SIZE: "0"
   ZO_COMPACT_BLOCKED_ORGS: ""
-  ZO_MEMORY_CACHE_ENABLED: "true"
+  ZO_MEMORY_CACHE_ENABLED: "false"
   ZO_MEMORY_CACHE_STRATEGY: "lru"
-  ZO_MEMORY_CACHE_CACHE_LATEST_FILES: "false"
   ZO_MEMORY_CACHE_MAX_SIZE: "0"
   ZO_MEMORY_CACHE_SKIP_SIZE: "0"
   ZO_MEMORY_CACHE_RELEASE_SIZE: "0"
@@ -229,7 +239,6 @@ config:
   ZO_S3_REGION_NAME: "us-east-2" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_NAME: "o2-dev-bucket" # do not need to set this if enabled minio is being used. settings will be picked from minio section
   ZO_S3_BUCKET_PREFIX: ""
-  ZO_S3_FEATURE_FORCE_PATH_STYLE: "false"
   ZO_S3_FEATURE_FORCE_HOSTED_STYLE: "false"
   ZO_S3_FEATURE_HTTP1_ONLY: "false"
   ZO_S3_FEATURE_HTTP2_ONLY: "false"
@@ -239,6 +248,7 @@ config:
   ZO_S3_ALLOW_INVALID_CERTIFICATES: "false"
   ZO_S3_MAX_RETRIES: "10"
   ZO_S3_MAX_IDLE_PER_HOST: "0"
+  ZO_S3_CONNECTION_KEEPALIVE_TIMEOUT: "20"
   ZO_USAGE_REPORTING_ENABLED: "false"
   ZO_USAGE_REPORTING_MODE: "local"
   ZO_USAGE_REPORTING_URL: "http://localhost:5080/api/_meta/usage/_json"
@@ -248,7 +258,6 @@ config:
   ZO_PRINT_KEY_CONFIG: "false"
   ZO_PRINT_KEY_EVENT: "false"
   ZO_PRINT_KEY_SQL: "false"
-  ZO_INGESTER_SERVICE_URL: ""
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "false"
   ZO_RUM_ENABLED: "false"
   ZO_RUM_CLIENT_TOKEN: ""
@@ -267,6 +276,28 @@ config:
   ZO_PROF_PYROSCOPE_SERVER_URL: "http://localhost:4040"
   ZO_PROF_PYROSCOPE_PROJECT_NAME: "openobserve"
   ZO_ENTRY_PER_SCHEMA_VERSION_ENABLED: "true"
+  ZO_MIN_AUTO_REFRESH_INTERVAL: "5"
+  ZO_MAX_DASHBOARD_SERIES: "100"
+  ZO_ALLOW_USER_DEFINED_SCHEMAS: "true"
+  ZO_SKIP_FORMAT_STREAM_NAME: "false"
+  ZO_MEM_TABLE_STREAMS: "" # Streams for which dedicated MemTable will be used as comma separated values
+  ZO_DEFAULT_SCRAPE_INTERVAL: "15"
+  ZO_MEMORY_CIRCUIT_BREAKER_ENABLED: "false"
+  ZO_MEMORY_CIRCUIT_BREAKER_RATIO: "90"
+  ZO_MMDB_DISABLE_DOWNLOAD: "false"
+  ZO_MMDB_UPDATE_DURATION_DAYS: "30" # 30 days
+  ZO_MMDB_GEOLITE_CITYDB_URL: "https://geoip.zinclabs.dev/GeoLite2-City.mmdb"
+  ZO_MMDB_GEOLITE_CITYDB_SHA256_URL: "https://geoip.zinclabs.dev/GeoLite2-ASN.sha256"
+  ZO_MMDB_GEOLITE_ASNDB_URL: "https://geoip.zinclabs.dev/GeoLite2-ASN.mmdb"
+  ZO_MMDB_GEOLITE_ASNDB_SHA256_URL: "https://geoip.zinclabs.dev/GeoLite2-ASN.sha256"
+  ZO_SELF_METRIC_CONSUMPTION_ENABLED: "false" # self-consume metrics generated by openobserve
+  ZO_SELF_METRIC_CONSUMPTION_INTERVAL: "60" # self-consume metrics interval, unit seconds
+  ZO_SELF_METRIC_CONSUMPTION_ACCEPTLIST: "" # only these metrics will be self-consumed, comma separated
+  ZO_SWAGGER_ENABLED: "true"
+  ZO_STREAMING_ENABLED: "true"
+  ZO_PROMETHEUS_ENABLED: "false"
+  ZO_HISTOGRAM_ENABLED: "true" # show/hide histogram on logs page by default
+  ZO_SGRAPH_ENABLED: "true"
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
 
@@ -282,11 +313,16 @@ service:
   type: ClusterIP
   # type: LoadBalancer
   http_port: 5080
+  # http_nodePort: 30580
   grpc_port: 5081
+  # grpc_nodePort: 30581
   annotations: {}
 
 certIssuer:
   enabled: false
+
+secret:
+  annotations: {}
 
 ingress:
   enabled: false
@@ -368,7 +404,7 @@ minio:
 zplane:
   enabled: false # if true then zPlane will be deployed as part of openobserve
   image:
-    repository: public.ecr.aws/zinclabs/zplane
+    repository: o2cr.ai/openobserve/zplane
     tag: 0.1.6
     pullPolicy: IfNotPresent
   service:

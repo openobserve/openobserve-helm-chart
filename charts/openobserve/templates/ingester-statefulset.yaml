@@ -27,7 +27,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- with .Values.podAnnotations }}
+        {{- with .Values.podAnnotations.ingester }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
         checksum/specific-config: {{ include (print $.Template.BasePath "/ingester-configmap.yaml") . | sha256sum }}
@@ -74,6 +74,10 @@ spec:
         {{- if .Values.nats.enabled }}
         - name: check-nats
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
+          resources:
+            limits:
+              cpu: 50m
+              memory: 50Mi
           command: ['sh', '-c', '
             until nc -zv {{ .Release.Name }}-nats 4222; do
               echo "Waiting for NATS to be ready...";
@@ -117,6 +121,99 @@ spec:
             successThreshold: {{ .Values.probes.ingester.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.ingester.config.readinessProbe.failureThreshold | default 3 }}
           {{- end }}
+          {{- if .Values.autoscaling.ingester.enabled }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "=========================================="
+                  echo "PreStop Hook Started: $(date)"
+                  echo "Pod: $HOSTNAME"
+                  echo "=========================================="
+
+                  # Get credentials from environment
+                  USER_EMAIL="$ZO_ROOT_USER_EMAIL"
+                  USER_PASSWORD="$ZO_ROOT_USER_PASSWORD"
+                  AUTH_HEADER=$(echo -n "${USER_EMAIL}:${USER_PASSWORD}" | base64)
+                  PORT="${ZO_HTTP_PORT:-5080}"
+
+                  # Step 1: Disable the node (triggers drain mode)
+                  echo "[$(date)] Step 1: Calling PUT /node/enable?value=false to disable node..."
+                  DISABLE_RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" \
+                    -X PUT "http://localhost:${PORT}/node/enable?value=false" \
+                    -H "Authorization: Basic ${AUTH_HEADER}")
+
+                  HTTP_CODE=$(echo "$DISABLE_RESPONSE" | grep "HTTP_CODE:" | cut -d: -f2)
+                  BODY=$(echo "$DISABLE_RESPONSE" | grep -v "HTTP_CODE:")
+
+                  echo "[$(date)] Response (HTTP $HTTP_CODE): $BODY"
+
+                  if [ "$HTTP_CODE" != "200" ]; then
+                    echo "[$(date)] ERROR: Failed to disable node"
+                    exit 1
+                  fi
+
+                  echo "[$(date)] ✓ Node disabled - drain mode activated"
+                  echo ""
+
+                  # Step 2: Poll drain status until ready for shutdown
+                  echo "[$(date)] Step 2: Monitoring drain status via GET /node/drain_status..."
+
+                  START_TIME=$(date +%s)
+                  MAX_WAIT=1000  # ~16 minutes (leave buffer for k8s)
+                  POLL_INTERVAL=5
+
+                  while true; do
+                    CURRENT_TIME=$(date +%s)
+                    ELAPSED=$((CURRENT_TIME - START_TIME))
+
+                    if [ $ELAPSED -ge $MAX_WAIT ]; then
+                      echo "[$(date)] WARNING: Drain timeout after ${ELAPSED}s"
+                      echo "[$(date)] Exiting to allow Kubernetes to terminate pod"
+                      break
+                    fi
+
+                    # Call drain_status API
+                    STATUS=$(curl -s "http://localhost:${PORT}/node/drain_status" \
+                      -H "Authorization: Basic ${AUTH_HEADER}")
+
+                    if [ $? -ne 0 ]; then
+                      echo "[$(date)] ERROR: Failed to get drain status"
+                      sleep $POLL_INTERVAL
+                      continue
+                    fi
+
+                    # Parse JSON response (without jq dependency)
+                    READY=$(echo "$STATUS" | grep -o '"readyForShutdown":[^,}]*' | cut -d: -f2 | tr -d ' ')
+                    PENDING=$(echo "$STATUS" | grep -o '"pendingParquetFiles":[^,}]*' | cut -d: -f2 | tr -d ' ')
+                    IS_DRAINING=$(echo "$STATUS" | grep -o '"isDraining":[^,}]*' | cut -d: -f2 | tr -d ' ')
+                    MEMORY_FLUSHED=$(echo "$STATUS" | grep -o '"memoryFlushed":[^,}]*' | cut -d: -f2 | tr -d ' ')
+
+                    echo "[$(date)] [${ELAPSED}s] Status:"
+                    echo "  - isDraining: $IS_DRAINING"
+                    echo "  - memoryFlushed: $MEMORY_FLUSHED"
+                    echo "  - pendingParquetFiles: $PENDING"
+                    echo "  - readyForShutdown: $READY"
+
+                    # Check if ready for shutdown
+                    if [ "$READY" = "true" ]; then
+                      echo ""
+                      echo "=========================================="
+                      echo "[$(date)] ✓ DRAIN COMPLETED in ${ELAPSED}s"
+                      echo "=========================================="
+                      echo "All parquet files uploaded to S3"
+                      echo "Pod is safe to terminate"
+                      break
+                    fi
+
+                    sleep $POLL_INTERVAL
+                  done
+
+                  echo "[$(date)] PreStop hook completed. Pod will now terminate."
+          {{- end }}
           resources:
             {{- toYaml .Values.resources.ingester | nindent 12 }}
           envFrom:
@@ -129,15 +226,17 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "ingester"
-            {{- with .Values.ingester.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
+            {{- with .Values.ingester.extraEnv }}
+            {{- toYaml . |  nindent 12 }}
+            {{- end }}
+          {{- if .Values.ingester.persistence.enabled }}
           volumeMounts:
             - name: data
               mountPath: /data
+          {{- end }}
       {{- with .Values.nodeSelector.ingester }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -150,6 +249,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- if .Values.ingester.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -162,3 +262,5 @@ spec:
       resources:
         requests:
           storage: {{ .Values.ingester.persistence.size | quote }}
+  {{- end }}
+
