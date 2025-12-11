@@ -33,7 +33,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
-        {{- if and .Values.compactor.persistence.enabled }}
+        {{- if and .Values.compactor.persistence.volumePermissions.enabled .Values.compactor.persistence.enabled }}
         - name: volume-permissions
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
           imagePullPolicy: IfNotPresent
