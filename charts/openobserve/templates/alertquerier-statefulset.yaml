@@ -96,6 +96,15 @@ spec:
             timeoutSeconds: {{ .Values.probes.alertquerier.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.alertquerier.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.alertquerier.config.readinessProbe.failureThreshold | default 3 }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.alertquerier.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.alertquerier.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.alertquerier.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.alertquerier.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.alertquerier.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.alertquerier | nindent 12 }}
