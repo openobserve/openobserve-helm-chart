@@ -92,6 +92,15 @@ spec:
             timeoutSeconds: {{ .Values.probes.router.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.router.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.router.config.readinessProbe.failureThreshold | default 3 }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.config.ZO_BASE_URI | default "" }}/healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.router.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.router.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.router.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.router.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.router.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.router | nindent 12 }}

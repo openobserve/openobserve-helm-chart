@@ -120,6 +120,15 @@ spec:
             timeoutSeconds: {{ .Values.probes.ingester.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.ingester.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.ingester.config.readinessProbe.failureThreshold | default 3 }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.ingester.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.ingester.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.ingester.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.ingester.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.ingester.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           {{- if .Values.autoscaling.ingester.enabled }}
           lifecycle:
