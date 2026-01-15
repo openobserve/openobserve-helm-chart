@@ -993,6 +993,13 @@ probes:
   alertmanager:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1010,6 +1017,13 @@ probes:
   compactor:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1027,6 +1041,13 @@ probes:
   ingester:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 1200 # 20 minutes for now, since we are using pre-stop hook to flush data and it takes up to 10 minutes to flush data to s3
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1044,6 +1065,13 @@ probes:
   querier:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1061,6 +1089,13 @@ probes:
   alertquerier:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1078,6 +1113,13 @@ probes:
   router:
     enabled: true
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1095,6 +1137,13 @@ probes:
   dex:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1112,6 +1161,13 @@ probes:
   openfga:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
@@ -1129,6 +1185,13 @@ probes:
   reportserver:
     enabled: false
     config:
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+        terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
