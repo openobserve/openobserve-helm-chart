@@ -33,6 +33,22 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+        {{- if and .Values.compactor.persistence.volumePermissions.enabled .Values.compactor.persistence.enabled }}
+        - name: volume-permissions
+          image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              chown -R {{ .Values.podSecurityContext.runAsUser }}:{{ .Values.podSecurityContext.fsGroup }} /data
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+          volumeMounts:
+            - name: data
+              mountPath: /data
+        {{- end }}
         {{- if .Values.etcd.enabled }}
         - name: check-etcd
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
@@ -120,6 +136,11 @@ spec:
             {{- with .Values.compactor.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
+          {{- if .Values.compactor.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
 
       {{- with .Values.nodeSelector.compactor }}
       nodeSelector:
@@ -132,4 +153,19 @@ spec:
       {{- with .Values.tolerations.compactor }}
       tolerations:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.compactor.persistence.enabled }}
+      volumes:
+        - name: data
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                {{- range .Values.compactor.persistence.accessModes }}
+                  - {{ . | quote }}
+                {{- end }}
+                storageClassName: {{ .Values.compactor.persistence.storageClass }}
+                resources:
+                  requests:
+                    storage: {{ .Values.compactor.persistence.size | quote }}
       {{- end }}
