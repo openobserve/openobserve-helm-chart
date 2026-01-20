@@ -25,6 +25,7 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: openobserve
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -105,7 +106,7 @@ spec:
             - name: data
               mountPath: /data
           {{- if .Values.extraVolumeMounts }}
-          {{ toYaml .Values.extraVolumeMounts | nindent 10 }}
+          {{ toYaml .Values.extraVolumeMounts | nindent 12 }}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

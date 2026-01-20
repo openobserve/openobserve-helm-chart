@@ -23,4 +23,5 @@ spec:
       name: grpc
   selector:
     {{- include "openobserve.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: openobserve
 {{- end }}
