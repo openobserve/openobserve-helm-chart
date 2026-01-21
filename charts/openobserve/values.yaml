@@ -53,8 +53,7 @@ podSecurityContext:
   runAsGroup: 3000
   runAsNonRoot: true
 
-securityContext:
-  {}
+securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -95,6 +94,14 @@ compactor:
     ZO_META_CONNECTION_POOL_MAX_SIZE: "0"
     ZO_ACTIX_REQ_TIMEOUT: "30"
   extraEnv: []
+  persistence:
+    enabled: false
+    size: 10Gi
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    volumePermissions:
+      enabled: false
 
 router:
   # Router specific configuration
@@ -768,8 +775,7 @@ zplane:
   ingress: # if enabled is true then this is required
     enabled: false
     className: ""
-    annotations:
-      {}
+    annotations: {}
       # kubernetes.io/ingress.class: nginx
       # cert-manager.io/issuer: letsencrypt
       # kubernetes.io/tls-acme: true
@@ -778,8 +784,7 @@ zplane:
         paths:
           - path: /
             pathType: ImplementationSpecific
-    tls:
-      []
+    tls: []
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
@@ -859,8 +864,7 @@ enterprise:
       O2_ACTION_MAX_MILLI_CPU: "128"
       O2_ACTION_MIN_MILLI_CPU: "128"
       O2_ACTION_CONTAINER_IMAGE: "ghcr.io/astral-sh/uv:bookworm-slim"
-    resources:
-      {}
+    resources: {}
       # limits:
       #   cpu: 1000m
       #   memory: 1Gi
