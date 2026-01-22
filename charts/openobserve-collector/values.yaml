@@ -143,7 +143,7 @@ agent:
           to: resource["k8s.pod.uid"]
     hostmetrics:
       root_path: /hostfs
-      collection_interval: 30s
+      collection_interval: 10s
       scrapers:
         cpu:
           metrics:
@@ -197,7 +197,7 @@ agent:
         #     processes: {}
         #     process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
-      collection_interval: 30s
+      collection_interval: 10s
       auth_type: "serviceAccount"
       endpoint: "https://${env:K8S_NODE_IP}:10250"
       insecure_skip_verify: true
@@ -376,7 +376,7 @@ gateway:
         grpc: {}
         http: {}
     k8s_cluster:
-      collection_interval: 30s
+      collection_interval: 10s
       node_conditions_to_report:
         [Ready, MemoryPressure, DiskPressure, PIDPressure]
       allocatable_types_to_report: [cpu, memory, storage]
@@ -409,7 +409,7 @@ gateway:
           - job_name: cadvisor
             scheme: https
             sample_limit: 10000
-            scrape_interval: 30s
+            scrape_interval: 10s
             scrape_timeout: 10s
             metrics_path: /metrics/cadvisor
             tls_config:
