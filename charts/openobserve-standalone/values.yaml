@@ -348,6 +348,16 @@ ingress:
       hosts:
         - openobserve.example.com
 
+# blockedMetrics configuration for the nginx container that blocks /metrics and /api/metrics endpoints
+blockedMetrics:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 50m
+      memory: 32Mi
+
 # You can specify resources for each deployment independently.
 # For example, to configure resources for the ingester, use
 # the code below:

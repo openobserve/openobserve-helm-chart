@@ -44,12 +44,7 @@ spec:
         - name: run
           mountPath: /var/run
         resources:
-          requests:
-            cpu: 10m
-            memory: 16Mi
-          limits:
-            cpu: 50m
-            memory: 32Mi
+          {{- toYaml .Values.blockedMetrics.resources | nindent 10 }}
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
