@@ -1,3 +1,4 @@
+{{- if .Values.gateway.enabled -}}
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
@@ -71,3 +72,4 @@ spec:
       {{- toYaml .Values.exporters | nindent 6 }}
     service:
       {{- toYaml .Values.gateway.service | nindent 6 }}
+{{- end -}}
