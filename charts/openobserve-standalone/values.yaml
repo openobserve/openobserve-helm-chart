@@ -558,17 +558,17 @@ enterprise:
     O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: ""  # Leave empty to use default auto-generated URL
     # Service Graph features
-    O2_SERVICE_GRAPH_ENABLED: "true"
+    O2_SERVICE_GRAPH_ENABLED: "false"
     O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS: "300"
     O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES: "10"
     O2_SERVICE_GRAPH_EXCLUDE_INTERNAL_SPANS: "false"
     # Incidents and RCA features
-    O2_INCIDENTS_ENABLED: "true"
-    O2_INCIDENTS_RCA_ENABLED: "true"
+    O2_INCIDENTS_ENABLED: "false"
+    O2_INCIDENTS_RCA_ENABLED: "false"
     O2_INCIDENTS_AUTO_RESOLVE_AFTER_MINUTES: "-1"
-    O2_INCIDENTS_ALERT_GRAPH_ENABLED: "true"
+    O2_INCIDENTS_ALERT_GRAPH_ENABLED: "false"
     # Service Streams features
-    O2_SERVICE_STREAMS_ENABLED: "true"
+    O2_SERVICE_STREAMS_ENABLED: "false"
     O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_STREAM: "5"
     O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_FILE: "50"
     O2_FQN_PRIORITY_DIMENSIONS: "k8s-deployment,k8s-statefulset,k8s-daemonset,k8s-job,aws-ecs-task,service"
