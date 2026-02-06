@@ -48,6 +48,10 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+          {{- with .Values.compactor.persistence.volumePermissions.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         {{- end }}
         {{- if .Values.etcd.enabled }}
         - name: check-etcd
@@ -58,21 +62,25 @@ spec:
               sleep 5;
             done;
           ']
-        {{- end }} 
+          {{- with .Values.compactor.initContainers.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- end }}
         {{- if .Values.nats.enabled }}
         - name: check-nats
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
-          resources:
-            limits:
-              cpu: 50m
-              memory: 50Mi
           command: ['sh', '-c', '
             until nc -zv {{ .Release.Name }}-nats 4222; do
               echo "Waiting for NATS to be ready...";
               sleep 2;
             done;
           ']
-         {{- end }} 
+          {{- with .Values.compactor.initContainers.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- end }} 
       containers:
         - name: {{ .Chart.Name }}-compactor
           securityContext:
