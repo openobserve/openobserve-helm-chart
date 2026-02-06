@@ -9,6 +9,10 @@ spec:
   mode: daemonset # "daemonset", "deployment" (default), "statefulset"
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+  {{- with .Values.image.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   env:
     - name: K8S_NODE_NAME
       valueFrom:
