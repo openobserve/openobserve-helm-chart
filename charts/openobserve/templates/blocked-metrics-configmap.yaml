@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled -}}
+{{- if and .Values.ingress.enabled (not .Values.gateway.enabled) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:

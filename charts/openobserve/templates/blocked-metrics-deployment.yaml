@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled -}}
+{{- if and .Values.ingress.enabled (not .Values.gateway.enabled) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

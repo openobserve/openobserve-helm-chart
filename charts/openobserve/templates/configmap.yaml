@@ -307,6 +307,41 @@ data:
   O2_METRICS_DOWNSAMPLING_RULES: "{{ .Values.enterprise.parameters.O2_METRICS_DOWNSAMPLING_RULES }}"
   O2_RATE_LIMIT_ENABLED: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_ENABLED }}"
   O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_RULE_REFRESH_INTERVAL }}"
+  {{- if and (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (not .Values.enterprise.sreagent.enabled) }}
+    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.sreagent.enabled is not true. SRE Agent is required for AI features!" }}
+  {{- end }}
+  O2_AI_ENABLED: "{{ .Values.enterprise.parameters.O2_AI_ENABLED }}"
+  {{- if .Values.enterprise.parameters.O2_AI_MODEL }}
+  O2_AI_MODEL: "{{ .Values.enterprise.parameters.O2_AI_MODEL }}"
+  {{- end }}
+  {{- if .Values.enterprise.parameters.O2_AI_PROVIDER }}
+  O2_AI_PROVIDER: "{{ .Values.enterprise.parameters.O2_AI_PROVIDER }}"
+  {{- end }}
+  {{- if .Values.enterprise.parameters.O2_TOOL_API_URL }}
+  O2_TOOL_API_URL: "{{ .Values.enterprise.parameters.O2_TOOL_API_URL }}"
+  {{- else }}
+  O2_TOOL_API_URL: "http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.service.http_port }}"
+  {{- end }}
+  {{- if .Values.enterprise.parameters.O2_AGENT_URL }}
+  O2_AGENT_URL: "{{ .Values.enterprise.parameters.O2_AGENT_URL }}"
+  {{- else if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled }}
+  O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-sreagent.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
+  {{- end }}
+  O2_SERVICE_GRAPH_ENABLED: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_ENABLED }}"
+  O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS }}"
+  O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES }}"
+  O2_SERVICE_GRAPH_EXCLUDE_INTERNAL_SPANS: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_EXCLUDE_INTERNAL_SPANS }}"
+  O2_INCIDENTS_ENABLED: "{{ .Values.enterprise.parameters.O2_INCIDENTS_ENABLED }}"
+  O2_INCIDENTS_RCA_ENABLED: "{{ .Values.enterprise.parameters.O2_INCIDENTS_RCA_ENABLED }}"
+  O2_INCIDENTS_AUTO_RESOLVE_AFTER_MINUTES: "{{ .Values.enterprise.parameters.O2_INCIDENTS_AUTO_RESOLVE_AFTER_MINUTES }}"
+  O2_INCIDENTS_ALERT_GRAPH_ENABLED: "{{ .Values.enterprise.parameters.O2_INCIDENTS_ALERT_GRAPH_ENABLED }}"
+  O2_SERVICE_STREAMS_ENABLED: "{{ .Values.enterprise.parameters.O2_SERVICE_STREAMS_ENABLED }}"
+  O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_STREAM: "{{ .Values.enterprise.parameters.O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_STREAM }}"
+  O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_FILE: "{{ .Values.enterprise.parameters.O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_FILE }}"
+  O2_FQN_PRIORITY_DIMENSIONS: "{{ .Values.enterprise.parameters.O2_FQN_PRIORITY_DIMENSIONS }}"
+  O2_SERVICE_STREAMS_MIN_CORRELATION_CONFIDENCE: "{{ .Values.enterprise.parameters.O2_SERVICE_STREAMS_MIN_CORRELATION_CONFIDENCE }}"
+  O2_SERVICE_STREAMS_MAX_STREAMS_PER_SERVICE: "{{ .Values.enterprise.parameters.O2_SERVICE_STREAMS_MAX_STREAMS_PER_SERVICE }}"
+  O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS: "{{ .Values.enterprise.parameters.O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS }}"
   O2_ACTION_ENABLED: "{{ .Values.enterprise.actions.enabled }}"
   O2_ACTION_CLUSTER_URL: "http://{{ include "openobserve.fullname" . }}-actions.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5080"
   O2_SCRIPT_SERVER_TOKEN:  "{{ .Values.enterprise.actions.parameters.O2_SCRIPT_SERVER_TOKEN }}"

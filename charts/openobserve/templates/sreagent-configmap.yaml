@@ -1,0 +1,51 @@
+{{- if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled -}}
+{{- /* Validation: If O2_AI_GATEWAY_ENABLED is manually set to "true", ensure aiGateway.enabled is true or O2_AI_GATEWAY_URL is provided */ -}}
+{{- if and (eq (.Values.enterprise.sreagent.config.O2_AI_GATEWAY_ENABLED | toString) "true") (not .Values.aiGateway.enabled) (not .Values.enterprise.sreagent.config.O2_AI_GATEWAY_URL) }}
+  {{- fail "ERROR: O2_AI_GATEWAY_ENABLED is set to 'true' but aiGateway.enabled is false and no O2_AI_GATEWAY_URL is provided. Either set aiGateway.enabled to true or provide O2_AI_GATEWAY_URL!" }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "openobserve.fullname" . }}-sreagent
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+data:
+  O2_SRE_HOST: {{ .Values.enterprise.sreagent.config.O2_SRE_HOST | quote }}
+  O2_SRE_PORT: {{ .Values.enterprise.sreagent.config.O2_SRE_PORT | quote }}
+  O2_SRE_LOG_LEVEL: {{ .Values.enterprise.sreagent.config.O2_SRE_LOG_LEVEL | quote }}
+  ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: {{ .Values.enterprise.sreagent.config.ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL | quote }}
+  O2_TOOL_API_URL: http://{{ include "openobserve.fullname" . }}-router.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.service.http_port }}/api/default/mcp
+  O2_AI_MODEL: {{ .Values.enterprise.sreagent.config.O2_AI_MODEL | quote }}
+  O2_MCP_VALIDATION_ENABLED: {{ .Values.enterprise.sreagent.config.O2_MCP_VALIDATION_ENABLED | quote }}
+  O2_MCP_VALIDATION_RETRY: {{ .Values.enterprise.sreagent.config.O2_MCP_VALIDATION_RETRY | quote }}
+  O2_MCP_CONTENT_VALIDATION_ENABLED: {{ .Values.enterprise.sreagent.config.O2_MCP_CONTENT_VALIDATION_ENABLED | quote }}
+  O2_MCP_CONTENT_VALIDATION_MODE: {{ .Values.enterprise.sreagent.config.O2_MCP_CONTENT_VALIDATION_MODE | quote }}
+  O2_MCP_RESPONSE_VALIDATION_ENABLED: {{ .Values.enterprise.sreagent.config.O2_MCP_RESPONSE_VALIDATION_ENABLED | quote }}
+  {{- if .Values.aiGateway.enabled }}
+  # Flow 1: Existing AI Gateway enabled
+  # SRE agent routes requests through the specified gateway
+  # SRE agent sends: POST {O2_AI_GATEWAY_URL}/v1/chat/completions + x-ai-eg-model header
+  # Gateway routes based on x-ai-eg-model header automatically (no O2_AI_PROVIDER needed)
+  O2_AI_GATEWAY_ENABLED: "true"
+  O2_AI_GATEWAY_URL: http://{{ .Values.aiGateway.gatewayServiceName }}.{{ if .Values.aiGateway.gatewayNamespace }}{{ .Values.aiGateway.gatewayNamespace }}{{ else }}{{ .Release.Namespace }}{{ end }}.svc.{{ .Values.clusterDomain }}:{{ .Values.aiGateway.port }}
+  {{- else if .Values.enterprise.sreagent.config.O2_AI_GATEWAY_URL }}
+  # Flow 2: Self-hosted/external AI gateway
+  # Use user-provided gateway URL
+  # SRE agent sends: POST {O2_AI_GATEWAY_URL}/chat/completions + x-ai-eg-model header
+  # Gateway routes based on x-ai-eg-model header automatically (no O2_AI_PROVIDER needed)
+  {{- if .Values.enterprise.sreagent.config.O2_AI_GATEWAY_ENABLED }}
+  O2_AI_GATEWAY_ENABLED: {{ .Values.enterprise.sreagent.config.O2_AI_GATEWAY_ENABLED | quote }}
+  {{- else }}
+  O2_AI_GATEWAY_ENABLED: "true"
+  {{- end }}
+  O2_AI_GATEWAY_URL: {{ .Values.enterprise.sreagent.config.O2_AI_GATEWAY_URL | quote }}
+  {{- else }}
+  # Flow 3: No AI Gateway - Direct provider calls
+  # O2_AI_PROVIDER is required to know which provider API to call
+  {{- if .Values.enterprise.sreagent.config.O2_AI_GATEWAY_ENABLED }}
+  O2_AI_GATEWAY_ENABLED: {{ .Values.enterprise.sreagent.config.O2_AI_GATEWAY_ENABLED | quote }}
+  {{- end }}
+  O2_AI_PROVIDER: {{ .Values.enterprise.sreagent.config.O2_AI_PROVIDER | quote }}
+  {{- end }}
+{{- end }}

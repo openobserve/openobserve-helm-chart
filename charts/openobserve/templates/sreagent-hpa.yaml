@@ -1,0 +1,33 @@
+{{- if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled .Values.autoscaling.sreagent.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "openobserve.fullname" . }}-sreagent
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "openobserve.fullname" . }}-sreagent
+  minReplicas: {{ .Values.autoscaling.sreagent.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.sreagent.maxReplicas }}
+  metrics:
+    {{- if .Values.autoscaling.sreagent.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.sreagent.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.autoscaling.sreagent.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.sreagent.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
