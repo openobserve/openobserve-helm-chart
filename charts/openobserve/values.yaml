@@ -6,11 +6,11 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.40.1"
+    tag: "v0.60.0"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.40.1"
+    tag: "v0.60.0"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
@@ -20,7 +20,7 @@ image:
   sreagent:
     repository: public.ecr.aws/zinclabs/o2-sre-agent
     # repository: 058694856476.dkr.ecr.us-east-2.amazonaws.com/openobserve/o2-sre-agent
-    tag: "v1.1.5"
+    tag: "v1.1.6"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -971,7 +971,7 @@ enterprise:
     O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: ""  # Leave empty to use default auto-generated URL
     # Service Graph features
-    O2_SERVICE_GRAPH_ENABLED: "true"
+    O2_SERVICE_GRAPH_ENABLED: "false"
     O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS: "300"
     O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES: "10"
     O2_SERVICE_GRAPH_EXCLUDE_INTERNAL_SPANS: "false"
