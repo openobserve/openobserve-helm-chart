@@ -6,11 +6,11 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.60.0"
+    tag: "v0.60.0-rc4"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.60.0"
+    tag: "v0.60.0-rc4"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
