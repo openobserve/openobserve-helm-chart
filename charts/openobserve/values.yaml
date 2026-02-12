@@ -6,17 +6,21 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.40.1"
+    tag: "v0.60.0-rc4"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.40.1"
+    tag: "v0.60.0-rc4"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
+  sreagent:
+    repository: public.ecr.aws/zinclabs/o2-sre-agent
+    # repository: 058694856476.dkr.ecr.us-east-2.amazonaws.com/openobserve/o2-sre-agent
+    tag: "v1.1.6"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -44,6 +48,7 @@ podAnnotations:
   reportserver: {}
   alertquerier: {}
   zplane: {}
+  sreagent: {}
 
 labels: {}
 
@@ -71,6 +76,7 @@ replicaCount:
   zplane: 0
   reportserver: 0
   actions: 1
+  sreagent: 2
 
 alertmanager:
   # Alertmanager specific configuration
@@ -236,6 +242,9 @@ auth:
   ZO_REPORT_USER_PASSWORD: ""
   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
+  O2_AI_API_KEY: "" # AI API key for o2-sre-agent
+  O2_MCP_USERNAME: "" # MCP authentication username for o2-sre-agent (optional)
+  O2_MCP_PASSWORD: "" # MCP authentication password for o2-sre-agent (optional)
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -570,6 +579,89 @@ ingress:
       hosts:
         - openobserve.example.com
 
+# Gateway API configuration (Envoy Gateway)
+# Uses Envoy Gateway EnvoyPatchPolicy to block /metrics and /api/metrics endpoints with direct 403 response
+gateway:
+  enabled: false
+  # TLS Certificate configuration (requires cert-manager)
+  # Creates Certificate resources for HTTPS listeners on Gateways
+  certificates:
+    enabled: false  # Set to true to create cert-manager Certificate resources
+    # Cert-manager issuer configuration
+    issuerRef:
+      name: "letsencrypt-prod"  # ClusterIssuer or Issuer name
+      kind: "ClusterIssuer"     # ClusterIssuer or Issuer
+    # List of certificates to create
+    certs: []
+      # Example:
+      # - name: eg-external-https-cert  # Certificate resource name
+      #   namespace: envoy-gateway-system  # Where to create the certificate (usually gateway namespace)
+      #   secretName: eg-external-https-cert  # Secret name (must match Gateway certificateRefs)
+      #   dnsNames:
+      #     - helmo2distributed.test.zinclabs.dev
+      #     - apihelmo2distributed.test.zinclabs.dev
+  # HTTPRoute configurations - supports multiple routes with different hostnames and backends
+  httpRoutes:
+    # Annotations to add to all HTTPRoute resources
+    annotations: {}
+    # Labels to add to all HTTPRoute resources
+    labels: {}
+    # List of HTTPRoute configurations
+    # Note: /metrics and /api/metrics are automatically blocked by EnvoyPatchPolicy
+    routes:
+      # UI Route - for web interface (external traffic)
+      - name: openobserve-api
+        # Gateway(s) to attach this route to
+        # Simple format: just gateway name (assumes same namespace as release)
+        gateways:
+          - eg-external
+        # Advanced format (if needed):
+        # gateways:
+        #   - name: eg-external
+        #     namespace: custom-namespace
+        #     sectionName: https
+        hostnames:
+          - "api.openobserve.ai"
+        rules:
+          # Route all traffic to router service
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            backendRefs:
+              - name: router
+                port: 5080
+      # API Route - for data ingestion (internal traffic)
+      - name: openobserve-ui
+        gateways:
+          - eg-internal
+        hostnames:
+          - "ui.openobserve.com"
+        rules:
+          # Route all traffic to ingester service
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            backendRefs:
+              - name: router
+                port: 5080
+      # Example: Route accessible via both internal and external gateways
+      # - name: admin
+      #   gateways:
+      #     - eg-internal
+      #     - eg-external
+      #   hostnames:
+      #     - "admin.openobserve.ai"
+      #   rules:
+      #     - matches:
+      #         - path:
+      #             type: PathPrefix
+      #             value: /
+      #       backendRefs:
+      #         - name: router
+      #           port: 5080
+
 # You can specify resources for each deployment independently.
 # For example, to configure resources for the ingester, use
 # the code below:
@@ -590,6 +682,13 @@ resources:
   dex: {}
   reportserver: {}
   openfga: {}
+  sreagent:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
 
 # autoscaling:
 #   enabled: false
@@ -635,6 +734,12 @@ autoscaling:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
+  sreagent:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
 
 nodeSelector:
   ingester: {}
@@ -646,6 +751,7 @@ nodeSelector:
   zplane: {}
   dex: {}
   reportserver: {}
+  sreagent: {}
 
 tolerations:
   ingester: []
@@ -657,6 +763,7 @@ tolerations:
   zplane: []
   dex: []
   reportserver: []
+  sreagent: []
 
 affinity:
   ingester: {}
@@ -668,6 +775,7 @@ affinity:
   zplane: {}
   dex: {}
   reportserver: {}
+  sreagent: {}
 
 nats:
   enabled: true # if true then nats will be deployed as part of openobserve
@@ -856,6 +964,30 @@ enterprise:
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
     O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds
+    # AI features - requires o2-sre-agent to be enabled
+    # O2_AGENT_URL is auto-generated when sreagent.enabled=true (defaults to http://<release>-sreagent:8000), override below if needed
+    # O2_TOOL_API_URL is auto-generated (defaults to http://<release>-router:5080), override below if needed
+    O2_AI_ENABLED: "false"
+    O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
+    O2_TOOL_API_URL: ""  # Leave empty to use default auto-generated URL
+    # Service Graph features
+    O2_SERVICE_GRAPH_ENABLED: "false"
+    O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS: "300"
+    O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES: "10"
+    O2_SERVICE_GRAPH_EXCLUDE_INTERNAL_SPANS: "false"
+    # Incidents and RCA features
+    O2_INCIDENTS_ENABLED: "false"
+    O2_INCIDENTS_RCA_ENABLED: "false"
+    O2_INCIDENTS_AUTO_RESOLVE_AFTER_MINUTES: "-1"
+    O2_INCIDENTS_ALERT_GRAPH_ENABLED: "false"
+    # Service Streams features
+    O2_SERVICE_STREAMS_ENABLED: "false"
+    O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_STREAM: "5"
+    O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_FILE: "50"
+    O2_FQN_PRIORITY_DIMENSIONS: "k8s-deployment,k8s-statefulset,k8s-daemonset,k8s-job,aws-ecs-task,service"
+    O2_SERVICE_STREAMS_MIN_CORRELATION_CONFIDENCE: "0.20"
+    O2_SERVICE_STREAMS_MAX_STREAMS_PER_SERVICE: "100"
+    O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS: "3600"
   actions:
     enabled: true
     parameters:
@@ -989,6 +1121,27 @@ enterprise:
         - secretName: dex.example.com
           hosts:
             - dex.example.com
+  sreagent:
+    enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
+    config:
+      O2_SRE_HOST: "0.0.0.0"
+      O2_SRE_PORT: "8000"
+      O2_SRE_LOG_LEVEL: "INFO"
+      ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: "true"
+      O2_AI_MODEL: "claude-sonnet-4-5-20250929"  # Model name for AI requests
+      O2_AI_PROVIDER: "anthropic"  # Provider for direct API calls (Flow 3 only - ignored when gateway is used)
+      O2_AI_GATEWAY_ENABLED: ""  # Optional: Set to "true" to force gateway usage (auto-set when aiGateway.enabled=true)
+      O2_AI_GATEWAY_URL: ""  # Optional: AI Gateway URL (e.g., "http://my-gateway:80")
+                             # Flow 1: When aiGateway.enabled=true → Auto-set to deployed gateway (O2_AI_GATEWAY_ENABLED=true, no O2_AI_PROVIDER needed)
+                             # Flow 2: When set manually → Use self-hosted gateway (O2_AI_GATEWAY_ENABLED=true, no O2_AI_PROVIDER needed)
+                             # Flow 3: When blank → Direct provider API calls (O2_AI_PROVIDER required)
+      # MCP validation settings
+      O2_MCP_VALIDATION_ENABLED: "true"
+      O2_MCP_VALIDATION_RETRY: "true"
+      O2_MCP_CONTENT_VALIDATION_ENABLED: "true"
+      O2_MCP_CONTENT_VALIDATION_MODE: "hybrid"
+      O2_MCP_RESPONSE_VALIDATION_ENABLED: "true"
+    extraEnv: []
 
 probes:
   alertmanager:
@@ -1207,3 +1360,37 @@ probes:
         successThreshold: 1
         failureThreshold: 3
         terminationGracePeriodSeconds: 30
+  sreagent:
+    enabled: true
+    config:
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 8000
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        timeoutSeconds: 3
+        failureThreshold: 3
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 8000
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
+
+
+# Envoy AI Gateway Configuration
+# When enabled, SRE agent routes AI requests through an existing AI Gateway
+# Use this when you have already deployed an AI Gateway in your cluster
+aiGateway:
+  enabled: false  # Set to true to use an existing AI Gateway
+  # Name of the AI Gateway service (e.g., "envoy-envoy-gateway-system-ai-gateway-78adb12c")
+  gatewayServiceName: "ai-gateway"
+  # Namespace where the AI Gateway service exists (empty = same as release namespace)
+  gatewayNamespace: ""
+  # Port of the AI Gateway service
+  port: 80
+  # URL will be auto-generated as: http://<gatewayServiceName>.<gatewayNamespace>.svc.cluster.local:<port>
+

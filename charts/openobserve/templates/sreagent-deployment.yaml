@@ -1,0 +1,110 @@
+{{- if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "openobserve.fullname" . }}-sreagent
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    name: openobserve
+    app: openobserve
+    role: sreagent
+spec:
+  {{- if not .Values.autoscaling.sreagent.enabled }}
+  replicas: {{ .Values.replicaCount.sreagent }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "openobserve.selectorLabels" . | nindent 6 }}
+      name: openobserve
+      app: openobserve
+      role: sreagent
+  template:
+    metadata:
+      labels:
+        {{- include "openobserve.selectorLabels" . | nindent 8 }}
+        name: openobserve
+        app: openobserve
+        role: sreagent
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/sreagent-configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations.sreagent }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: o2-sre-agent
+          image: "{{ .Values.image.sreagent.repository }}:{{ .Values.image.sreagent.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "openobserve.fullname" . }}-sreagent
+          env:
+            - name: O2_AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
+                  key: O2_AI_API_KEY
+            {{- if .Values.auth.O2_MCP_USERNAME }}
+            - name: O2_MCP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
+                  key: O2_MCP_USERNAME
+            {{- end }}
+            {{- if .Values.auth.O2_MCP_PASSWORD }}
+            - name: O2_MCP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
+                  key: O2_MCP_PASSWORD
+            {{- end }}
+            {{- with .Values.enterprise.sreagent.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources.sreagent | nindent 12 }}
+          {{- if .Values.probes.sreagent.enabled }}
+          {{- with .Values.probes.sreagent.config.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.probes.sreagent.config.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+              - ALL
+      {{- with .Values.nodeSelector.sreagent }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity.sreagent }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations.sreagent }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

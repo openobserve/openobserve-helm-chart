@@ -1,0 +1,28 @@
+{{- if and .Values.gateway.enabled .Values.gateway.certificates.enabled -}}
+{{- range .Values.gateway.certificates.certs }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace | default $.Release.Namespace }}
+  labels:
+    {{- include "openobserve.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: gateway-certificate
+spec:
+  secretName: {{ .secretName }}
+  issuerRef:
+    name: {{ $.Values.gateway.certificates.issuerRef.name }}
+    kind: {{ $.Values.gateway.certificates.issuerRef.kind }}
+  dnsNames:
+    {{- range .dnsNames }}
+    - {{ . | quote }}
+    {{- end }}
+  {{- if .duration }}
+  duration: {{ .duration }}
+  {{- end }}
+  {{- if .renewBefore }}
+  renewBefore: {{ .renewBefore }}
+  {{- end }}
+{{- end }}
+{{- end }}

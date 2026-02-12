@@ -1,0 +1,23 @@
+{{- if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openobserve.fullname" . }}-sreagent
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    app: openobserve
+    role: sreagent
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "openobserve.selectorLabels" . | nindent 4 }}
+    name: openobserve
+    app: openobserve
+    role: sreagent
+{{- end }}
