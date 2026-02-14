@@ -108,6 +108,23 @@ compactor:
       - ReadWriteOnce
     volumePermissions:
       enabled: false
+      # Separate resources for volume-permissions init container (not shared with main compactor).
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+  # Resources for check-etcd and check-nats init containers (not shared with main compactor).
+  initContainers:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
 
 router:
   # Router specific configuration
