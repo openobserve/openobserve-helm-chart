@@ -80,7 +80,7 @@ cleanup() {
     
     # Delete CloudNative PostgreSQL Operator
     echo "Removing CloudNative PostgreSQL Operator..."
-    kubectl delete -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/releases/cnpg-1.22.1.yaml
+    kubectl delete -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.27/releases/cnpg-1.27.1.yaml
     
     echo "Cleanup completed."
     
@@ -96,7 +96,7 @@ setup() {
     else
         # Install CloudNative PostgreSQL Operator (prerequisite)
         echo "Installing CloudNative PostgreSQL Operator..."
-        kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.22/releases/cnpg-1.22.1.yaml
+        kubectl apply --server-side -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.27/releases/cnpg-1.27.1.yaml
     fi
 
     # wait for the operator to get ready
