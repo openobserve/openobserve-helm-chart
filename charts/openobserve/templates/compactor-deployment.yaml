@@ -130,11 +130,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "compactor"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.compactor.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.compactor.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.compactor.persistence.enabled }}
           volumeMounts:

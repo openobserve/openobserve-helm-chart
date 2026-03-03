@@ -114,11 +114,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "router"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.router.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.router.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
             
       {{- with .Values.nodeSelector.router }}

@@ -59,6 +59,32 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Merge multiple env var lists, with each later list taking precedence over earlier ones.
+Usage: include "openobserve.mergeEnv" (list .Values.extraEnv .Values.someComponent.extraEnv)
+       include "openobserve.mergeEnv" (list $defaults .Values.extraEnv .Values.someComponent.extraEnv)
+*/}}
+{{- define "openobserve.mergeEnv" -}}
+{{- $merged := list -}}
+{{- range . -}}
+{{- $override := . | default list -}}
+{{- $overrideNames := list -}}
+{{- range $override -}}
+{{- $overrideNames = append $overrideNames .name -}}
+{{- end -}}
+{{- $filtered := list -}}
+{{- range $merged -}}
+{{- if not (has .name $overrideNames) -}}
+{{- $filtered = append $filtered . -}}
+{{- end -}}
+{{- end -}}
+{{- $merged = concat $filtered $override -}}
+{{- end -}}
+{{- if $merged -}}
+{{- toYaml $merged -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "openobserve.serviceAccountName" -}}

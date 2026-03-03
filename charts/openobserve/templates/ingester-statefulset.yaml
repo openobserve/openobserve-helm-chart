@@ -235,11 +235,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "ingester"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.ingester.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.ingester.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.ingester.persistence.enabled }}
           volumeMounts:
