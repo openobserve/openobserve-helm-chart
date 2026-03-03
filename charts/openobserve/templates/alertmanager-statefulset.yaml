@@ -122,11 +122,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "alertmanager"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.alertmanager.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.alertmanager.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.alertmanager.persistence.enabled }}
           volumeMounts:

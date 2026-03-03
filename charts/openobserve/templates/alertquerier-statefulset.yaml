@@ -120,11 +120,8 @@ spec:
               value: "querier"
             - name: ZO_NODE_ROLE_GROUP
               value: "background"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.alertquerier.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.alertquerier.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.alertquerier.persistence.enabled }}
           volumeMounts:

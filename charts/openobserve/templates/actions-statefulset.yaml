@@ -48,22 +48,9 @@ spec:
               value: "scriptserver"
             - name: ZO_DATA_DIR
               value: "/data/"
-            {{- $o2ActionNamespaceDefined := false }}
-            {{- $allExtraEnv := concat (default (list) .Values.extraEnv) (default (list) .Values.actions.extraEnv) }}
-            {{- range $allExtraEnv }}
-            {{- if eq .name "O2_ACTION_NAMESPACE" }}
-            {{- $o2ActionNamespaceDefined = true }}
-            {{- end }}
-            {{- end }}
-            {{- if not $o2ActionNamespaceDefined }}
-            - name: O2_ACTION_NAMESPACE
-              value: {{ .Release.Namespace | quote }}
-            {{- end }}
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.actions.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- $defaultEnv := list (dict "name" "O2_ACTION_NAMESPACE" "value" .Release.Namespace) }}
+            {{- with include "openobserve.mergeEnv" (list $defaultEnv .Values.extraEnv .Values.actions.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.enterprise.actions.resources | nindent 12 }}

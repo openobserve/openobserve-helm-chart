@@ -118,11 +118,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "querier"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.querier.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.querier.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.querier.persistence.enabled }}
           volumeMounts:
