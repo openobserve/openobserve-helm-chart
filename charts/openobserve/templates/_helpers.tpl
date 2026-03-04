@@ -109,6 +109,8 @@ Usage: {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
 - name: K8S_CONTAINER_IMAGE
   value: {{ if .Values.enterprise.enabled }}"{{ .Values.image.enterprise.repository }}:{{ .Values.image.enterprise.tag | default .Chart.AppVersion }}"{{ else }}"{{ .Values.image.oss.repository }}:{{ .Values.image.oss.tag | default .Chart.AppVersion }}"{{ end }}
 {{- if .Values.clusterName }}
+- name: K8S_CLUSTER
+  value: {{ .Values.clusterName | quote }}
 - name: K8S_CLUSTER_NAME
   value: {{ .Values.clusterName | quote }}
 {{- end }}
