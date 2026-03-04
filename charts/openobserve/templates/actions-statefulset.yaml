@@ -48,6 +48,9 @@ spec:
               value: "scriptserver"
             - name: ZO_DATA_DIR
               value: "/data/"
+            - name: K8S_CONTAINER_NAME
+              value: "{{ .Chart.Name }}-actions"
+            {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
             {{- $defaultEnv := list (dict "name" "O2_ACTION_NAMESPACE" "value" .Release.Namespace) }}
             {{- with include "openobserve.mergeEnv" (list $defaultEnv .Values.extraEnv .Values.actions.extraEnv) }}
             {{- . | nindent 12 }}
