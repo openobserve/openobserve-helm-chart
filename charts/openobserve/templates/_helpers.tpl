@@ -85,6 +85,36 @@ Usage: include "openobserve.mergeEnv" (list .Values.extraEnv .Values.someCompone
 {{- end -}}
 
 {{/*
+Kubernetes metadata environment variables using the Downward API.
+Injects node name, namespace, pod name, and optionally cluster name into containers.
+Usage: {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
+*/}}
+{{- define "openobserve.k8sMetaEnv" -}}
+- name: K8S_NODE_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: spec.nodeName
+- name: K8S_NAMESPACE_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.namespace
+- name: K8S_POD_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+- name: K8S_POD_ID
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.uid
+- name: K8S_CONTAINER_IMAGE
+  value: {{ if .Values.enterprise.enabled }}"{{ .Values.image.enterprise.repository }}:{{ .Values.image.enterprise.tag | default .Chart.AppVersion }}"{{ else }}"{{ .Values.image.oss.repository }}:{{ .Values.image.oss.tag | default .Chart.AppVersion }}"{{ end }}
+{{- if .Values.clusterName }}
+- name: K8S_CLUSTER_NAME
+  value: {{ .Values.clusterName | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "openobserve.serviceAccountName" -}}

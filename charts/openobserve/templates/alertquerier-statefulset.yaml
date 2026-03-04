@@ -120,6 +120,9 @@ spec:
               value: "querier"
             - name: ZO_NODE_ROLE_GROUP
               value: "background"
+            - name: K8S_CONTAINER_NAME
+              value: "{{ .Chart.Name }}-alertquerier"
+            {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
             {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.alertquerier.extraEnv) }}
             {{- . | nindent 12 }}
             {{- end }}

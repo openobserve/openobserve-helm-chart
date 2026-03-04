@@ -235,6 +235,9 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "ingester"
+            - name: K8S_CONTAINER_NAME
+              value: "{{ .Chart.Name }}-ingester"
+            {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
             {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.ingester.extraEnv) }}
             {{- . | nindent 12 }}
             {{- end }}
