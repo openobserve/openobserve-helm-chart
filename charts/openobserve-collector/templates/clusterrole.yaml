@@ -13,6 +13,7 @@ rules:
   - configmaps
   - endpoints
   - events
+  - limitranges
   - namespaces
   - namespaces/status
   - nodes
@@ -27,6 +28,7 @@ rules:
   - replicationcontrollers
   - replicationcontrollers/status
   - resourcequotas
+  - serviceaccounts
   - services
   verbs: ["get", "list", "watch"]
 - apiGroups: ["monitoring.coreos.com"]
@@ -59,6 +61,22 @@ rules:
 - apiGroups: ["networking.k8s.io"]
   resources:
   - ingresses
+  - networkpolicies
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources:
+  - roles
+  - clusterroles
+  - rolebindings
+  - clusterrolebindings
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apiextensions.k8s.io"]
+  resources:
+  - customresourcedefinitions
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["storage.k8s.io"]
+  resources:
+  - storageclasses
   verbs: ["get", "list", "watch"]
 - apiGroups: ["discovery.k8s.io"]
   resources:

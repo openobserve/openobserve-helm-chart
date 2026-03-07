@@ -34,6 +34,25 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# kube-state-metrics exposes Kubernetes object states as Prometheus metrics.
+# Set enabled: false if you already have kube-state-metrics installed in your cluster.
+kube-state-metrics:
+  enabled: true
+  namespaceOverride: "kube-system"
+  fullnameOverride: "kube-state-metrics"
+  tolerations:
+    - operator: Exists
+  extraArgs:
+    - --metric-annotations-allowlist=replicasets=[deployment.kubernetes.io/revision]
+    - --metric-opt-in-list=kube_serviceaccount_info,kube_serviceaccount_created,kube_serviceaccount_secret,kube_serviceaccount_image_pull_secret
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
 # If Opentelemetry operator should be installed with the chart. If you already have the operator installed, set enabled to false. Refer https://opentelemetry.io/docs/kubernetes/operator/ and https://opentelemetry.io/docs/kubernetes/helm/operator/
 opentelemetry-operator:
   enabled: false
@@ -64,7 +83,8 @@ autoinstrumentation:
 
 agent:
   enabled: true
-  tolerations: []
+  tolerations:
+    - operator: Exists
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -138,9 +158,12 @@ agent:
           from: attributes.stream
           to: attributes["log.iostream"]
         # Move pod UID to resource for k8sattributes processor association
+        # on_error: send ensures static pods (etcd, kube-apiserver) with non-standard UIDs
+        # are still processed even when the regex above didn't capture a uid
         - type: move
           from: attributes.uid
           to: resource["k8s.pod.uid"]
+          on_error: send
     hostmetrics:
       root_path: /hostfs
       collection_interval: 10s
@@ -194,7 +217,7 @@ agent:
               enabled: true
         network: {}
         #     paging: {}
-        #     processes: {}
+        processes: {}
         #     process: {} # a bug in the process scraper causes the collector to throw errors so disabling it for now
     kubeletstats:
       collection_interval: 10s
@@ -334,7 +357,8 @@ gateway:
       #   memory: 64Mi
   affinity: {}
   nodeSelector: {}
-  tolerations: []
+  tolerations:
+    - operator: Exists
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -375,20 +399,6 @@ gateway:
       protocols:
         grpc: {}
         http: {}
-    k8s_cluster:
-      collection_interval: 10s
-      node_conditions_to_report:
-        [Ready, MemoryPressure, DiskPressure, PIDPressure]
-      allocatable_types_to_report: [cpu, memory, storage]
-      metrics:
-        k8s.container.cpu_limit: # redundant
-          enabled: false
-        k8s.container.cpu_request: # redundant
-          enabled: false
-        k8s.container.memory_limit: # redundant
-          enabled: false
-        k8s.container.memory_request: # redundant
-          enabled: false
     k8sobjects/events:
       auth_type: serviceAccount
       objects:
@@ -403,6 +413,147 @@ gateway:
           mode: watch
           # label_selector: environment in (production),tier in (frontend)
           # field_selector filters removed to capture all pod phases (Pending, Running, Failed, etc.)
+    k8sobjects/nodes:
+      auth_type: serviceAccount
+      objects:
+        - name: nodes
+          mode: watch
+    k8sobjects/deployments:
+      auth_type: serviceAccount
+      objects:
+        - name: deployments
+          mode: watch
+          group: apps
+    k8sobjects/services:
+      auth_type: serviceAccount
+      objects:
+        - name: services
+          mode: watch
+    k8sobjects/namespaces:
+      auth_type: serviceAccount
+      objects:
+        - name: namespaces
+          mode: watch
+    k8sobjects/pvcs:
+      auth_type: serviceAccount
+      objects:
+        - name: persistentvolumeclaims
+          mode: watch
+    k8sobjects/daemonsets:
+      auth_type: serviceAccount
+      objects:
+        - name: daemonsets
+          mode: watch
+          group: apps
+    k8sobjects/statefulsets:
+      auth_type: serviceAccount
+      objects:
+        - name: statefulsets
+          mode: watch
+          group: apps
+    k8sobjects/ingresses:
+      auth_type: serviceAccount
+      objects:
+        - name: ingresses
+          mode: watch
+          group: networking.k8s.io
+    k8sobjects/jobs:
+      auth_type: serviceAccount
+      objects:
+        - name: jobs
+          mode: watch
+          group: batch
+    k8sobjects/cronjobs:
+      auth_type: serviceAccount
+      objects:
+        - name: cronjobs
+          mode: watch
+          group: batch
+    k8sobjects/persistentvolumes:
+      auth_type: serviceAccount
+      objects:
+        - name: persistentvolumes
+          mode: watch
+    k8sobjects/serviceaccounts:
+      auth_type: serviceAccount
+      objects:
+        - name: serviceaccounts
+          mode: watch
+    k8sobjects/roles:
+      auth_type: serviceAccount
+      objects:
+        - name: roles
+          mode: watch
+          group: rbac.authorization.k8s.io
+    k8sobjects/clusterroles:
+      auth_type: serviceAccount
+      objects:
+        - name: clusterroles
+          mode: watch
+          group: rbac.authorization.k8s.io
+    k8sobjects/rolebindings:
+      auth_type: serviceAccount
+      objects:
+        - name: rolebindings
+          mode: watch
+          group: rbac.authorization.k8s.io
+    k8sobjects/clusterrolebindings:
+      auth_type: serviceAccount
+      objects:
+        - name: clusterrolebindings
+          mode: watch
+          group: rbac.authorization.k8s.io
+    k8sobjects/hpa:
+      auth_type: serviceAccount
+      objects:
+        - name: horizontalpodautoscalers
+          mode: watch
+          group: autoscaling
+    k8sobjects/crds:
+      auth_type: serviceAccount
+      objects:
+        - name: customresourcedefinitions
+          mode: pull
+          interval: 5m
+          group: apiextensions.k8s.io
+    k8sobjects/storageclasses:
+      auth_type: serviceAccount
+      objects:
+        - name: storageclasses
+          mode: watch
+          group: storage.k8s.io
+    k8sobjects/configmaps:
+      auth_type: serviceAccount
+      objects:
+        - name: configmaps
+          mode: watch
+    k8sobjects/networkpolicies:
+      auth_type: serviceAccount
+      objects:
+        - name: networkpolicies
+          mode: watch
+          group: networking.k8s.io
+    k8sobjects/endpoints:
+      auth_type: serviceAccount
+      objects:
+        - name: endpoints
+          mode: watch
+    k8sobjects/replicasets:
+      auth_type: serviceAccount
+      objects:
+        - name: replicasets
+          mode: watch
+          group: apps
+    k8sobjects/limitranges:
+      auth_type: serviceAccount
+      objects:
+        - name: limitranges
+          mode: watch
+    k8sobjects/resourcequotas:
+      auth_type: serviceAccount
+      objects:
+        - name: resourcequotas
+          mode: watch
     prometheus:
       config:
         scrape_configs:
@@ -441,8 +592,147 @@ gateway:
                 source_labels:
                   - __meta_kubernetes_node_name
                 target_label: node
+          - job_name: kube-state-metrics
+            scrape_interval: 30s
+            scrape_timeout: 10s
+            static_configs:
+              - targets: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
+            metric_relabel_configs:
+              # Keep the most useful kube-state-metrics for a Datadog-equivalent view
+              - action: keep
+                regex: "kube_(pod_info|pod_created|pod_status_phase|pod_status_ready|pod_status_reason|pod_container_info|pod_container_status_ready|pod_container_status_restarts_total|pod_container_resource_requests|pod_container_resource_limits|pod_container_status_waiting.*|pod_container_status_terminated_reason|pod_owner|pod_spec_volumes_persistentvolumeclaims_info|deployment_status_replicas.*|deployment_spec_replicas|deployment_created|daemonset_created|daemonset_status.*|statefulset_replicas|statefulset_created|statefulset_status.*|replicaset_status.*|replicaset_spec_replicas|replicaset_created|replicaset_owner|replicaset_annotations|service_info|service_created|service_spec_type|service_status_load_balancer_ingress|endpoint_address|node_status_condition|node_status_allocatable|node_info|node_spec_taint|node_created|namespace_status_phase|namespace_created|persistentvolumeclaim_status_phase|persistentvolumeclaim_info|persistentvolumeclaim_access_mode|persistentvolumeclaim_resource_requests_storage_bytes|persistentvolumeclaim_created|persistentvolume_info|persistentvolume_created|persistentvolume_status_phase|persistentvolume_capacity_bytes|persistentvolume_access_mode|persistentvolume_reclaim_policy|horizontalpodautoscaler_info|horizontalpodautoscaler_created|horizontalpodautoscaler_status.*|horizontalpodautoscaler_spec.*|job_info|job_created|job_status.*|job_spec.*|job_complete|job_failed|job_owner|cronjob_info|cronjob_created|cronjob_status_active|cronjob_spec_suspend|cronjob_next_schedule_time|ingress_info|ingress_created|ingress_path|ingress_tls|ingress_labels|networkpolicy_created|networkpolicy_spec_ingress_rules|networkpolicy_spec_egress_rules|resourcequota|limitrange|serviceaccount_info|serviceaccount_created)"
+                source_labels: [__name__]
+          # CoreDNS metrics (DNS request rate, error rate, cache hit/miss)
+          - job_name: coredns
+            scrape_interval: 30s
+            scrape_timeout: 10s
+            kubernetes_sd_configs:
+              - role: endpoints
+                namespaces:
+                  names: [kube-system]
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_service_name]
+                action: keep
+                regex: kube-dns
+              - source_labels: [__meta_kubernetes_endpoint_port_name]
+                action: keep
+                regex: metrics
+          # kube-apiserver metrics (request rate, latency, error rate, inflight requests)
+          - job_name: kube-apiserver
+            scheme: https
+            scrape_interval: 30s
+            scrape_timeout: 10s
+            tls_config:
+              ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            authorization:
+              credentials_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              type: Bearer
+            kubernetes_sd_configs:
+              - role: endpoints
+                namespaces:
+                  names: [default]
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+                action: keep
+                regex: kubernetes;https
+            metric_relabel_configs:
+              - action: keep
+                regex: "apiserver_(request_total|request_duration_seconds_bucket|request_duration_seconds_count|admission_webhook_request_total|current_inflight_requests)|process_resident_memory_bytes|process_cpu_seconds_total|kubernetes_build_info"
+                source_labels: [__name__]
+          # kube-scheduler metrics (scheduling latency, queue depth)
+          - job_name: kube-scheduler
+            scheme: https
+            scrape_interval: 30s
+            scrape_timeout: 10s
+            tls_config:
+              insecure_skip_verify: true
+            authorization:
+              credentials_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              type: Bearer
+            kubernetes_sd_configs:
+              - role: pod
+                namespaces:
+                  names: [kube-system]
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_pod_label_component]
+                action: keep
+                regex: kube-scheduler
+              - source_labels: [__address__]
+                action: replace
+                regex: "([^:]+)(?::\\d+)?"
+                replacement: "$1:10259"
+                target_label: __address__
+              - source_labels: [__meta_kubernetes_pod_node_name]
+                target_label: node
+          # kube-controller-manager metrics (reconciliation errors, queue depth)
+          - job_name: kube-controller-manager
+            scheme: https
+            scrape_interval: 30s
+            scrape_timeout: 10s
+            tls_config:
+              insecure_skip_verify: true
+            authorization:
+              credentials_file: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+              type: Bearer
+            kubernetes_sd_configs:
+              - role: pod
+                namespaces:
+                  names: [kube-system]
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_pod_label_component]
+                action: keep
+                regex: kube-controller-manager
+              - source_labels: [__address__]
+                action: replace
+                regex: "([^:]+)(?::\\d+)?"
+                replacement: "$1:10257"
+                target_label: __address__
+              - source_labels: [__meta_kubernetes_pod_node_name]
+                target_label: node
+          # Prometheus auto-discovery: scrapes any pod annotated with prometheus.io/scrape=true
+          - job_name: prometheus-autodiscovery
+            scrape_interval: 30s
+            kubernetes_sd_configs:
+              - role: pod
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                action: keep
+                regex: "true"
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+                action: replace
+                target_label: __metrics_path__
+                regex: (.+)
+              - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+                action: replace
+                regex: "([^:]+)(?::\\d+)?;(\\d+)"
+                replacement: "$1:$2"
+                target_label: __address__
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+                action: replace
+                regex: (https?)
+                target_label: __scheme__
+              - source_labels: [__meta_kubernetes_namespace]
+                target_label: namespace
+              - source_labels: [__meta_kubernetes_pod_name]
+                target_label: pod
+              - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                target_label: service
+            sample_limit: 10000
 
   processors:
+    # Strip large CRD spec/status before export.
+    # The openAPIV3Schema inside spec.versions[*].schema is 100KB-2MB per CRD.
+    # We first promote the 3 useful spec fields (group, scope, versions names) into
+    # the body directly, then delete spec/status entirely.
+    transform/strip_crd_spec:
+      log_statements:
+        - context: log
+          statements:
+            - set(body["crd_group"], body["spec"]["group"]) where body["kind"] == "CustomResourceDefinition"
+            - set(body["crd_scope"], body["spec"]["scope"]) where body["kind"] == "CustomResourceDefinition"
+            - set(body["crd_stored_versions"], body["status"]["storedVersions"]) where body["kind"] == "CustomResourceDefinition"
+            - delete_key(body, "spec") where body["kind"] == "CustomResourceDefinition"
+            - delete_key(body, "status") where body["kind"] == "CustomResourceDefinition"
     memory_limiter:
       check_interval: 1s
       limit_mib: 1024
@@ -555,17 +845,12 @@ gateway:
     extensions: [health_check, zpages]
     pipelines:
       logs/k8s_events:
-        receivers: [k8sobjects/events]
+        receivers: [k8sobjects/events, k8sobjects/pods, k8sobjects/nodes, k8sobjects/deployments, k8sobjects/services, k8sobjects/namespaces, k8sobjects/pvcs, k8sobjects/daemonsets, k8sobjects/statefulsets, k8sobjects/ingresses, k8sobjects/jobs, k8sobjects/cronjobs, k8sobjects/persistentvolumes, k8sobjects/serviceaccounts, k8sobjects/roles, k8sobjects/clusterroles, k8sobjects/rolebindings, k8sobjects/clusterrolebindings, k8sobjects/hpa, k8sobjects/crds, k8sobjects/storageclasses, k8sobjects/configmaps, k8sobjects/networkpolicies, k8sobjects/endpoints, k8sobjects/replicasets, k8sobjects/limitranges, k8sobjects/resourcequotas]
         processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+          [memory_limiter, resourcedetection, attributes, k8sattributes, transform/strip_crd_spec, batch]
         exporters: [otlphttp/openobserve_k8s_events]
-      logs/k8s_pods:
-        receivers: [k8sobjects/pods]
-        processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve] 
       metrics:
-        receivers: [k8s_cluster, servicegraph, prometheus]
+        receivers: [otlp, servicegraph, prometheus]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve] 
