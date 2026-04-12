@@ -255,8 +255,8 @@ data:
   {{- else if .Values.enterprise.sreagent.enabled }}
   O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-sreagent.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
   {{- end }}
-  ZO_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.config.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
-  ZO_MASTER_ENCRYPTION_KEY: "{{ .Values.config.ZO_MASTER_ENCRYPTION_KEY }}"
+  ZO_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
+  ZO_MASTER_ENCRYPTION_KEY: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY }}"
   O2_SERVICE_GRAPH_ENABLED: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_ENABLED }}"
   O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS }}"
   O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES }}"
