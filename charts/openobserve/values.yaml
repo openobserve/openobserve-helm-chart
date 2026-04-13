@@ -911,7 +911,7 @@ enterprise:
     # Incidents and RCA features
     O2_INCIDENTS_ENABLED: "false"
     O2_INCIDENTS_RCA_ENABLED: "false"
-    O2_INCIDENTS_AUTO_RESOLVE_AFTER_MINUTES: "-1"
+    O2_INCIDENTS_AUTO_RESOLVE_AFTER_MINUTES: "4320"
     O2_INCIDENTS_ALERT_GRAPH_ENABLED: "false"
     # Service Streams features
     O2_SERVICE_STREAMS_ENABLED: "false"
