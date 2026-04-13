@@ -560,7 +560,7 @@ enterprise:
     O2_AI_ENABLED: "false"
     O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: ""  # Leave empty to use default auto-generated URL
-    ZO_MASTER_ENCRYPTION_ALGORITHM: "aes-256-siv"
+    ZO_MASTER_ENCRYPTION_ALGORITHM: "" # MUST be empty if key is empty
     ZO_MASTER_ENCRYPTION_KEY: ""
     # Service Graph features
     O2_SERVICE_GRAPH_ENABLED: "false"
