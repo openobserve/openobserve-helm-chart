@@ -45,8 +45,7 @@ podSecurityContext:
   runAsGroup: 3000
   runAsNonRoot: true
 
-securityContext:
-  {}
+securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -152,6 +151,9 @@ config:
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_num"
   ZO_FEATURE_SHARED_MEMTABLE_ENABLED: "false"
   ZO_FEATURE_QUERY_STREAMING_AGGS: "true"
+  ZO_FEATURE_PUSHDOWN_FILTER_ENABLED: "false"
+  ZO_FEATURE_DYNAMIC_PUSHDOWN_FILTER_ENABLED: "true"
+  ZO_UTF8_VIEW_ENABLED: "false"
   ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "10000"
   ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES: "10000"
   ZO_CACHE_DELAY_SECS: "300"
@@ -373,11 +375,11 @@ gateway:
   # TLS Certificate configuration (requires cert-manager)
   # Creates Certificate resources for HTTPS listeners on Gateways
   certificates:
-    enabled: false  # Set to true to create cert-manager Certificate resources
+    enabled: false # Set to true to create cert-manager Certificate resources
     # Cert-manager issuer configuration
     issuerRef:
-      name: "letsencrypt-prod"  # ClusterIssuer or Issuer name
-      kind: "ClusterIssuer"     # ClusterIssuer or Issuer
+      name: "letsencrypt-prod" # ClusterIssuer or Issuer name
+      kind: "ClusterIssuer" # ClusterIssuer or Issuer
     # List of certificates to create
     certs: []
       # Example:
@@ -417,7 +419,7 @@ gateway:
                   value: /
             backendRefs:
               # Use the full service name (will be {{ release-name }}-openobserve-standalone)
-              - name: o2-openobserve-standalone  # Change this to match your release name
+              - name: o2-openobserve-standalone # Change this to match your release name
                 port: 5080
 
 # You can specify resources for each deployment independently.
@@ -485,11 +487,11 @@ zplane:
     type: ClusterIP
     port: 9200
     annotations: {}
-  ingress: # if enabled is true then this is required
+  ingress:
+    # if enabled is true then this is required
     enabled: false
     className: ""
-    annotations:
-      {}
+    annotations: {}
       # kubernetes.io/ingress.class: nginx
       # cert-manager.io/issuer: letsencrypt
       # kubernetes.io/tls-acme: true
@@ -498,8 +500,7 @@ zplane:
         paths:
           - path: /
             pathType: ImplementationSpecific
-    tls:
-      []
+    tls: []
       # - secretName: chart-example-tls
       #   hosts:
       #     - chart-example.local
@@ -559,8 +560,8 @@ enterprise:
     # AI features - requires o2-sre-agent to be enabled
     # IMPORTANT: If O2_AI_ENABLED is "true", you MUST also set enterprise.sreagent.enabled to true
     O2_AI_ENABLED: "false"
-    O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
-    O2_TOOL_API_URL: ""  # Leave empty to use default auto-generated URL
+    O2_AGENT_URL: "" # Leave empty to use default auto-generated URL
+    O2_TOOL_API_URL: "" # Leave empty to use default auto-generated URL
     ZO_MASTER_ENCRYPTION_ALGORITHM: "" # MUST be empty if key is empty
     ZO_MASTER_ENCRYPTION_KEY: ""
     # Service Graph features
@@ -590,11 +591,11 @@ enterprise:
       O2_SRE_LOG_LEVEL: "INFO"
       ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: "true"
       O2_AI_GATEWAY_ENABLED: "false"
-      O2_AI_PROVIDER: "anthropic"    # openai or anthropic or gemini or others
+      O2_AI_PROVIDER: "anthropic" # openai or anthropic or gemini or others
       O2_AI_MODEL: "claude-3-5-sonnet-20241022"
-      O2_AI_GATEWAY_URL: ""  # Optional: AI Gateway URL (e.g., "http://my-gateway:80")
-      O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
-      O2_TOOL_API_URL: ""  # Leave empty to use default auto-generated URL
+      O2_AI_GATEWAY_URL: "" # Optional: AI Gateway URL (e.g., "http://my-gateway:80")
+      O2_AGENT_URL: "" # Leave empty to use default auto-generated URL
+      O2_TOOL_API_URL: "" # Leave empty to use default auto-generated URL
       # MCP validation settings
       O2_MCP_VALIDATION_ENABLED: "true"
       O2_MCP_VALIDATION_RETRY: "true"
@@ -607,7 +608,7 @@ enterprise:
 # When enabled, SRE agent routes AI requests through an existing AI Gateway
 # Use this when you have already deployed an AI Gateway in your cluster
 aiGateway:
-  enabled: false  # Set to true to use an existing AI Gateway
+  enabled: false # Set to true to use an existing AI Gateway
   # Name of the AI Gateway service (e.g., "envoy-envoy-gateway-system-ai-gateway-78adb12c")
   gatewayServiceName: "ai-gateway"
   # Namespace where the AI Gateway service exists (empty = same as release namespace)
