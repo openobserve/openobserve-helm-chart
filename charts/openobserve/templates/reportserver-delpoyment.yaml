@@ -50,11 +50,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "reportserver"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.reportserver.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.reportserver.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           ports:
             - name: http

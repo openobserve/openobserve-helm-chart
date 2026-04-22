@@ -53,20 +53,6 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
         {{- end }}
-        {{- if .Values.etcd.enabled }}
-        - name: check-etcd
-          image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
-          command: ['sh', '-c', '
-            until nc -z {{ .Release.Name }}-etcd 2379; do
-              echo "Waiting for etcd to be ready";
-              sleep 5;
-            done;
-          ']
-          {{- with .Values.compactor.initContainers.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-        {{- end }}
         {{- if .Values.nats.enabled }}
         - name: check-nats
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
@@ -138,11 +124,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "compactor"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.compactor.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.compactor.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.compactor.persistence.enabled }}
           volumeMounts:
