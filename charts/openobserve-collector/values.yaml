@@ -35,13 +35,18 @@ serviceAccount:
   name: ""
 
 # If additional RBAC rules are needed for the collector, they can be added here
-# Example use case: To allow the collector to access the custom resources from the third-party API groups
+# Any valid Kubernetes RBAC PolicyRule fields can be used here.
+# Example use case: Allow the collector to access third-party custom resources
+# and specific non-resource URLs.
 rbac: {}
 # rbac:
 #   extraRules:
 #     - apiGroups: ["thirdparty.api.group"]
 #       resources: ["customresourcename"]
 #       verbs: ["get", "list", "watch"]
+#       resourceNames: ["example-resource-name"]
+#     - nonResourceURLs: ["/custom-metrics"]
+#       verbs: ["get"]
 
 labels: {}
 
@@ -108,18 +113,6 @@ agent:
     #   cpu: 100m
     #   memory: 128Mi
   receivers:
-    otlp:
-      protocols:
-        grpc: {}
-        http: {}
-    prometheus:
-      config:
-        scrape_configs:
-          - job_name: "otel-collector"
-            scrape_interval: 5s
-            static_configs:
-              - targets: ["0.0.0.0:8888"]
-
     filelog/std:
       include: [/var/log/pods/*/*/*.log]
       exclude:

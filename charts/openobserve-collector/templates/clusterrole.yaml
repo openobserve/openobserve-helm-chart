@@ -86,11 +86,7 @@ rules:
   resources:
   - events
   verbs: ["get", "list", "watch"]
-{{- if .Values.rbac.extraRules }}
-{{- range .Values.rbac.extraRules }}
-- apiGroups: {{ .apiGroups | toJson }}
-  resources: {{ .resources | toJson }}
-  verbs: {{ .verbs | toJson }}
-{{- end }}
+{{- with .Values.rbac.extraRules }}
+{{ toYaml . }}
 {{- end }}
 {{- end }}
