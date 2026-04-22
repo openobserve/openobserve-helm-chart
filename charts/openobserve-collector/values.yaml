@@ -83,6 +83,12 @@ autoinstrumentation:
 
 agent:
   enabled: true
+  # Labels added to the OpenTelemetryCollector CR and inherited by the generated collector pods.
+  # This is useful for platforms like AKS Workload Identity that require pod labels such as:
+  #   azure.workload.identity/use: "true"
+  labels: {}
+  # Annotations added to the generated collector pods.
+  podAnnotations: {}
   tolerations:
     - operator: Exists
   resources: {}
@@ -340,6 +346,12 @@ agent:
 
 gateway:
   enabled: true
+  # Labels added to the OpenTelemetryCollector CR and inherited by the generated collector pods.
+  # This is useful for platforms like AKS Workload Identity that require pod labels such as:
+  #   azure.workload.identity/use: "true"
+  labels: {}
+  # Annotations added to the generated collector pods.
+  podAnnotations: {}
   # Number of replicas when autoscaler is not used
   replicas: 1
   targetAllocator:
