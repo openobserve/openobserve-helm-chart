@@ -1,0 +1,20 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openobserve.fullname" . }}-blocked-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    app.kubernetes.io/component: blocked-metrics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "openobserve.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: blocked-metrics
+{{- end }}

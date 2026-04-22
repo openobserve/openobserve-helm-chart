@@ -1,0 +1,42 @@
+{{- if .Values.gateway.enabled -}}
+{{- $fullName := include "openobserve.fullname" . -}}
+{{- range .Values.gateway.httpRoutes.routes }}
+---
+# EnvoyPatchPolicy to return 403 directly for metrics endpoints without needing a backend service
+# This is an Envoy Gateway specific feature and requires Envoy Gateway to be installed
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyPatchPolicy
+metadata:
+  name: {{ $fullName }}-{{ .name }}-block-metrics
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "openobserve.labels" $ | nindent 4 }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ $fullName }}-{{ .name }}
+  type: JSONPatch
+  jsonPatches:
+    # Add direct_response action to /metrics route
+    - type: "type.googleapis.com/envoy.config.route.v3.RouteConfiguration"
+      name: "{{ $fullName }}-{{ .name }}"
+      operation:
+        op: add
+        path: "/virtual_hosts/0/routes/0/direct_response"
+        value:
+          status: 403
+          body:
+            inline_string: "Access to metrics endpoint is forbidden"
+    # Add direct_response action to /api/metrics route
+    - type: "type.googleapis.com/envoy.config.route.v3.RouteConfiguration"
+      name: "{{ $fullName }}-{{ .name }}"
+      operation:
+        op: add
+        path: "/virtual_hosts/0/routes/1/direct_response"
+        value:
+          status: 403
+          body:
+            inline_string: "Access to metrics endpoint is forbidden"
+{{- end }}
+{{- end }}

@@ -12,16 +12,16 @@ rules:
   verbs: [ "create", "get", "list", "patch", "update" ]
 - apiGroups: ["batch"]
   resources: ["jobs", "cronjobs"]
-  verbs: ["create", "list", "get", "delete"]
+  verbs: ["create", "watch", "list", "get", "delete"]
 - apiGroups: [""]
   resources: ["pods"]
   verbs: ["create", "list", "get", "delete"]
 - apiGroups: [""]
   resources: ["services"]
-  verbs: ["create", "patch", "delete", "get", "list"]
+  verbs: ["create", "watch", "patch", "delete", "get", "list"]
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs: ["create", "patch", "delete", "get", "list", "update"]
+  verbs: ["create", "watch", "patch", "delete", "get", "list", "update"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

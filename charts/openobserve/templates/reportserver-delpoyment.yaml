@@ -50,11 +50,8 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "reportserver"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.reportserver.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.reportserver.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           ports:
             - name: http
@@ -80,6 +77,15 @@ spec:
             timeoutSeconds: {{ .Values.probes.reportserver.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.reportserver.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.reportserver.config.readinessProbe.failureThreshold | default 3 }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.reportserver.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.reportserver.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.reportserver.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.reportserver.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.reportserver.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.reportserver | nindent 12 }}

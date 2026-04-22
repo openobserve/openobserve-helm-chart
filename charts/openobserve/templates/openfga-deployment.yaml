@@ -98,6 +98,15 @@ spec:
             timeoutSeconds: {{ .Values.probes.openfga.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.openfga.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.openfga.config.readinessProbe.failureThreshold | default 3 }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.openfga.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.openfga.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.openfga.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.openfga.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.openfga.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
             {{- if .Values.resources.openfga }}

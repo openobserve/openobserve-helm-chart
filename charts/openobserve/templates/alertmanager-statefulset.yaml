@@ -37,16 +37,6 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
-        {{- if .Values.etcd.enabled }}
-        - name: check-etcd
-          image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
-          command: ['sh', '-c', '
-            until nc -z {{ .Release.Name }}-etcd 2379; do
-              echo "Waiting for etcd to be ready";
-              sleep 5;
-            done;
-          ']
-        {{- end }}
         {{- if .Values.nats.enabled }}
         - name: check-nats
           image: {{ .Values.image.busybox.repository }}:{{ .Values.image.busybox.tag }}
@@ -100,6 +90,15 @@ spec:
             timeoutSeconds: {{ .Values.probes.alertmanager.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.failureThreshold | default 3 }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.alertmanager.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.alertmanager.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.alertmanager.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.alertmanager.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.alertmanager.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.alertmanager | nindent 12 }}
@@ -113,11 +112,11 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "alertmanager"
-            {{- with .Values.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
-            {{- end }}
-            {{- with .Values.alertmanager.extraEnv }}
-            {{- toYaml . |  nindent 12 }}
+            - name: K8S_CONTAINER_NAME
+              value: "{{ .Chart.Name }}-alertmanager"
+            {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.alertmanager.extraEnv) }}
+            {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.alertmanager.persistence.enabled }}
           volumeMounts:

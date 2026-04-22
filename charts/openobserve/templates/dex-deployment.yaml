@@ -59,6 +59,15 @@ spec:
             timeoutSeconds: {{ .Values.probes.dex.config.readinessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.dex.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.dex.config.readinessProbe.failureThreshold | default 3 }}
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.config.ZO_HTTP_PORT }}
+            initialDelaySeconds: {{ .Values.probes.dex.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.dex.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.dex.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.dex.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.dex.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
             {{- toYaml .Values.enterprise.dex.resources | nindent 12 }}

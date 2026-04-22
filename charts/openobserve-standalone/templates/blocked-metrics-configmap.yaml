@@ -1,0 +1,21 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "openobserve.fullname" . }}-blocked-metrics-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+    app.kubernetes.io/component: blocked-metrics
+data:
+  default.conf: |
+    server {
+        listen 8080;
+        server_name _;
+
+        location / {
+            return 403 '{"error": "Access to metrics endpoint is forbidden"}';
+            default_type application/json;
+        }
+    }
+{{- end }}

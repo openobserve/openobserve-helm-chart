@@ -44,6 +44,24 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          # Block /metrics endpoint - always blocked for public access
+          - path: /metrics
+            pathType: Exact
+            backend:
+              service:
+                name: {{ $fullName }}-blocked-metrics
+                port:
+                  number: 80
+          # Block /api/metrics endpoint - always blocked for public access
+          - path: /api/metrics
+            pathType: Exact
+            backend:
+              service:
+                name: {{ $fullName }}-blocked-metrics
+                port:
+                  number: 80
+          {{- end }}
           {{- range .paths }}
           - path: {{ .path }}
             {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}

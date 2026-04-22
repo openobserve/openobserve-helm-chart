@@ -51,9 +51,23 @@ spec:
             {{- toYaml .Values.zplane.resources | nindent 12 }}
           env:
             - name: ZPLANE_ZO_USERNAME
-              value: "{{ .Values.auth.ZO_ROOT_USER_EMAIL }}"
+              {{- if .Values.auth.existingRootUserSecret.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingRootUserSecret.name }}
+                  key: {{ .Values.auth.existingRootUserSecret.emailKey }}
+              {{- else }}
+              value: {{ .Values.auth.ZO_ROOT_USER_EMAIL | quote }}
+              {{- end }}
             - name: ZPLANE_ZO_PASSWORD
-              value: "{{ .Values.auth.ZO_ROOT_USER_PASSWORD }}"
+              {{- if .Values.auth.existingRootUserSecret.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingRootUserSecret.name }}
+                  key: {{ .Values.auth.existingRootUserSecret.passwordKey }}
+              {{- else }}
+              value: {{ .Values.auth.ZO_ROOT_USER_PASSWORD | quote }}
+              {{- end }}
             - name: ZPLANE_ZO_ENDPOINT
               value: "http://{{ include "openobserve.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.service.port }}"
 

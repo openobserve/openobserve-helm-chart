@@ -25,6 +25,7 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: openobserve
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -55,7 +56,11 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.enterprise.enabled }}
+          image: "{{ .Values.image.enterprise.repository }}:{{ .Values.image.enterprise.tag | default .Chart.AppVersion }}"
+          {{- else }}
+          image: "{{ .Values.image.oss.repository }}:{{ .Values.image.oss.tag | default .Chart.AppVersion }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -86,6 +91,18 @@ spec:
             - secretRef:
                 name: {{ include "openobserve.fullname" . }}
           env:
+            {{- if .Values.auth.existingRootUserSecret.name }}
+            - name: ZO_ROOT_USER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingRootUserSecret.name }}
+                  key: {{ .Values.auth.existingRootUserSecret.emailKey }}
+            - name: ZO_ROOT_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.existingRootUserSecret.name }}
+                  key: {{ .Values.auth.existingRootUserSecret.passwordKey }}
+            {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}
@@ -93,7 +110,7 @@ spec:
             - name: data
               mountPath: /data
           {{- if .Values.extraVolumeMounts }}
-          {{ toYaml .Values.extraVolumeMounts | nindent 10 }}
+          {{ toYaml .Values.extraVolumeMounts | nindent 12 }}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
