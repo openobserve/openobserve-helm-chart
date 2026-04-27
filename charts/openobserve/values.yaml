@@ -19,7 +19,7 @@ image:
     tag: 1.36.1
   sreagent:
     repository: ghcr.io/openobserve/o2-ai
-    tag: "v0.80.0-rc8"
+    tag: "v0.80.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
