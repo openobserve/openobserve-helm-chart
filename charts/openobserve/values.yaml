@@ -6,11 +6,11 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.70.3"
+    tag: "v0.80.0"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.70.3"
+    tag: "v0.80.0"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.0-70baf7a"
@@ -18,9 +18,8 @@ image:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
   sreagent:
-    repository: public.ecr.aws/zinclabs/o2-sre-agent
-    # repository: 058694856476.dkr.ecr.us-east-2.amazonaws.com/openobserve/o2-sre-agent
-    tag: "v1.1.6"
+    repository: ghcr.io/openobserve/o2-ai
+    tag: "v0.80.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -77,7 +76,6 @@ replicaCount:
   compactor: 1
   zplane: 0
   reportserver: 0
-  actions: 1
   sreagent: 2
 
 alertmanager:
@@ -142,21 +140,6 @@ reportserver:
       value: /tmp/.chromium
     - name: XDG_CACHE_HOME
       value: /tmp/.chromium
-
-actions:
-  enabled: true
-  # Additional volumes on the output Deployment definition.
-  volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
-
-  # Additional volumeMounts on the output Deployment definition.
-  volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
 
 # Enable the following to use an external secret instead of placing credentials under the auth section in this values.yaml file
 externalSecret:
@@ -694,12 +677,6 @@ autoscaling:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  actions:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
   sreagent:
     enabled: false
     minReplicas: 1
@@ -925,22 +902,6 @@ enterprise:
     O2_SERVICE_STREAMS_MIN_CORRELATION_CONFIDENCE: "0.20"
     O2_SERVICE_STREAMS_MAX_STREAMS_PER_SERVICE: "100"
     O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS: "3600"
-  actions:
-    enabled: true
-    parameters:
-      O2_ACTION_MAX_MEMORY_MIB: "500"
-      O2_ACTION_MIN_MEMORY_MIB: "128"
-      O2_ACTION_MAX_MILLI_CPU: "128"
-      O2_ACTION_MIN_MILLI_CPU: "128"
-      O2_ACTION_CONTAINER_IMAGE: "ghcr.io/astral-sh/uv:bookworm-slim"
-    resources: {}
-      # limits:
-      #   cpu: 1000m
-      #   memory: 1Gi
-      # requests:
-      #   cpu: 100m
-      #   memory: 128Mi
-    extraEnv: []
   openfga:
     enabled: true
     parameters:
