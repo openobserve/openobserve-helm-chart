@@ -40,7 +40,7 @@ spec:
         runAsUser: 1000
         fsGroup: 1000
       containers:
-        - name: o2-sre-agent
+        - name: o2ai
           image: "{{ .Values.image.o2ai.repository }}:{{ .Values.image.o2ai.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:

@@ -194,9 +194,9 @@ auth:
   ZO_REPORT_USER_PASSWORD: ""
   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
-  O2_AI_API_KEY: "" # AI API key for o2-sre-agent
-  O2_MCP_USERNAME: "" # MCP authentication username for o2-sre-agent (optional)
-  O2_MCP_PASSWORD: "" # MCP authentication password for o2-sre-agent (optional)
+  O2_AI_API_KEY: "" # AI API key for o2ai
+  O2_MCP_USERNAME: "" # MCP authentication username for o2ai (optional)
+  O2_MCP_PASSWORD: "" # MCP authentication password for o2ai (optional)
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -841,7 +841,7 @@ enterprise:
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
     O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds
-    # AI features - requires o2-sre-agent to be enabled
+    # AI features - requires o2ai to be enabled
     # O2_AGENT_URL is auto-generated when o2ai.enabled=true (defaults to http://<release>-o2ai:8000), override below if needed
     # O2_TOOL_API_URL is auto-generated (defaults to http://<release>-router:5080), override below if needed
     O2_AI_ENABLED: "false"
@@ -985,7 +985,7 @@ enterprise:
           hosts:
             - dex.example.com
   o2ai:
-    enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
+    enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
     config:
       O2_AI_HOST: "0.0.0.0"
       O2_AI_PORT: "8000"

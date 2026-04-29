@@ -80,9 +80,9 @@ auth:
   # OpenObserve root user password
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
   ZO_ROOT_USER_TOKEN: ""
-  # AI API key for o2-sre-agent (required if enterprise.o2ai.enabled=true)
+  # AI API key for o2ai (required if enterprise.o2ai.enabled=true)
   O2_AI_API_KEY: "" # OpenAI, Anthropic, Gemini, or other provider API key
-  # MCP authentication for o2-sre-agent (optional)
+  # MCP authentication for o2ai (optional)
   O2_MCP_USERNAME: "root@example.com" # MCP authentication username
   O2_MCP_PASSWORD: "Complexpass#123" # MCP authentication password
 
@@ -524,7 +524,7 @@ enterprise:
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
     O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds"
-    # AI features - requires o2-sre-agent to be enabled
+    # AI features - requires o2ai to be enabled
     # IMPORTANT: If O2_AI_ENABLED is "true", you MUST also set enterprise.o2ai.enabled to true
     O2_AI_ENABLED: "false"
     O2_AGENT_URL: "" # Leave empty to use default auto-generated URL
@@ -551,7 +551,7 @@ enterprise:
     O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS: "3600"
   o2ai:
     # IMPORTANT: Must be set to true if O2_AI_ENABLED is "true" above
-    enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
+    enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
     config:
       O2_AI_HOST: "0.0.0.0"
       O2_AI_PORT: "8000"
