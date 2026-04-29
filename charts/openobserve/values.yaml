@@ -17,7 +17,7 @@ image:
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
-  sreagent:
+  o2ai:
     repository: ghcr.io/openobserve/o2-ai
     tag: "v0.80.1"
   pullPolicy: IfNotPresent
@@ -48,7 +48,7 @@ podAnnotations:
   dex: {}
   reportserver: {}
   alertquerier: {}
-  sreagent: {}
+  o2ai: {}
 
 labels: {}
 
@@ -74,7 +74,7 @@ replicaCount:
   alertquerier: 0
   compactor: 1
   reportserver: 0
-  sreagent: 2
+  o2ai: 2
 
 alertmanager:
   extraEnv: []
@@ -194,9 +194,9 @@ auth:
   ZO_REPORT_USER_PASSWORD: ""
   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
-  O2_AI_API_KEY: "" # AI API key for o2-sre-agent
-  O2_MCP_USERNAME: "" # MCP authentication username for o2-sre-agent (optional)
-  O2_MCP_PASSWORD: "" # MCP authentication password for o2-sre-agent (optional)
+  O2_AI_API_KEY: "" # AI API key for o2ai
+  O2_MCP_USERNAME: "" # MCP authentication username for o2ai (optional)
+  O2_MCP_PASSWORD: "" # MCP authentication password for o2ai (optional)
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -629,7 +629,7 @@ resources:
   dex: {}
   reportserver: {}
   openfga: {}
-  sreagent:
+  o2ai:
     requests:
       memory: "256Mi"
       cpu: "250m"
@@ -675,7 +675,7 @@ autoscaling:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  sreagent:
+  o2ai:
     enabled: false
     minReplicas: 1
     maxReplicas: 100
@@ -691,7 +691,7 @@ nodeSelector:
   alertquerier: {}
   dex: {}
   reportserver: {}
-  sreagent: {}
+  o2ai: {}
 
 tolerations:
   ingester: []
@@ -702,7 +702,7 @@ tolerations:
   alertquerier: []
   dex: []
   reportserver: []
-  sreagent: []
+  o2ai: []
 
 affinity:
   ingester: {}
@@ -713,7 +713,7 @@ affinity:
   alertquerier: {}
   dex: {}
   reportserver: {}
-  sreagent: {}
+  o2ai: {}
 
 nats:
   enabled: true # if true then nats will be deployed as part of openobserve
@@ -841,8 +841,8 @@ enterprise:
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
     O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds
-    # AI features - requires o2-sre-agent to be enabled
-    # O2_AGENT_URL is auto-generated when sreagent.enabled=true (defaults to http://<release>-sreagent:8000), override below if needed
+    # AI features - requires o2ai to be enabled
+    # O2_AGENT_URL is auto-generated when o2ai.enabled=true (defaults to http://<release>-o2ai:8000), override below if needed
     # O2_TOOL_API_URL is auto-generated (defaults to http://<release>-router:5080), override below if needed
     O2_AI_ENABLED: "false"
     O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
@@ -984,14 +984,14 @@ enterprise:
         - secretName: dex.example.com
           hosts:
             - dex.example.com
-  sreagent:
-    enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
+  o2ai:
+    enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
     config:
-      O2_SRE_HOST: "0.0.0.0"
-      O2_SRE_PORT: "8000"
-      O2_SRE_LOG_LEVEL: "INFO"
+      O2_AI_HOST: "0.0.0.0"
+      O2_AI_PORT: "8000"
+      O2_AI_LOG_LEVEL: "INFO"
       ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: "true"
-      O2_AI_MODEL: "claude-sonnet-4-5-20250929"  # Model name for AI requests
+      O2_AI_MODEL: "claude-sonnet-4-6"  # Model name for AI requests
       O2_AI_PROVIDER: "anthropic"  # Provider for direct API calls (Flow 3 only - ignored when gateway is used)
       O2_AI_GATEWAY_ENABLED: ""  # Optional: Set to "true" to force gateway usage (auto-set when aiGateway.enabled=true)
       O2_AI_GATEWAY_URL: ""  # Optional: AI Gateway URL (e.g., "http://my-gateway:80")
@@ -1005,6 +1005,17 @@ enterprise:
       O2_MCP_CONTENT_VALIDATION_MODE: "hybrid"
       O2_MCP_RESPONSE_VALIDATION_ENABLED: "true"
     extraEnv: []
+    clusterAccess:
+      enabled: false  # Enable kubectl/cluster access — creates ServiceAccount, ClusterRole, ClusterRoleBinding
+      serviceAccount:
+        annotations: {}
+        # AWS EKS IRSA example:
+        #   eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME
+        # GKE Workload Identity example:
+        #   iam.gke.io/gcp-service-account: SA_NAME@PROJECT_ID.iam.gserviceaccount.com
+      rbac:
+        rules: []  # Leave empty to use built-in defaults. Override to restrict or extend permissions.
+      cliConfig: {}  # Leave empty to use built-in defaults. Override to customize available CLI commands.
 
 probes:
   alertmanager:
@@ -1223,7 +1234,7 @@ probes:
         successThreshold: 1
         failureThreshold: 3
         terminationGracePeriodSeconds: 30
-  sreagent:
+  o2ai:
     enabled: true
     config:
       readinessProbe:

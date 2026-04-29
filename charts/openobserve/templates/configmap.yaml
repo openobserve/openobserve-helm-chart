@@ -297,8 +297,8 @@ data:
   O2_METRICS_DOWNSAMPLING_RULES: "{{ .Values.enterprise.parameters.O2_METRICS_DOWNSAMPLING_RULES }}"
   O2_RATE_LIMIT_ENABLED: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_ENABLED }}"
   O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_RULE_REFRESH_INTERVAL }}"
-  {{- if and (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (not .Values.enterprise.sreagent.enabled) }}
-    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.sreagent.enabled is not true. SRE Agent is required for AI features!" }}
+  {{- if and (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (not .Values.enterprise.o2ai.enabled) }}
+    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.o2ai.enabled is not true. SRE Agent is required for AI features!" }}
   {{- end }}
   O2_AI_ENABLED: "{{ .Values.enterprise.parameters.O2_AI_ENABLED }}"
   {{- if .Values.enterprise.parameters.O2_AI_MODEL }}
@@ -314,8 +314,8 @@ data:
   {{- end }}
   {{- if .Values.enterprise.parameters.O2_AGENT_URL }}
   O2_AGENT_URL: "{{ .Values.enterprise.parameters.O2_AGENT_URL }}"
-  {{- else if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled }}
-  O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-sreagent.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
+  {{- else if and .Values.enterprise.enabled .Values.enterprise.o2ai.enabled }}
+  O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-o2ai.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
   {{- end }}
   ZO_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
   ZO_MASTER_ENCRYPTION_KEY: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY }}"
