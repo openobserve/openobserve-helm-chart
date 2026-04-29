@@ -37,28 +37,28 @@ helm --namespace openobserve delete o2
 
 ## Enterprise Features
 
-### SRE Agent (AI-Powered Operations)
+### O2 AI (AI-Powered Operations)
 
-The SRE Agent is an enterprise-only feature that enables AI-powered operations and intelligent troubleshooting capabilities in OpenObserve.
+O2 AI is an enterprise-only feature that enables AI-powered operations and intelligent troubleshooting capabilities in OpenObserve.
 
 #### Prerequisites
 
-1. **Enterprise License**: SRE Agent is only available with OpenObserve Enterprise
+1. **Enterprise License**: O2 AI is only available with OpenObserve Enterprise
 2. **API Key**: You need an API key from one of the supported AI providers (OpenAI, Anthropic, Gemini, etc.)
 
 #### Configuration
 
-To enable the SRE Agent, set the following values in your `values.yaml`:
+To enable O2 AI, set the following values in your `values.yaml`:
 
 ```yaml
 enterprise:
   enabled: true
   parameters:
     O2_AI_ENABLED: "true"  # Enable AI features
-  sreagent:
-    enabled: true  # Deploy SRE Agent (required when O2_AI_ENABLED is true)
+  o2ai:
+    enabled: true  # Deploy O2 AI (required when O2_AI_ENABLED is true)
     config:
-      O2_AI_MODEL: "claude-3-5-sonnet-20241022"  # Or your preferred model
+      O2_AI_MODEL: "claude-sonnet-4-5-20250929"  # Or your preferred model
       O2_AI_PROVIDER: "anthropic"  # Options: openai, anthropic, gemini, etc.
 
 auth:
@@ -67,9 +67,74 @@ auth:
   O2_MCP_PASSWORD: "your-password"  # MCP authentication (optional)
 ```
 
+#### Cluster Access (kubectl)
+
+O2 AI can execute `kubectl`, `aws`, `az`, `git`, and `gh` commands against the local cluster. This is disabled by default. When enabled, a dedicated ServiceAccount, ClusterRole, and ClusterRoleBinding are created and the pod mounts a CLI config at `/etc/o2ai/config.yaml`.
+
+```yaml
+enterprise:
+  o2ai:
+    clusterAccess:
+      enabled: true
+```
+
+**IRSA on AWS EKS** — annotate the ServiceAccount with an IAM role so the pod can also run `aws` CLI commands:
+
+```yaml
+enterprise:
+  o2ai:
+    clusterAccess:
+      enabled: true
+      serviceAccount:
+        annotations:
+          eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME
+```
+
+**GKE Workload Identity**:
+
+```yaml
+enterprise:
+  o2ai:
+    clusterAccess:
+      enabled: true
+      serviceAccount:
+        annotations:
+          iam.gke.io/gcp-service-account: SA_NAME@PROJECT_ID.iam.gserviceaccount.com
+```
+
+**Custom RBAC rules** — override the default ClusterRole rules (read/write on pods, deployments, services, etc.):
+
+```yaml
+enterprise:
+  o2ai:
+    clusterAccess:
+      enabled: true
+      rbac:
+        rules:
+          - apiGroups: [""]
+            resources: ["pods", "services", "namespaces"]
+            verbs: ["get", "list", "watch"]
+```
+
+**Custom CLI config** — override which commands the agent is allowed to run:
+
+```yaml
+enterprise:
+  o2ai:
+    clusterAccess:
+      enabled: true
+      cliConfig:
+        clis:
+          kubectl:
+            command: kubectl
+            allowed_subcommands: ["get", "describe", "logs"]
+            timeout_seconds: 30
+            description: "Read-only kubectl access"
+```
+
 #### Using AI Gateway
 
-If you have an AI Gateway deployed (e.g., Envoy Gateway with AI routing), you can configure the SRE Agent to route through it:
+If you have an AI Gateway deployed (e.g., Envoy Gateway with AI routing), you can configure O2 AI to route through it:
 
 ```yaml
 aiGateway:
@@ -85,9 +150,9 @@ When using an AI Gateway, you don't need to specify `O2_AI_PROVIDER` as the gate
 
 #### Important Notes
 
-- **Validation**: The deployment will fail if `O2_AI_ENABLED` is set to `"true"` but `enterprise.sreagent.enabled` is not `true`
-- **Resource Requirements**: The SRE Agent requires additional resources. Default requests are 256Mi memory and 250m CPU
-- **Scaling**: The SRE Agent supports horizontal pod autoscaling when needed
+- **Validation**: The deployment will fail if `O2_AI_ENABLED` is set to `"true"` but `enterprise.o2ai.enabled` is not `true`
+- **Resource Requirements**: O2 AI requires additional resources. Default requests are 256Mi memory and 250m CPU
+- **Scaling**: O2 AI supports horizontal pod autoscaling when needed
 
 ### Service Graph
 

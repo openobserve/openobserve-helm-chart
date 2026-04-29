@@ -1,13 +1,13 @@
-{{- if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled -}}
+{{- if and .Values.enterprise.enabled .Values.enterprise.o2ai.enabled -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "openobserve.fullname" . }}-sreagent
+  name: {{ include "openobserve.fullname" . }}-o2ai
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
     app: openobserve
-    role: sreagent
+    role: o2ai
 spec:
   type: ClusterIP
   ports:
@@ -19,5 +19,5 @@ spec:
     {{- include "openobserve.selectorLabels" . | nindent 4 }}
     name: openobserve
     app: openobserve
-    role: sreagent
+    role: o2ai
 {{- end }}

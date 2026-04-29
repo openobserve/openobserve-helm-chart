@@ -1,14 +1,14 @@
-{{- if and .Values.enterprise.enabled .Values.enterprise.sreagent.enabled -}}
+{{- if and .Values.enterprise.enabled .Values.enterprise.o2ai.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "openobserve.fullname" . }}-sreagent
+  name: {{ include "openobserve.fullname" . }}-o2ai
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
     name: openobserve
     app: openobserve
-    role: sreagent
+    role: o2ai
 spec:
   replicas: 1
   selector:
@@ -16,17 +16,17 @@ spec:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
       name: openobserve
       app: openobserve
-      role: sreagent
+      role: o2ai
   template:
     metadata:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         name: openobserve
         app: openobserve
-        role: sreagent
+        role: o2ai
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/sreagent-configmap.yaml") . | sha256sum }}
-        {{- with .Values.podAnnotations.sreagent }}
+        checksum/config: {{ include (print $.Template.BasePath "/o2ai-configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations.o2ai }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
@@ -34,14 +34,14 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "openobserve.serviceAccountName" . }}
+      serviceAccountName: {{ if .Values.enterprise.o2ai.clusterAccess.enabled }}{{ include "openobserve.fullname" . }}-o2ai{{ else }}{{ include "openobserve.serviceAccountName" . }}{{ end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
       containers:
         - name: o2-sre-agent
-          image: "{{ .Values.image.sreagent.repository }}:{{ .Values.image.sreagent.tag }}"
+          image: "{{ .Values.image.o2ai.repository }}:{{ .Values.image.o2ai.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -49,7 +49,7 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "openobserve.fullname" . }}-sreagent
+                name: {{ include "openobserve.fullname" . }}-o2ai
           env:
             - name: O2_AI_API_KEY
               valueFrom:
@@ -70,17 +70,23 @@ spec:
                   name: {{ include "openobserve.fullname" . }}
                   key: O2_MCP_PASSWORD
             {{- end }}
-            {{- with .Values.enterprise.sreagent.extraEnv }}
+            {{- with .Values.enterprise.o2ai.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+          {{- if .Values.enterprise.o2ai.clusterAccess.enabled }}
+          volumeMounts:
+            - name: cli-config
+              mountPath: /etc/o2ai
+              readOnly: true
+          {{- end }}
           resources:
-            {{- toYaml .Values.resources.sreagent | nindent 12 }}
-          {{- if .Values.probes.sreagent.enabled }}
-          {{- with .Values.probes.sreagent.config.readinessProbe }}
+            {{- toYaml .Values.resources.o2ai | nindent 12 }}
+          {{- if .Values.probes.o2ai.enabled }}
+          {{- with .Values.probes.o2ai.config.readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.probes.sreagent.config.livenessProbe }}
+          {{- with .Values.probes.o2ai.config.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -93,4 +99,10 @@ spec:
             capabilities:
               drop:
               - ALL
+      {{- if .Values.enterprise.o2ai.clusterAccess.enabled }}
+      volumes:
+        - name: cli-config
+          configMap:
+            name: {{ include "openobserve.fullname" . }}-o2ai-cliconfig
+      {{- end }}
 {{- end }}

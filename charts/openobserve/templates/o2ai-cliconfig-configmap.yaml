@@ -1,0 +1,21 @@
+{{- if and .Values.enterprise.enabled .Values.enterprise.o2ai.enabled .Values.enterprise.o2ai.clusterAccess.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "openobserve.fullname" . }}-o2ai-cliconfig
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    {{- if .Values.enterprise.o2ai.clusterAccess.cliConfig }}
+    {{- toYaml .Values.enterprise.o2ai.clusterAccess.cliConfig | nindent 4 }}
+    {{- else }}
+    clis:
+      kubectl:
+        command: kubectl
+        allowed_subcommands: ["*"]
+        timeout_seconds: 30
+        description: "Run kubectl commands for Kubernetes cluster management"
+    {{- end }}
+{{- end }}
