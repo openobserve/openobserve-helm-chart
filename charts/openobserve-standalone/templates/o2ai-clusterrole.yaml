@@ -10,7 +10,7 @@ rules:
   {{- toYaml .Values.enterprise.o2ai.clusterAccess.rbac.rules | nindent 2 }}
   {{- else }}
   - apiGroups: [""]
-    resources: ["pods", "services", "configmaps", "secrets", "namespaces", "nodes", "persistentvolumes", "persistentvolumeclaims"]
+    resources: ["pods", "services", "configmaps", "secrets", "namespaces", "nodes", "persistentvolumes", "persistentvolumeclaims", "events"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["apps"]
     resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]

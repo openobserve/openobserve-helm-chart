@@ -66,7 +66,7 @@ auth:
 
 #### Cluster Access (kubectl)
 
-O2 AI can execute `kubectl`, `aws`, `az`, `git`, and `gh` commands against the local cluster. This is disabled by default. When enabled, a dedicated ServiceAccount, ClusterRole, and ClusterRoleBinding are created and the pod mounts a CLI config at `/etc/o2ai/config.yaml`.
+O2 AI can execute `kubectl`, `aws`, `az`, `git`, and `gh` commands against the local cluster. This is disabled by default. When enabled, a dedicated ServiceAccount, ClusterRole, and ClusterRoleBinding are created and the pod mounts a CLI config at `/app/config.yaml`.
 
 ```yaml
 enterprise:

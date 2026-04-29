@@ -78,7 +78,8 @@ spec:
           {{- if .Values.enterprise.o2ai.clusterAccess.enabled }}
           volumeMounts:
             - name: cli-config
-              mountPath: /etc/o2ai
+              mountPath: /app/config.yaml
+              subPath: config.yaml
               readOnly: true
           {{- end }}
           resources:

@@ -553,9 +553,9 @@ enterprise:
     # IMPORTANT: Must be set to true if O2_AI_ENABLED is "true" above
     enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
     config:
-      O2_SRE_HOST: "0.0.0.0"
-      O2_SRE_PORT: "8000"
-      O2_SRE_LOG_LEVEL: "INFO"
+      O2_AI_HOST: "0.0.0.0"
+      O2_AI_PORT: "8000"
+      O2_AI_LOG_LEVEL: "INFO"
       ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: "true"
       O2_AI_GATEWAY_ENABLED: "false"
       O2_AI_PROVIDER: "anthropic" # openai or anthropic or gemini or others

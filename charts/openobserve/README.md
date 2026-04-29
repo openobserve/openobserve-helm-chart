@@ -58,7 +58,7 @@ enterprise:
   o2ai:
     enabled: true  # Deploy O2 AI (required when O2_AI_ENABLED is true)
     config:
-      O2_AI_MODEL: "claude-sonnet-4-5-20250929"  # Or your preferred model
+      O2_AI_MODEL: "claude-sonnet-4-6"  # Or your preferred model
       O2_AI_PROVIDER: "anthropic"  # Options: openai, anthropic, gemini, etc.
 
 auth:
@@ -69,7 +69,7 @@ auth:
 
 #### Cluster Access (kubectl)
 
-O2 AI can execute `kubectl`, `aws`, `az`, `git`, and `gh` commands against the local cluster. This is disabled by default. When enabled, a dedicated ServiceAccount, ClusterRole, and ClusterRoleBinding are created and the pod mounts a CLI config at `/etc/o2ai/config.yaml`.
+O2 AI can execute `kubectl`, `aws`, `az`, `git`, and `gh` commands against the local cluster. This is disabled by default. When enabled, a dedicated ServiceAccount, ClusterRole, and ClusterRoleBinding are created and the pod mounts a CLI config at `/app/config.yaml`.
 
 ```yaml
 enterprise:

@@ -987,11 +987,11 @@ enterprise:
   o2ai:
     enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
     config:
-      O2_SRE_HOST: "0.0.0.0"
-      O2_SRE_PORT: "8000"
-      O2_SRE_LOG_LEVEL: "INFO"
+      O2_AI_HOST: "0.0.0.0"
+      O2_AI_PORT: "8000"
+      O2_AI_LOG_LEVEL: "INFO"
       ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: "true"
-      O2_AI_MODEL: "claude-sonnet-4-5-20250929"  # Model name for AI requests
+      O2_AI_MODEL: "claude-sonnet-4-6"  # Model name for AI requests
       O2_AI_PROVIDER: "anthropic"  # Provider for direct API calls (Flow 3 only - ignored when gateway is used)
       O2_AI_GATEWAY_ENABLED: ""  # Optional: Set to "true" to force gateway usage (auto-set when aiGateway.enabled=true)
       O2_AI_GATEWAY_URL: ""  # Optional: AI Gateway URL (e.g., "http://my-gateway:80")

@@ -11,9 +11,9 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 data:
-  O2_SRE_HOST: {{ .Values.enterprise.o2ai.config.O2_SRE_HOST | quote }}
-  O2_SRE_PORT: {{ .Values.enterprise.o2ai.config.O2_SRE_PORT | quote }}
-  O2_SRE_LOG_LEVEL: {{ .Values.enterprise.o2ai.config.O2_SRE_LOG_LEVEL | quote }}
+  O2_AI_HOST: {{ .Values.enterprise.o2ai.config.O2_AI_HOST | quote }}
+  O2_AI_PORT: {{ .Values.enterprise.o2ai.config.O2_AI_PORT | quote }}
+  O2_AI_LOG_LEVEL: {{ .Values.enterprise.o2ai.config.O2_AI_LOG_LEVEL | quote }}
   ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: {{ .Values.enterprise.o2ai.config.ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL | quote }}
   O2_TOOL_API_URL: http://{{ include "openobserve.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.service.http_port }}/api/default/mcp
   O2_AI_MODEL: {{ .Values.enterprise.o2ai.config.O2_AI_MODEL | quote }}
