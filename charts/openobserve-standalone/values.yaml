@@ -6,17 +6,17 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.80.0"
+    tag: "v0.80.1"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.80.0"
+    tag: "v0.80.1"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
   sreagent:
     repository: ghcr.io/openobserve/o2-ai
-    tag: "v0.80.0"
+    tag: "v0.80.1"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
