@@ -6,14 +6,14 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.80.1"
+    tag: "v0.80.2"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.80.1"
+    tag: "v0.80.2"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
-    tag: "v0.11.0-70baf7a"
+    tag: "v0.11.2-88574bc"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
@@ -1005,6 +1005,7 @@ enterprise:
       O2_MCP_CONTENT_VALIDATION_MODE: "hybrid"
       O2_MCP_RESPONSE_VALIDATION_ENABLED: "true"
     extraEnv: []
+    cliConfig: {}  # Leave empty to use built-in defaults. Override to customize available CLI commands.
     clusterAccess:
       enabled: false  # Enable kubectl/cluster access — creates ServiceAccount, ClusterRole, ClusterRoleBinding
       serviceAccount:
@@ -1014,8 +1015,7 @@ enterprise:
         # GKE Workload Identity example:
         #   iam.gke.io/gcp-service-account: SA_NAME@PROJECT_ID.iam.gserviceaccount.com
       rbac:
-        rules: []  # Leave empty to use built-in defaults. Override to restrict or extend permissions.
-      cliConfig: {}  # Leave empty to use built-in defaults. Override to customize available CLI commands.
+        rules: []  # Leave empty to use built-in defaults. Override to restrict or extend permissions.    
 
 probes:
   alertmanager:

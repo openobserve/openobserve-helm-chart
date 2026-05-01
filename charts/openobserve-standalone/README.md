@@ -118,15 +118,15 @@ enterprise:
 ```yaml
 enterprise:
   o2ai:
+    cliConfig:
+      clis:
+        kubectl:
+          command: kubectl
+          allowed_subcommands: ["get", "describe", "logs"]
+          timeout_seconds: 30
+          description: "Read-only kubectl access"
     clusterAccess:
       enabled: true
-      cliConfig:
-        clis:
-          kubectl:
-            command: kubectl
-            allowed_subcommands: ["get", "describe", "logs"]
-            timeout_seconds: 30
-            description: "Read-only kubectl access"
 ```
 
 #### Using AI Gateway
