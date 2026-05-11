@@ -1,8 +1,8 @@
 name: Claude PR Review
 
 on:
-  pull_request:
-    types: [opened, synchronize, ready_for_review, reopened]
+  pull_request_target:
+    types: [labeled, synchronize, ready_for_review, reopened]
 
 env:
   REVIEW_MARKER: "<!-- claude-pr-review -->"
@@ -10,6 +10,8 @@ env:
 jobs:
   review-with-tracking:
     runs-on: ubuntu-latest
+    # Only run when 'claude-review' label is added (for security)
+    if: github.event.label.name == 'claude-review' || contains(github.event.pull_request.labels.*.name, 'claude-review')
     permissions:
       contents: read
       pull-requests: write
@@ -19,6 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0 # Full history needed to check what changed
 
       - name: PR Review with Progress Tracking
