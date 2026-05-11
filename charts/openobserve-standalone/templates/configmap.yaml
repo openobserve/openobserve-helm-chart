@@ -244,8 +244,8 @@ data:
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   {{- if .Values.enterprise.enabled }}
-  {{- if and (or (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (eq .Values.enterprise.parameters.O2_AI_ENABLED true)) (not .Values.enterprise.sreagent.enabled) }}
-    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.sreagent.enabled is not true. SRE Agent is required for AI features!" }}
+  {{- if and (or (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (eq .Values.enterprise.parameters.O2_AI_ENABLED true)) (not .Values.enterprise.o2ai.enabled) }}
+    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.o2ai.enabled is not true. SRE Agent is required for AI features!" }}
   {{- end }}
   # Enterprise parameters
   O2_AI_ENABLED: "{{ .Values.enterprise.parameters.O2_AI_ENABLED }}"
@@ -256,8 +256,8 @@ data:
   {{- end }}
   {{- if .Values.enterprise.parameters.O2_AGENT_URL }}
   O2_AGENT_URL: "{{ .Values.enterprise.parameters.O2_AGENT_URL }}"
-  {{- else if .Values.enterprise.sreagent.enabled }}
-  O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-sreagent.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
+  {{- else if .Values.enterprise.o2ai.enabled }}
+  O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-o2ai.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
   {{- end }}
   ZO_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
   ZO_MASTER_ENCRYPTION_KEY: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY }}"

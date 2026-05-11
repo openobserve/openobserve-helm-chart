@@ -1,14 +1,26 @@
+{{- if .Values.agent.enabled }}
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
+{{- $agentLabels := include "openobserve-collector.labels" . | fromYaml | default (dict) }}
+{{- $agentLabels = mergeOverwrite $agentLabels (.Values.agent.labels | default (dict)) }}
 metadata:
   name: {{ include "openobserve-collector.fullname" . }}-agent
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "openobserve-collector.labels" . | nindent 4 }}
+    {{- toYaml $agentLabels | nindent 4 }}
 spec:
   mode: daemonset # "daemonset", "deployment" (default), "statefulset"
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+<<<<<<< feat/collector-workload-identity-support
+  {{- with .Values.agent.podAnnotations }}
+  podAnnotations:
+=======
+  {{- with .Values.image.imagePullSecrets }}
+  imagePullSecrets:
+>>>>>>> main
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   env:
     - name: K8S_NODE_NAME
       valueFrom:
@@ -64,3 +76,4 @@ spec:
       {{- toYaml .Values.exporters | nindent 6 }}
     service:
       {{- toYaml .Values.agent.service | nindent 6 }}
+{{- end }}

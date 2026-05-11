@@ -6,21 +6,20 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.70.3"
+    tag: "v0.80.2"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.70.3"
+    tag: "v0.80.2"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
-    tag: "v0.11.0-70baf7a"
+    tag: "v0.11.2-88574bc"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
-  sreagent:
-    repository: public.ecr.aws/zinclabs/o2-sre-agent
-    # repository: 058694856476.dkr.ecr.us-east-2.amazonaws.com/openobserve/o2-sre-agent
-    tag: "v1.1.6"
+  o2ai:
+    repository: ghcr.io/openobserve/o2-ai
+    tag: "v0.80.1"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -49,8 +48,7 @@ podAnnotations:
   dex: {}
   reportserver: {}
   alertquerier: {}
-  zplane: {}
-  sreagent: {}
+  o2ai: {}
 
 labels: {}
 
@@ -75,10 +73,8 @@ replicaCount:
   alertmanager: 1
   alertquerier: 0
   compactor: 1
-  zplane: 0
   reportserver: 0
-  actions: 1
-  sreagent: 2
+  o2ai: 2
 
 alertmanager:
   extraEnv: []
@@ -143,21 +139,6 @@ reportserver:
     - name: XDG_CACHE_HOME
       value: /tmp/.chromium
 
-actions:
-  enabled: true
-  # Additional volumes on the output Deployment definition.
-  volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
-
-  # Additional volumeMounts on the output Deployment definition.
-  volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
-
 # Enable the following to use an external secret instead of placing credentials under the auth section in this values.yaml file
 externalSecret:
   enabled: false
@@ -213,9 +194,9 @@ auth:
   ZO_REPORT_USER_PASSWORD: ""
   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
-  O2_AI_API_KEY: "" # AI API key for o2-sre-agent
-  O2_MCP_USERNAME: "" # MCP authentication username for o2-sre-agent (optional)
-  O2_MCP_PASSWORD: "" # MCP authentication password for o2-sre-agent (optional)
+  O2_AI_API_KEY: "" # AI API key for o2ai
+  O2_MCP_USERNAME: "" # MCP authentication username for o2ai (optional)
+  O2_MCP_PASSWORD: "" # MCP authentication password for o2ai (optional)
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -356,7 +337,7 @@ config:
   ZO_COMPACT_INTERVAL: "10"
   ZO_COMPACT_SYNC_TO_DB_INTERVAL: "600"
   ZO_COMPACT_STRATEGY: "file_time"
-  ZO_COMPACT_MAX_FILE_SIZE: "512"
+  ZO_COMPACT_MAX_FILE_SIZE: "2048"
   ZO_COMPACT_DATA_RETENTION_DAYS: "3650"
   ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
   ZO_COMPACT_BATCH_SIZE: "0"
@@ -648,7 +629,7 @@ resources:
   dex: {}
   reportserver: {}
   openfga: {}
-  sreagent:
+  o2ai:
     requests:
       memory: "256Mi"
       cpu: "250m"
@@ -694,13 +675,7 @@ autoscaling:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  actions:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-  sreagent:
+  o2ai:
     enabled: false
     minReplicas: 1
     maxReplicas: 100
@@ -714,10 +689,9 @@ nodeSelector:
   router: {}
   alertmanager: {}
   alertquerier: {}
-  zplane: {}
   dex: {}
   reportserver: {}
-  sreagent: {}
+  o2ai: {}
 
 tolerations:
   ingester: []
@@ -726,10 +700,9 @@ tolerations:
   router: []
   alertmanager: []
   alertquerier: []
-  zplane: []
   dex: []
   reportserver: []
-  sreagent: []
+  o2ai: []
 
 affinity:
   ingester: {}
@@ -738,10 +711,9 @@ affinity:
   router: {}
   alertmanager: {}
   alertquerier: {}
-  zplane: {}
   dex: {}
   reportserver: {}
-  sreagent: {}
+  o2ai: {}
 
 nats:
   enabled: true # if true then nats will be deployed as part of openobserve
@@ -801,36 +773,6 @@ minio:
     accessModes:
       - ReadWriteOnce
     annotations: {}
-
-# zPlane enables elasticsearch compatibility for openobserve. Copyright (c) 2023 Zinc Labs Inc.
-# You can enable zPlane by setting enabled to true
-# zPlane is a commercial software and requires a license to be used.
-# Reach out to hello@zinclabs.io for commercial license if you continue to use zPlane
-zplane:
-  enabled: false # if true then zPlane will be deployed as part of openobserve
-  image:
-    repository: o2cr.ai/openobserve/zplane
-    tag: 0.1.6
-    pullPolicy: IfNotPresent
-  service:
-    type: ClusterIP
-    port: 9200
-  ingress: # if enabled is true then this is required
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # cert-manager.io/issuer: letsencrypt
-      # kubernetes.io/tls-acme: true
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-      # - secretName: chart-example-tls
-      #   hosts:
-      #     - chart-example.local
 
 # Postgres is used for storing openobserve metadata.
 # Make sure to install cloudnative-pg operator before enabling this
@@ -899,8 +841,8 @@ enterprise:
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
     O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds
-    # AI features - requires o2-sre-agent to be enabled
-    # O2_AGENT_URL is auto-generated when sreagent.enabled=true (defaults to http://<release>-sreagent:8000), override below if needed
+    # AI features - requires o2ai to be enabled
+    # O2_AGENT_URL is auto-generated when o2ai.enabled=true (defaults to http://<release>-o2ai:8000), override below if needed
     # O2_TOOL_API_URL is auto-generated (defaults to http://<release>-router:5080), override below if needed
     O2_AI_ENABLED: "false"
     O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
@@ -925,22 +867,6 @@ enterprise:
     O2_SERVICE_STREAMS_MIN_CORRELATION_CONFIDENCE: "0.20"
     O2_SERVICE_STREAMS_MAX_STREAMS_PER_SERVICE: "100"
     O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS: "3600"
-  actions:
-    enabled: true
-    parameters:
-      O2_ACTION_MAX_MEMORY_MIB: "500"
-      O2_ACTION_MIN_MEMORY_MIB: "128"
-      O2_ACTION_MAX_MILLI_CPU: "128"
-      O2_ACTION_MIN_MILLI_CPU: "128"
-      O2_ACTION_CONTAINER_IMAGE: "ghcr.io/astral-sh/uv:bookworm-slim"
-    resources: {}
-      # limits:
-      #   cpu: 1000m
-      #   memory: 1Gi
-      # requests:
-      #   cpu: 100m
-      #   memory: 128Mi
-    extraEnv: []
   openfga:
     enabled: true
     parameters:
@@ -1058,14 +984,14 @@ enterprise:
         - secretName: dex.example.com
           hosts:
             - dex.example.com
-  sreagent:
-    enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
+  o2ai:
+    enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
     config:
-      O2_SRE_HOST: "0.0.0.0"
-      O2_SRE_PORT: "8000"
-      O2_SRE_LOG_LEVEL: "INFO"
+      O2_AI_HOST: "0.0.0.0"
+      O2_AI_PORT: "8000"
+      O2_AI_LOG_LEVEL: "INFO"
       ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: "true"
-      O2_AI_MODEL: "claude-sonnet-4-5-20250929"  # Model name for AI requests
+      O2_AI_MODEL: "claude-sonnet-4-6"  # Model name for AI requests
       O2_AI_PROVIDER: "anthropic"  # Provider for direct API calls (Flow 3 only - ignored when gateway is used)
       O2_AI_GATEWAY_ENABLED: ""  # Optional: Set to "true" to force gateway usage (auto-set when aiGateway.enabled=true)
       O2_AI_GATEWAY_URL: ""  # Optional: AI Gateway URL (e.g., "http://my-gateway:80")
@@ -1079,6 +1005,17 @@ enterprise:
       O2_MCP_CONTENT_VALIDATION_MODE: "hybrid"
       O2_MCP_RESPONSE_VALIDATION_ENABLED: "true"
     extraEnv: []
+    cliConfig: {}  # Leave empty to use built-in defaults. Override to customize available CLI commands.
+    clusterAccess:
+      enabled: false  # Enable kubectl/cluster access — creates ServiceAccount, ClusterRole, ClusterRoleBinding
+      serviceAccount:
+        annotations: {}
+        # AWS EKS IRSA example:
+        #   eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME
+        # GKE Workload Identity example:
+        #   iam.gke.io/gcp-service-account: SA_NAME@PROJECT_ID.iam.gserviceaccount.com
+      rbac:
+        rules: []  # Leave empty to use built-in defaults. Override to restrict or extend permissions.    
 
 probes:
   alertmanager:
@@ -1297,7 +1234,7 @@ probes:
         successThreshold: 1
         failureThreshold: 3
         terminationGracePeriodSeconds: 30
-  sreagent:
+  o2ai:
     enabled: true
     config:
       readinessProbe:

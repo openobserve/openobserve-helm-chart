@@ -6,18 +6,17 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.70.3"
+    tag: "v0.80.2"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.70.3"
+    tag: "v0.80.2"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
-  sreagent:
-    repository: public.ecr.aws/zinclabs/o2-sre-agent
-    # repository: 058694856476.dkr.ecr.us-east-2.amazonaws.com/openobserve/o2-sre-agent
-    tag: "v1.1.6"
+  o2ai:
+    repository: ghcr.io/openobserve/o2-ai
+    tag: "v0.80.1"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -81,9 +80,9 @@ auth:
   # OpenObserve root user password
   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
   ZO_ROOT_USER_TOKEN: ""
-  # AI API key for o2-sre-agent (required if enterprise.sreagent.enabled=true)
+  # AI API key for o2ai (required if enterprise.o2ai.enabled=true)
   O2_AI_API_KEY: "" # OpenAI, Anthropic, Gemini, or other provider API key
-  # MCP authentication for o2-sre-agent (optional)
+  # MCP authentication for o2ai (optional)
   O2_MCP_USERNAME: "root@example.com" # MCP authentication username
   O2_MCP_PASSWORD: "Complexpass#123" # MCP authentication password
 
@@ -234,7 +233,7 @@ config:
   ZO_COMPACT_INTERVAL: "10"
   ZO_COMPACT_SYNC_TO_DB_INTERVAL: "600"
   ZO_COMPACT_STRATEGY: "file_time"
-  ZO_COMPACT_MAX_FILE_SIZE: "512"
+  ZO_COMPACT_MAX_FILE_SIZE: "2048"
   ZO_COMPACT_DATA_RETENTION_DAYS: "3650"
   ZO_COMPACT_DELETE_FILES_DELAY_HOURS: "2"
   ZO_COMPACT_BATCH_SIZE: "0"
@@ -473,44 +472,12 @@ minio:
       - ReadWriteOnce
     annotations: {}
 
-# zPlane enables elasticsearch compatibility for openobserve. Copyright (c) 2023 Zinc Labs Inc.
-# You can enable zPlane by setting enabled to true
-# zPlane is a commercial software and requires a license to be used.
-# Reach out to hello@zinclabs.io for commercial license if you continue to use zPlane
-zplane:
-  enabled: false # if true then zPlane will be deployed as part of openobserve
-  image:
-    repository: o2cr.ai/openobserve/zplane
-    tag: 0.1.6
-    pullPolicy: IfNotPresent
-  service:
-    type: ClusterIP
-    port: 9200
-    annotations: {}
-  ingress:
-    # if enabled is true then this is required
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # cert-manager.io/issuer: letsencrypt
-      # kubernetes.io/tls-acme: true
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-      # - secretName: chart-example-tls
-      #   hosts:
-      #     - chart-example.local
-
 probes:
   enabled: true
   initialDelaySeconds: 10
   failureThreshold: 3
   path: /healthz
-  sreagent:
+  o2ai:
     enabled: true
     config:
       readinessProbe:
@@ -557,8 +524,8 @@ enterprise:
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
     O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds"
-    # AI features - requires o2-sre-agent to be enabled
-    # IMPORTANT: If O2_AI_ENABLED is "true", you MUST also set enterprise.sreagent.enabled to true
+    # AI features - requires o2ai to be enabled
+    # IMPORTANT: If O2_AI_ENABLED is "true", you MUST also set enterprise.o2ai.enabled to true
     O2_AI_ENABLED: "false"
     O2_AGENT_URL: "" # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: "" # Leave empty to use default auto-generated URL
@@ -582,13 +549,13 @@ enterprise:
     O2_SERVICE_STREAMS_MIN_CORRELATION_CONFIDENCE: "0.20"
     O2_SERVICE_STREAMS_MAX_STREAMS_PER_SERVICE: "100"
     O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS: "3600"
-  sreagent:
+  o2ai:
     # IMPORTANT: Must be set to true if O2_AI_ENABLED is "true" above
-    enabled: false # if true then o2-sre-agent will be deployed as part of openobserve (enterprise only)
+    enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
     config:
-      O2_SRE_HOST: "0.0.0.0"
-      O2_SRE_PORT: "8000"
-      O2_SRE_LOG_LEVEL: "INFO"
+      O2_AI_HOST: "0.0.0.0"
+      O2_AI_PORT: "8000"
+      O2_AI_LOG_LEVEL: "INFO"
       ADK_ENABLE_JSON_SCHEMA_FOR_FUNC_DECL: "true"
       O2_AI_GATEWAY_ENABLED: "false"
       O2_AI_PROVIDER: "anthropic" # openai or anthropic or gemini or others
@@ -603,6 +570,17 @@ enterprise:
       O2_MCP_CONTENT_VALIDATION_MODE: "hybrid"
       O2_MCP_RESPONSE_VALIDATION_ENABLED: "true"
     extraEnv: []
+    cliConfig: {}  # Leave empty to use built-in defaults. Override to customize available CLI commands.
+    clusterAccess:
+      enabled: false  # Enable kubectl/cluster access — creates ServiceAccount, ClusterRole, ClusterRoleBinding
+      serviceAccount:
+        annotations: {}
+        # AWS EKS IRSA example:
+        #   eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME
+        # GKE Workload Identity example:
+        #   iam.gke.io/gcp-service-account: SA_NAME@PROJECT_ID.iam.gserviceaccount.com
+      rbac:
+        rules: []  # Leave empty to use built-in defaults. Override to restrict or extend permissions.
 
 # Envoy AI Gateway Configuration
 # When enabled, SRE agent routes AI requests through an existing AI Gateway

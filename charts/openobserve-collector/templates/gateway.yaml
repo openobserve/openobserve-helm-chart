@@ -1,10 +1,13 @@
+{{- if .Values.gateway.enabled -}}
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
+{{- $gatewayLabels := include "openobserve-collector.labels" . | fromYaml | default (dict) }}
+{{- $gatewayLabels = mergeOverwrite $gatewayLabels (.Values.gateway.labels | default (dict)) }}
 metadata:
   name: {{ include "openobserve-collector.fullname" . }}-gateway
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "openobserve-collector.labels" . | nindent 4 }}
+    {{- toYaml $gatewayLabels | nindent 4 }}
 spec:
   {{- if .Values.gateway.autoscaler }}
   autoscaler:
@@ -28,6 +31,15 @@ spec:
   {{- end }}
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+<<<<<<< feat/collector-workload-identity-support
+  {{- with .Values.gateway.podAnnotations }}
+  podAnnotations:
+=======
+  {{- with .Values.image.imagePullSecrets }}
+  imagePullSecrets:
+>>>>>>> main
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   env:
     - name: K8S_NODE_NAME
       valueFrom:
@@ -71,3 +83,4 @@ spec:
       {{- toYaml .Values.exporters | nindent 6 }}
     service:
       {{- toYaml .Values.gateway.service | nindent 6 }}
+{{- end -}}
