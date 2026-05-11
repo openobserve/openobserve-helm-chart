@@ -37,6 +37,29 @@ kubectl create ns openobserve-collector
 helm --namespace openobserve-collector -f values.yaml install o2c openobserve/openobserve-collector
 ```
 
+## AKS Workload Identity
+
+The chart already supports service account annotations through `serviceAccount.annotations`.
+For collector pods managed by the OpenTelemetry operator, use `agent.labels` and/or `gateway.labels`
+to add labels that the generated pods must inherit, and `agent.podAnnotations` / `gateway.podAnnotations`
+for pod-level annotations.
+
+Example:
+
+```yaml
+serviceAccount:
+  annotations:
+    azure.workload.identity/client-id: "<managed-identity-client-id>"
+
+gateway:
+  labels:
+    azure.workload.identity/use: "true"
+
+agent:
+  labels:
+    azure.workload.identity/use: "true"
+```
+
 
 ## Development
 
@@ -77,4 +100,3 @@ To uninstall
 ```shell
 helm -n openobserve-collector uninstall o2c .
 ```
-
