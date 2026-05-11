@@ -1,3 +1,4 @@
+{{- if .Values.gateway.enabled -}}
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 {{- $gatewayLabels := include "openobserve-collector.labels" . | fromYaml | default (dict) }}
@@ -30,8 +31,13 @@ spec:
   {{- end }}
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+<<<<<<< feat/collector-workload-identity-support
   {{- with .Values.gateway.podAnnotations }}
   podAnnotations:
+=======
+  {{- with .Values.image.imagePullSecrets }}
+  imagePullSecrets:
+>>>>>>> main
     {{- toYaml . | nindent 4 }}
   {{- end }}
   env:
@@ -77,3 +83,4 @@ spec:
       {{- toYaml .Values.exporters | nindent 6 }}
     service:
       {{- toYaml .Values.gateway.service | nindent 6 }}
+{{- end -}}
