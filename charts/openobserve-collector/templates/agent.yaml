@@ -12,13 +12,12 @@ spec:
   mode: daemonset # "daemonset", "deployment" (default), "statefulset"
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-<<<<<<< feat/collector-workload-identity-support
-  {{- with .Values.agent.podAnnotations }}
-  podAnnotations:
-=======
   {{- with .Values.image.imagePullSecrets }}
   imagePullSecrets:
->>>>>>> main
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.agent.podAnnotations }}
+  podAnnotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   env:
