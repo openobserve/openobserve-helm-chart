@@ -86,4 +86,7 @@ rules:
   resources:
   - events
   verbs: ["get", "list", "watch"]
+{{- with .Values.rbac.extraRules }}
+{{ toYaml . }}
+{{- end }}
 {{- end }}

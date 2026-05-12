@@ -35,6 +35,22 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# If additional RBAC rules are needed for the collector, they can be added here
+# Any valid Kubernetes RBAC PolicyRule fields can be used here.
+# Example use case: Allow the collector to access third-party custom resources
+# and specific non-resource URLs.
+rbac: {}
+# rbac:
+#   extraRules:
+#     - apiGroups: ["thirdparty.api.group"]
+#       resources: ["customresourcename"]
+#       verbs: ["get", "list", "watch"]
+#       resourceNames: ["example-resource-name"]
+#     - nonResourceURLs: ["/custom-metrics"]
+#       verbs: ["get"]
+
+labels: {}
+
 # kube-state-metrics exposes Kubernetes object states as Prometheus metrics.
 # Set enabled: false if you already have kube-state-metrics installed in your cluster.
 kube-state-metrics:
@@ -338,12 +354,12 @@ agent:
         receivers: [filelog/std]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve] 
+        exporters: [otlphttp/openobserve]
       metrics:
         receivers: [kubeletstats, hostmetrics]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve] 
+        exporters: [otlphttp/openobserve]
 
 gateway:
   enabled: true
@@ -866,7 +882,7 @@ gateway:
         receivers: [otlp, servicegraph, prometheus]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve] 
+        exporters: [otlphttp/openobserve]
       traces:
         receivers: [otlp]
         processors:
