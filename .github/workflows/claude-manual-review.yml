@@ -17,7 +17,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      actions: read
     steps:
       - name: Get PR details
         id: pr
