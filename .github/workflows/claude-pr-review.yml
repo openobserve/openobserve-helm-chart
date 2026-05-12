@@ -8,7 +8,7 @@ env:
   REVIEW_MARKER: "<!-- claude-pr-review -->"
 
 jobs:
-  review-with-tracking:
+  claude-review:
     runs-on: ubuntu-latest
     # Only run when 'claude-review' label is added (for security)
     if: github.event.label.name == 'claude-review' || contains(github.event.pull_request.labels.*.name, 'claude-review')
@@ -24,11 +24,10 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0 # Full history needed to check what changed
 
-      - name: PR Review with Progress Tracking
+      - name: PR Review
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          track_progress: true
 
           prompt: |
             REPO: ${{ github.repository }}
