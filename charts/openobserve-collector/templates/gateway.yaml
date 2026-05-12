@@ -31,13 +31,12 @@ spec:
   {{- end }}
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-<<<<<<< feat/collector-workload-identity-support
-  {{- with .Values.gateway.podAnnotations }}
-  podAnnotations:
-=======
   {{- with .Values.image.imagePullSecrets }}
   imagePullSecrets:
->>>>>>> main
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.gateway.podAnnotations }}
+  podAnnotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   env:
