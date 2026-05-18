@@ -95,6 +95,23 @@ compactor:
       - ReadWriteOnce
     volumePermissions:
       enabled: false
+      # Separate resources for volume-permissions init container (not shared with main compactor).
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+  # Resources for compactor init containers such as check-nats (not shared with main compactor).
+  initContainers:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
 
 router:
   extraEnv: []
@@ -1267,4 +1284,3 @@ aiGateway:
   # Port of the AI Gateway service
   port: 80
   # URL will be auto-generated as: http://<gatewayServiceName>.<gatewayNamespace>.svc.cluster.local:<port>
-
