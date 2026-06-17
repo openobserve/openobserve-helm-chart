@@ -202,6 +202,22 @@ gateway:
 
 **Important**: For standalone deployments, ensure the `backendRefs.name` matches your actual service name (typically `{{ release-name }}-openobserve-standalone`).
 
+# Monitoring (Prometheus Operator)
+
+If you run the [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator), you can let it scrape OpenObserve's own `/metrics` endpoint by enabling a `ServiceMonitor`. It is disabled by default:
+
+```yaml
+serviceMonitor:
+  enabled: true
+  # interval: 30s
+  # scrapeTimeout: 10s
+  # Add labels so your Prometheus serviceMonitorSelector picks it up, e.g.:
+  # labels:
+  #   release: kube-prometheus-stack
+```
+
+The `ServiceMonitor` selects the standalone Service and scrapes the `http` port at `/metrics`. Note that `/metrics` is blocked for **public** access when `ingress`/`gateway` is enabled — the `ServiceMonitor` scrapes the in-cluster Service directly, so it is unaffected by that block. Requires the `monitoring.coreos.com/v1` CRDs to be installed.
+
 # Development
 
 If you are developing this chart then you should clone the repo and make any modifications.
