@@ -338,6 +338,37 @@ service:
   # grpc_nodePort: 30581
   annotations: {}
 
+# Prometheus Operator ServiceMonitor for scraping OpenObserve's own /metrics endpoint.
+# Requires the Prometheus Operator CRDs (monitoring.coreos.com/v1) to be installed.
+# NOTE: /metrics and /api/metrics are blocked for PUBLIC access when ingress/gateway is
+# enabled (see ingress/gateway above). The ServiceMonitor scrapes the in-cluster Service
+# directly, so it is unaffected by that public block.
+serviceMonitor:
+  enabled: false
+  # Namespace to deploy the ServiceMonitor into. Defaults to the release namespace.
+  namespace: ""
+  # Additional labels for the ServiceMonitor (e.g. to match your Prometheus serviceMonitorSelector).
+  labels: {}
+  # Additional annotations for the ServiceMonitor.
+  annotations: {}
+  # Service port name to scrape (must match the Service port name).
+  port: http
+  # Metrics path exposed by OpenObserve.
+  path: /metrics
+  scheme: http
+  interval: 30s
+  scrapeTimeout: 10s
+  honorLabels: false
+  # jobLabel: app.kubernetes.io/name
+  # TLS configuration for scraping (when OpenObserve serves metrics over HTTPS).
+  tlsConfig: {}
+  # basicAuth / bearerTokenSecret for protected /metrics endpoints.
+  basicAuth: {}
+  # bearerTokenSecret: {}
+  # relabelings / metricRelabelings are lists of Prometheus relabel configs.
+  relabelings: []
+  metricRelabelings: []
+
 certIssuer:
   enabled: false
 
