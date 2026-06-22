@@ -400,7 +400,7 @@ config:
   ZO_USAGE_PUBLISH_INTERVAL: "60" # duration in seconds after last reporting usage will be published
   ZO_PRINT_KEY_CONFIG: "false"
   ZO_PRINT_KEY_EVENT: "false"
-  ZO_PRINT_KEY_SQL: "false"
+  ZO_PRINT_KEY_SQL: "true"
   ZO_IGNORE_FILE_RETENTION_BY_STREAM: "false"
   ZO_RUM_ENABLED: "false"
   ZO_RUM_APPLICATION_ID: ""
