@@ -106,6 +106,21 @@ agent:
   labels: {}
   # Annotations added to the generated collector pods.
   podAnnotations: {}
+  # securityContext applied to the agent collector container.
+  # Required on OpenShift (and other SELinux-enforcing distros) so the filelog
+  # receiver can read host pod logs under /var/log/pods. Without this the collector
+  # logs "open .: permission denied" and no container logs are collected.
+  # Also grant the privileged SCC to the agent's service account, e.g.:
+  #   oc adm policy add-scc-to-user privileged -z <agent-sa> -n <namespace>
+  # Example:
+  #   securityContext:
+  #     privileged: true
+  #     runAsUser: 0
+  #     seLinuxOptions:
+  #       type: spc_t
+  securityContext: {}
+  # podSecurityContext applied to the agent collector pod.
+  podSecurityContext: {}
   tolerations:
     - operator: Exists
   resources: {}
@@ -369,6 +384,11 @@ gateway:
   labels: {}
   # Annotations added to the generated collector pods.
   podAnnotations: {}
+  # securityContext applied to the gateway collector container (e.g. for OpenShift/SELinux).
+  # See agent.securityContext above for details.
+  securityContext: {}
+  # podSecurityContext applied to the gateway collector pod.
+  podSecurityContext: {}
   # Number of replicas when autoscaler is not used
   replicas: 1
   targetAllocator:
