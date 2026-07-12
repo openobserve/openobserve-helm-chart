@@ -6,11 +6,11 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.80.2"
+    tag: "v0.91.1"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.80.2"
+    tag: "v0.91.1"
   reportserver:
     repository: o2cr.ai/openobserve/report-server
     tag: "v0.11.2-88574bc"
@@ -19,7 +19,7 @@ image:
     tag: 1.36.1
   o2ai:
     repository: ghcr.io/openobserve/o2-ai
-    tag: "v0.80.1"
+    tag: "v0.91.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -722,9 +722,9 @@ nats:
     cluster:
       enabled: true
       replicas: 3
-    routeURLs:
-      user: ""
-      password: ""
+      routeURLs:
+        user: ""
+        password: ""
     jetstream:
       enabled: true
       fileStore:
@@ -733,15 +733,15 @@ nats:
           enabled: true
           size: 20Gi
           storageClassName: ""
-    promExporter:
+  promExporter:
+    enabled: true
+    podMonitor:
       enabled: true
-      podMonitor:
-        enabled: true
   natsBox:
     container:
       image:
         repository: natsio/nats-box
-        tag: 0.18.0-nonroot
+        tag: 0.19.7
 
 minio:
   enabled: false # if true then minio will be deployed as part of openobserve
@@ -778,7 +778,7 @@ minio:
 # Make sure to install cloudnative-pg operator before enabling this
 # https://github.com/cloudnative-pg/cloudnative-pg/blob/main/docs/src/installation_upgrade.md
 # kubectl apply --server-side -f \
-#   https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.27/releases/cnpg-1.27.1.yaml
+#   https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.30/releases/cnpg-1.30.0.yaml
 postgres:
   enabled: true
   pgadmin:
@@ -799,7 +799,7 @@ postgres:
     password: Batman123 # password # username is hardcoded to openobserve, db is hardcoded to app
     enableSuperuserAccess: true # if true then superuser access will be enabled. You can get the password from appropriate secret once the postgres is deployed
     instances: 2 # creates a primary and a replica. replica will become primary if the primary fails
-    affinity: # see details https://cloudnative-pg.io/documentation/1.27/scheduling/
+    affinity: # see details https://cloudnative-pg.io/docs/1.30/scheduling/
       podAntiAffinityType: preferred
     storage:
       size: 10Gi
@@ -809,7 +809,7 @@ postgres:
         max_connections: "1500"
     monitoring:
       enablePodMonitor: true
-    backup: {} # All the configuration associated with an object store from https://cloudnative-pg.io/documentation/1.27/backup_recovery/
+    backup: {} # All the configuration associated with an object store from https://cloudnative-pg.io/docs/1.30/backup/
 
 enterprise:
   enabled: true
@@ -1026,21 +1026,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   compactor:
     enabled: false
@@ -1050,21 +1050,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   ingester:
     enabled: false
@@ -1074,21 +1074,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 1200 # 20 minutes for now, since we are using pre-stop hook to flush data and it takes up to 10 minutes to flush data to s3
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 1200 # 20 minutes for now, since we are using pre-stop hook to flush data and it takes up to 10 minutes to flush data to s3
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 1200 # 20 minutes for now, since we are using pre-stop hook to flush data and it takes up to 10 minutes to flush data to s3
   querier:
     enabled: false
@@ -1098,21 +1098,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   alertquerier:
     enabled: false
@@ -1122,21 +1122,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   router:
     enabled: true
@@ -1146,21 +1146,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   dex:
     enabled: false
@@ -1170,21 +1170,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30  
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30  
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   openfga:
     enabled: false
@@ -1194,21 +1194,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   reportserver:
     enabled: false
@@ -1218,21 +1218,21 @@ probes:
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       readinessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
       livenessProbe:
         initialDelaySeconds: 10
         periodSeconds: 10
         timeoutSeconds: 5
         successThreshold: 1
-        failureThreshold: 3
+        failureThreshold: 30
         terminationGracePeriodSeconds: 30
   o2ai:
     enabled: true
