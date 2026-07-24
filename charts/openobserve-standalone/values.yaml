@@ -344,6 +344,19 @@ certIssuer:
 secret:
   annotations: {}
 
+# blocked-metrics is a small nginx sidecar deployed when ingress is enabled (and the
+# gateway is not) to block public access to the /metrics endpoints.
+blockedMetrics:
+  # Resources for the blocked-metrics nginx container. Exposed because the previous
+  # hardcoded 32Mi limit could OOMKill the container in some environments.
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
+
 ingress:
   enabled: false
   className: "nginx"
