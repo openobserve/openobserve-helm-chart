@@ -52,6 +52,17 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+# Optional writable cache volume. Enable this when running with
+# securityContext.readOnlyRootFilesystem: true so OpenObserve can create its cache
+# directory (otherwise the process panics with a ReadOnlyFilesystem error).
+# NOTE: also set config.ZO_DATA_CACHE_DIR to the same mountPath so the app writes its
+# cache there. Validate the path for your app version before relying on it.
+cache:
+  enabled: false
+  mountPath: /cache
+  # medium: "Memory"   # use a tmpfs-backed emptyDir instead of node disk
+  # sizeLimit: "2Gi"   # optional emptyDir size limit
+
 persistence:
   enabled: true
   size: 10Gi
