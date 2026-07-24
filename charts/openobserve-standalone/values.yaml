@@ -329,6 +329,21 @@ extraEnv: []
 #       name: s3credentials-secret
 #       key: S3_KEY
 
+# Prometheus Operator ServiceMonitor to scrape OpenObserve's /metrics endpoint.
+# Requires the Prometheus Operator CRDs (monitoring.coreos.com/v1) to be installed.
+serviceMonitor:
+  enabled: false
+  # namespace: ""            # defaults to the release namespace
+  # additionalLabels: {}     # e.g. { release: kube-prometheus-stack } to match your Prometheus selector
+  interval: 30s
+  scrapeTimeout: 10s
+  path: /metrics
+  scheme: http
+  honorLabels: false
+  # tlsConfig: {}
+  relabelings: []
+  metricRelabelings: []
+
 service:
   type: ClusterIP
   # type: LoadBalancer
