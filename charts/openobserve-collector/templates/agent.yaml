@@ -9,6 +9,10 @@ metadata:
   labels:
     {{- toYaml $agentLabels | nindent 4 }}
 spec:
+  # Explicitly set so the collector renders on opentelemetry-operator versions whose
+  # v1beta1 CRD requires spec.managementState (otherwise install/ArgoCD validation fails
+  # with: missing required field "managementState"). See #108, #129, #141.
+  managementState: {{ .Values.managementState | default "managed" }}
   mode: daemonset # "daemonset", "deployment" (default), "statefulset"
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
