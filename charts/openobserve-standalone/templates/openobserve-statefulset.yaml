@@ -125,12 +125,22 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      {{- if not .Values.persistence.enabled }}
+        # persistence disabled: back /data with an ephemeral emptyDir instead of a PVC.
+        - name: data
+          emptyDir: {}
+      {{- end }}
       {{- if .Values.extraVolumes }}
       {{ toYaml .Values.extraVolumes | nindent 8 }}
       {{- end }}
+  {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
+      {{- with .Values.persistence.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       accessModes:
       {{- range .Values.persistence.accessModes }}
@@ -140,3 +150,4 @@ spec:
       resources:
         requests:
           storage: {{ .Values.persistence.size | quote }}
+  {{- end }}
