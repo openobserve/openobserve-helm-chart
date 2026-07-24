@@ -42,7 +42,9 @@ data:
   ZO_WEB_URL: "{{ .Values.config.ZO_WEB_URL }}"
   ZO_BASE_URI: "{{ .Values.config.ZO_BASE_URI }}"
   ZO_META_STORE: "{{ .Values.config.ZO_META_STORE }}"
-  ZO_META_POSTGRES_DSN: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
+  # ZO_META_POSTGRES_DSN is intentionally NOT set here — it is a credential and is
+  # rendered into the Secret instead (see templates/secret.yaml). Set it via
+  # auth.ZO_META_POSTGRES_DSN (preferred) or config.ZO_META_POSTGRES_DSN.
   ZO_META_CONNECTION_POOL_MIN_SIZE: "{{ .Values.config.ZO_META_CONNECTION_POOL_MIN_SIZE }}"
   ZO_META_CONNECTION_POOL_MAX_SIZE: "{{ .Values.config.ZO_META_CONNECTION_POOL_MAX_SIZE }}"
   ZO_META_TRANSACTION_RETRIES: "{{ .Values.config.ZO_META_TRANSACTION_RETRIES }}"
