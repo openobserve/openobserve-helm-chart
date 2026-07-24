@@ -101,6 +101,12 @@ auth:
   AZURE_STORAGE_ACCOUNT_KEY: ""
   AZURE_STORAGE_ACCOUNT_NAME: ""
 
+  # External metadata Postgres DSN. Set this to run standalone with Postgres as the
+  # meta store (also set config.ZO_META_STORE: "postgres"). It is a credential, so it
+  # is stored in the Secret, not the ConfigMap. Takes precedence over
+  # config.ZO_META_POSTGRES_DSN if both are set.
+  ZO_META_POSTGRES_DSN: ""
+
 # https://openobserve.ai/docs/environment-variables/
 config:
   ZO_APP_NAME: "openobserve"
