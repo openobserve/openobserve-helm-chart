@@ -109,6 +109,13 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            {{- if .Values.cache.enabled }}
+            # Writable cache dir so the app can create its cache when
+            # securityContext.readOnlyRootFilesystem: true. Point
+            # config.ZO_DATA_CACHE_DIR at this same path.
+            - name: cache
+              mountPath: {{ .Values.cache.mountPath }}
+            {{- end }}
           {{- if .Values.extraVolumeMounts }}
           {{ toYaml .Values.extraVolumeMounts | nindent 12 }}
           {{- end }}
@@ -129,6 +136,16 @@ spec:
         # persistence disabled: back /data with an ephemeral emptyDir instead of a PVC.
         - name: data
           emptyDir: {}
+      {{- end }}
+      {{- if .Values.cache.enabled }}
+        - name: cache
+          emptyDir:
+            {{- if .Values.cache.medium }}
+            medium: {{ .Values.cache.medium | quote }}
+            {{- end }}
+            {{- if .Values.cache.sizeLimit }}
+            sizeLimit: {{ .Values.cache.sizeLimit | quote }}
+            {{- end }}
       {{- end }}
       {{- if .Values.extraVolumes }}
       {{ toYaml .Values.extraVolumes | nindent 8 }}
