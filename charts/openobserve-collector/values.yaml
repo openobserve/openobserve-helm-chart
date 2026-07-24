@@ -15,6 +15,12 @@ exporters:
 
 k8sCluster: "cluster1"
 
+# managementState for the OpenTelemetryCollector CRs (agent & gateway).
+# "managed" (default) lets the opentelemetry-operator reconcile the collector.
+# Some operator versions require this field to be present on the v1beta1 CRD, so it
+# is always rendered. Set to "unmanaged" to have the operator stop reconciling.
+managementState: "managed"
+
 image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
