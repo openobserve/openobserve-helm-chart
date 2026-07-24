@@ -362,7 +362,9 @@ ingress:
   className: "nginx"
   # NOTE: /metrics and /api/metrics endpoints are always blocked for public access when ingress is enabled
   annotations:
-    cert-manager.io/issuer: letsencrypt
+    # NOTE: the cert-manager.io/issuer annotation is NOT set here. It is injected
+    # automatically by the ingress template when certIssuer.enabled=true. This lets you
+    # use your own cert-manager.io/cluster-issuer here without a conflicting issuer.
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     # nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
