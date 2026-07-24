@@ -705,6 +705,7 @@ nodeSelector:
   dex: {}
   reportserver: {}
   o2ai: {}
+  openfga: {}
 
 tolerations:
   ingester: []
@@ -716,6 +717,7 @@ tolerations:
   dex: []
   reportserver: []
   o2ai: []
+  openfga: []
 
 affinity:
   ingester: {}
@@ -727,6 +729,7 @@ affinity:
   dex: {}
   reportserver: {}
   o2ai: {}
+  openfga: {}
 
 nats:
   enabled: true # if true then nats will be deployed as part of openobserve
