@@ -1,0 +1,8 @@
+# Artifact Hub repository metadata.
+# https://artifacthub.io/docs/topics/repositories/helm-charts/
+# Place this file at the root of the branch/path that Artifact Hub indexes so the
+# repository can be verified and ownership claimed.
+repositoryID: ""   # fill in with the ID shown in the Artifact Hub control panel after adding the repo
+owners:
+  - name: OpenObserve
+    email: hello@openobserve.ai
