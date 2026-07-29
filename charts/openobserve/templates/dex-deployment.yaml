@@ -75,6 +75,9 @@ spec:
             - name: config
               mountPath: /etc/dex
               readOnly: true
+            {{- with .Values.enterprise.dex.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
@@ -88,7 +91,10 @@ spec:
         - name: config
           configMap:
             name: {{ include "openobserve.fullname" . }}-dex
-            
+        {{- with .Values.enterprise.dex.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
       {{- with .Values.enterprise.dex.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
