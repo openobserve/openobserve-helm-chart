@@ -996,6 +996,27 @@ enterprise:
       tag: v2.37.0
       pullPolicy: IfNotPresent
     extraEnv: []
+    # Mount additional volumes into the dex pod, e.g. a private root CA for an
+    # OIDC connector (Keycloak). Create a secret with the CA cert and reference
+    # it here, then point the connector's rootCAs at the mounted path:
+    #   connectors:
+    #     - type: oidc
+    #       id: keycloak
+    #       name: Keycloak
+    #       config:
+    #         issuer: https://keycloak.example.com/realms/master
+    #         rootCAs:
+    #           - /etc/dex/certs/ca.crt
+    # extraVolumes:
+    #   - name: keycloak-ca
+    #     secret:
+    #       secretName: keycloak-ca
+    # extraVolumeMounts:
+    #   - name: keycloak-ca
+    #     mountPath: /etc/dex/certs
+    #     readOnly: true
+    extraVolumes: []
+    extraVolumeMounts: []
     ingress:
       enabled: true
       className: "nginx"
