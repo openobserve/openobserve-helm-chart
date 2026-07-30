@@ -75,6 +75,7 @@ replicaCount:
   compactor: 1
   reportserver: 0
   o2ai: 2
+  dex: 1
 
 alertmanager:
   extraEnv: []
@@ -913,6 +914,12 @@ enterprise:
       pullPolicy: IfNotPresent
   dex:
     enabled: false
+    serviceAccount:
+      # Annotations for the dex ServiceAccount. Required for cloud workload
+      # identity, e.g. letting the google connector reach the Admin SDK
+      # Directory API without mounting a static service account key:
+      #   iam.gke.io/gcp-service-account: dex-dwd@my-project.iam.gserviceaccount.com
+      annotations: {}
     parameters:
       O2_CALLBACK_URL: https://openobserve.example.com/web/cb
       O2_DEX_SCOPES: openid profile email groups offline_access

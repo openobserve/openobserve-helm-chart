@@ -40,10 +40,16 @@ spec:
             - containerPort: 5556
               name: http
           {{- if .Values.probes.dex.enabled }}
+          {{- /*
+            dex registers every handler under the path of its issuer URL, so an
+            issuer of https://o2.example.com/dex serves health at /dex/healthz.
+            Derive the path from the issuer instead of assuming the root.
+          */}}
+          {{- $dexHealthPath := clean (printf "%s/healthz" (urlParse .Values.enterprise.dex.config.issuer).path) }}
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: {{ .Values.config.ZO_HTTP_PORT }}
+              path: {{ $dexHealthPath }}
+              port: http
             initialDelaySeconds: {{ .Values.probes.dex.config.livenessProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.dex.config.livenessProbe.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.dex.config.livenessProbe.timeoutSeconds | default 10 }}
@@ -52,8 +58,8 @@ spec:
             terminationGracePeriodSeconds: {{ .Values.probes.dex.config.livenessProbe.terminationGracePeriodSeconds | default 30 }}
           readinessProbe:
             httpGet:
-              path: /healthz
-              port: {{ .Values.config.ZO_HTTP_PORT }}
+              path: {{ $dexHealthPath }}
+              port: http
             initialDelaySeconds: {{ .Values.probes.dex.config.readinessProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.dex.config.readinessProbe.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.dex.config.readinessProbe.timeoutSeconds | default 10 }}
@@ -61,8 +67,8 @@ spec:
             failureThreshold: {{ .Values.probes.dex.config.readinessProbe.failureThreshold | default 3 }}
           startupProbe:
             httpGet:
-              path: /healthz
-              port: {{ .Values.config.ZO_HTTP_PORT }}
+              path: {{ $dexHealthPath }}
+              port: http
             initialDelaySeconds: {{ .Values.probes.dex.config.startupProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.dex.config.startupProbe.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.dex.config.startupProbe.timeoutSeconds | default 10 }}
