@@ -114,6 +114,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints.o2ai }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.enterprise.o2ai.clusterAccess.enabled }}
       volumes:
         - name: cli-config

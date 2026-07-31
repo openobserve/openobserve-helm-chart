@@ -135,6 +135,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints.alertmanager }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   {{- if .Values.alertmanager.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
