@@ -746,6 +746,18 @@ affinity:
   o2ai: {}
   openfga: {}
 
+topologySpreadConstraints:
+  ingester: []
+  querier: []
+  compactor: []
+  router: []
+  alertmanager: []
+  alertquerier: []
+  dex: []
+  reportserver: []
+  o2ai: []
+  openfga: []
+
 nats:
   enabled: true # if true then nats will be deployed as part of openobserve
   externalUrl: "my_custom_host.com:4222" # if enabled is false then this is required
