@@ -44,7 +44,7 @@ podAnnotations:
   querier: {}
   compactor: {}
   router: {}
-  alertmanager: {}
+  scheduler: {}
   dex: {}
   reportserver: {}
   alertquerier: {}
@@ -70,13 +70,13 @@ replicaCount:
   ingester: 1
   querier: 1
   router: 1
-  alertmanager: 1
+  scheduler: 1
   alertquerier: 0
   compactor: 1
   reportserver: 0
   o2ai: 2
 
-alertmanager:
+scheduler:
   extraEnv: []
   persistence: # If enabled it will be used for disk cache. Highly recommend to enable this for production
     enabled: true
@@ -653,7 +653,7 @@ resources:
   querier: {}
   compactor: {}
   router: {}
-  alertmanager: {}
+  scheduler: {}
   dex: {}
   reportserver: {}
   openfga: {}
@@ -715,7 +715,7 @@ nodeSelector:
   querier: {}
   compactor: {}
   router: {}
-  alertmanager: {}
+  scheduler: {}
   alertquerier: {}
   dex: {}
   reportserver: {}
@@ -727,7 +727,7 @@ tolerations:
   querier: []
   compactor: []
   router: []
-  alertmanager: []
+  scheduler: []
   alertquerier: []
   dex: []
   reportserver: []
@@ -739,7 +739,7 @@ affinity:
   querier: {}
   compactor: {}
   router: {}
-  alertmanager: {}
+  scheduler: {}
   alertquerier: {}
   dex: {}
   reportserver: {}
@@ -1070,7 +1070,7 @@ enterprise:
         rules: []  # Leave empty to use built-in defaults. Override to restrict or extend permissions.    
 
 probes:
-  alertmanager:
+  scheduler:
     enabled: false
     config:
       startupProbe:
