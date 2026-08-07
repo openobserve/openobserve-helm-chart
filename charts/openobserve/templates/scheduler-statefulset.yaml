@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "openobserve.fullname" . }}-alertmanager
+  name: {{ include "openobserve.fullname" . }}-scheduler
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
-  serviceName: "{{ include "openobserve.fullname" . }}-alertmanager"
-  replicas: {{ .Values.replicaCount.alertmanager }}
+  serviceName: "{{ include "openobserve.fullname" . }}-scheduler"
+  replicas: {{ .Values.replicaCount.scheduler }}
   podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
@@ -16,18 +16,18 @@ spec:
   selector:
     matchLabels:
       {{- include "openobserve.selectorLabels" . | nindent 6 }}
-      role: alertmanager
+      role: scheduler
   template:
     metadata:
       annotations:
-        {{- with .Values.podAnnotations.alertmanager }}
+        {{- with .Values.podAnnotations.scheduler }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        checksum/specific-config: {{ include (print $.Template.BasePath "/alertmanager-configmap.yaml") . | sha256sum }}
+        checksum/specific-config: {{ include (print $.Template.BasePath "/scheduler-configmap.yaml") . | sha256sum }}
         checksum/generic-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
-        role: alertmanager
+        role: scheduler
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -52,7 +52,7 @@ spec:
           ']
         {{- end }}
       containers:
-        - name: {{ .Chart.Name }}-alertmanager
+        - name: {{ .Chart.Name }}-scheduler
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           {{- if .Values.enterprise.enabled }}
@@ -70,82 +70,82 @@ spec:
             - name: reportserver
               containerPort: {{ .Values.config.ZO_REPORT_SERVER_HTTP_PORT }}
             {{- end }}
-          {{- if .Values.probes.alertmanager.enabled }}
+          {{- if .Values.probes.scheduler.enabled }}
           livenessProbe:
             httpGet:
               path: /healthz
               port: {{ .Values.config.ZO_HTTP_PORT }}
-            initialDelaySeconds: {{ .Values.probes.alertmanager.config.livenessProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.probes.alertmanager.config.livenessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.probes.alertmanager.config.livenessProbe.timeoutSeconds | default 10 }}
-            successThreshold: {{ .Values.probes.alertmanager.config.livenessProbe.successThreshold | default 1 }}
-            failureThreshold: {{ .Values.probes.alertmanager.config.livenessProbe.failureThreshold | default 3 }}
-            terminationGracePeriodSeconds: {{ .Values.probes.alertmanager.config.livenessProbe.terminationGracePeriodSeconds | default 30 }}
+            initialDelaySeconds: {{ .Values.probes.scheduler.config.livenessProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.scheduler.config.livenessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.scheduler.config.livenessProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.scheduler.config.livenessProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.scheduler.config.livenessProbe.failureThreshold | default 3 }}
+            terminationGracePeriodSeconds: {{ .Values.probes.scheduler.config.livenessProbe.terminationGracePeriodSeconds | default 30 }}
           readinessProbe:
             httpGet:
               path: /healthz
               port: {{ .Values.config.ZO_HTTP_PORT }}
-            initialDelaySeconds: {{ .Values.probes.alertmanager.config.readinessProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.probes.alertmanager.config.readinessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.probes.alertmanager.config.readinessProbe.timeoutSeconds | default 10 }}
-            successThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.successThreshold | default 1 }}
-            failureThreshold: {{ .Values.probes.alertmanager.config.readinessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ .Values.probes.scheduler.config.readinessProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.scheduler.config.readinessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.scheduler.config.readinessProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.scheduler.config.readinessProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.scheduler.config.readinessProbe.failureThreshold | default 3 }}
           startupProbe:
             httpGet:
               path: /healthz
               port: {{ .Values.config.ZO_HTTP_PORT }}
-            initialDelaySeconds: {{ .Values.probes.alertmanager.config.startupProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.probes.alertmanager.config.startupProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.probes.alertmanager.config.startupProbe.timeoutSeconds | default 10 }}
-            successThreshold: {{ .Values.probes.alertmanager.config.startupProbe.successThreshold | default 1 }}
-            failureThreshold: {{ .Values.probes.alertmanager.config.startupProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ .Values.probes.scheduler.config.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.probes.scheduler.config.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.probes.scheduler.config.startupProbe.timeoutSeconds | default 10 }}
+            successThreshold: {{ .Values.probes.scheduler.config.startupProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.probes.scheduler.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
-            {{- toYaml .Values.resources.alertmanager | nindent 12 }}
+            {{- toYaml .Values.resources.scheduler | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
             - configMapRef:
-                name: {{ include "openobserve.fullname" . }}-alertmanager
+                name: {{ include "openobserve.fullname" . }}-scheduler
             - secretRef:
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
             - name: ZO_NODE_ROLE
-              value: "alertmanager"
+              value: "scheduler"
             - name: K8S_CONTAINER_NAME
-              value: "{{ .Chart.Name }}-alertmanager"
+              value: "{{ .Chart.Name }}-scheduler"
             {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
-            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.alertmanager.extraEnv) }}
+            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.scheduler.extraEnv) }}
             {{- . | nindent 12 }}
             {{- end }}
-          {{- if .Values.alertmanager.persistence.enabled }}
+          {{- if .Values.scheduler.persistence.enabled }}
           volumeMounts:
             - name: cache
               mountPath: /data
           {{- end }}
-      {{- with .Values.nodeSelector.alertmanager }}
+      {{- with .Values.nodeSelector.scheduler }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity.alertmanager }}
+      {{- with .Values.affinity.scheduler }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations.alertmanager }}
+      {{- with .Values.tolerations.scheduler }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  {{- if .Values.alertmanager.persistence.enabled }}
+  {{- if .Values.scheduler.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: cache
       spec:
         accessModes:
-          {{- range .Values.alertmanager.persistence.accessModes }}
+          {{- range .Values.scheduler.persistence.accessModes }}
             - {{ . | quote }}
           {{- end }}
         resources:
           requests:
-            storage: {{ .Values.alertmanager.persistence.size }}
-        storageClassName: {{ .Values.alertmanager.persistence.storageClass }}
+            storage: {{ .Values.scheduler.persistence.size }}
+        storageClassName: {{ .Values.scheduler.persistence.storageClass }}
   {{- end }}
