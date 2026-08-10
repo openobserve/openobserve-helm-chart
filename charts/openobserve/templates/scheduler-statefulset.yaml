@@ -111,7 +111,7 @@ spec:
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
             - name: ZO_NODE_ROLE
-              value: "scheduler"
+              value: "alertmanager"
             - name: K8S_CONTAINER_NAME
               value: "{{ .Chart.Name }}-scheduler"
             {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
