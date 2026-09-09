@@ -131,6 +131,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints.querier }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   {{- if .Values.querier.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
