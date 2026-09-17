@@ -6,17 +6,17 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.92.2"
+    tag: "v1.0.1"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.92.2"
+    tag: "v1.0.1"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
   o2ai:
     repository: ghcr.io/openobserve/o2-ai
-    tag: "v0.92.0"
+    tag: "v1.0.1"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -333,6 +333,33 @@ config:
   ZO_PROMETHEUS_ENABLED: "false"
   ZO_HISTOGRAM_ENABLED: "true" # show/hide histogram on logs page by default
   ZO_SGRAPH_ENABLED: "true"
+  # Synthetics (introduced in v1.0.1)
+  ZO_SYNTHETICS_ENABLED: "false"
+  ZO_SYNTHETICS_API_ENDPOINT: ""
+  ZO_SYNTHETICS_BROWSERS: "chromium"
+  ZO_SYNTHETICS_DEVICES: "desktop:1440:900"
+  ZO_SYNTHETICS_LAMBDA_BROWSER: "o2"
+  ZO_SYNTHETICS_LAMBDA_NET: ""
+  ZO_SYNTHETICS_INSTALL_SCRIPT_URL: ""
+  ZO_SYNTHETICS_RECORDER_EXTENSION_URL: ""
+  ZO_SYNTHETICS_AGENT_STALE_SECS: "120"
+  ZO_SYNTHETICS_JOB_LEASE_SECS: "900"
+  ZO_SYNTHETICS_MAX_CHECK_BUDGET_SECS: "840"
+  ZO_SYNTHETICS_MAX_NET_TIMEOUT_MS: "300000"
+  ZO_SYNTHETICS_SCHEDULER_JITTER_ENABLED: "true"
+  ZO_SYNTHETICS_ORPHAN_DETECTION_ENABLED: "true"
+  # Alerts — composite / charts / eval (introduced in v1.0.1)
+  ZO_ALERT_CHART_ENABLED: "true"
+  ZO_ALERT_CHART_SIGNING_KEY: ""
+  ZO_ALERT_COMPOSITE_WRITES_ENABLED: "true"
+  ZO_ALERT_COMPOSITE_DEBOUNCE_SECS: "15"
+  ZO_ALERT_COMPOSITE_STALE_K: "3"
+  ZO_ALERT_COMPOSITE_SWEEP_SECS: "300"
+  ZO_ALERT_EVAL_LEDGER_RETENTION_DAYS: "97"
+  ZO_ALERT_TEST_SEND_PER_MINUTE: "6"
+  # Other (introduced in v1.0.1)
+  ZO_AI_SESSION_OWNER_TTL: "86400" # seconds
+  ZO_TRACE_TIME_INDEX_ENABLED: "true"
   RUST_LOG: "info"
   RUST_BACKTRACE: "0"
 
@@ -594,6 +621,14 @@ enterprise:
     O2_SERVICE_STREAMS_MIN_CORRELATION_CONFIDENCE: "0.20"
     O2_SERVICE_STREAMS_MAX_STREAMS_PER_SERVICE: "100"
     O2_SERVICE_STREAMS_SAMPLE_WINDOW_SECS: "3600"
+    # Eval / LLM playground / Synthetics metering (introduced in v1.0.1)
+    O2_EVAL_EXPERIMENT_MAX_TRIAL_COUNT: "10"
+    O2_EVAL_OUTBOUND_CONNECT_TIMEOUT_SECS: "10"
+    O2_EVAL_OUTBOUND_MAX_RESPONSE_BYTES: "1048576"
+    O2_LLM_PLAYGROUND_RUN_TIMEOUT_MS: "120000"
+    O2_LLM_PLAYGROUND_SNAPSHOT_MAX_PER_ORG: "1000"
+    O2_LLM_PLAYGROUND_SNAPSHOT_TTL_DAYS: "180"
+    O2_LLM_REVIEW_RECONCILE_INTERVAL_SECS: "600"
   o2ai:
     # IMPORTANT: Must be set to true if O2_AI_ENABLED is "true" above
     enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
