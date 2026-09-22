@@ -60,6 +60,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints.openfga }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: openfga
           image: {{ .Values.enterprise.openfga.image.repository }}:{{ .Values.enterprise.openfga.image.tag }}
