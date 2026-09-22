@@ -25,7 +25,7 @@ image:
   repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.138.0"
+  tag: "0.158.0"
   imagePullSecrets: []
 
 nameOverride: ""
@@ -214,8 +214,11 @@ agent:
       scrapers:
         cpu:
           metrics:
+            system.cpu.time:
+              attributes: [cpu, state]
             system.cpu.utilization:
               enabled: true
+              attributes: [cpu, state]
         disk: {}
         filesystem:
           exclude_mount_points:
@@ -334,6 +337,7 @@ agent:
           - k8s.namespace.name
           - k8s.node.name
           - k8s.pod.start_time
+          - k8s.pod.ip
           - k8s.container.name
       pod_association:
         - sources:
@@ -824,6 +828,7 @@ gateway:
           - k8s.pod.uid
           - k8s.node.name
           - k8s.pod.start_time
+          - k8s.pod.ip
           - k8s.deployment.name
           - k8s.replicaset.name
           - k8s.replicaset.uid
