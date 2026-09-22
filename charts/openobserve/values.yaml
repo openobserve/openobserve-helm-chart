@@ -460,20 +460,13 @@ config:
   ZO_HISTOGRAM_ENABLED: "true" # show/hide histogram on logs page by default
   ZO_SGRAPH_ENABLED: "true"
   # Synthetics (introduced in v1.0.1)
-  ZO_SYNTHETICS_ENABLED: "false"
-  ZO_SYNTHETICS_API_ENDPOINT: ""
-  ZO_SYNTHETICS_BROWSERS: "chromium"
-  ZO_SYNTHETICS_DEVICES: "desktop:1440:900"
-  ZO_SYNTHETICS_LAMBDA_BROWSER: "o2"
-  ZO_SYNTHETICS_LAMBDA_NET: ""
-  ZO_SYNTHETICS_INSTALL_SCRIPT_URL: ""
-  ZO_SYNTHETICS_RECORDER_EXTENSION_URL: ""
-  ZO_SYNTHETICS_AGENT_STALE_SECS: "120"
-  ZO_SYNTHETICS_JOB_LEASE_SECS: "900"
-  ZO_SYNTHETICS_MAX_CHECK_BUDGET_SECS: "840"
-  ZO_SYNTHETICS_MAX_NET_TIMEOUT_MS: "300000"
-  ZO_SYNTHETICS_SCHEDULER_JITTER_ENABLED: "true"
-  ZO_SYNTHETICS_ORPHAN_DETECTION_ENABLED: "true"
+  # No ZO_SYNTHETICS_* key is set here on purpose. The server already defines a
+  # default for each one, and a key listed here is an override, not a default:
+  # it is written into the ConfigMap and wins over the server's own value.
+  # Set only the keys you actually want to change, for example:
+  #   ZO_SYNTHETICS_ENABLED: "true"
+  #   ZO_SYNTHETICS_API_ENDPOINT: "https://o2.example.com"
+  #   ZO_SYNTHETICS_LAMBDA_NET: "o2-synthetics-net-probe"
   # Alerts — composite / charts / eval (introduced in v1.0.1)
   ZO_ALERT_CHART_ENABLED: "true"
   ZO_ALERT_CHART_SIGNING_KEY: ""
