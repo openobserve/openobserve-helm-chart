@@ -402,9 +402,9 @@ gateway:
   # Number of replicas when autoscaler is not used
   replicas: 1
   prometheus:
-    # Max samples per scrape for the cadvisor and prometheus-autodiscovery jobs. A target
-    # that exposes more is dropped whole (its `up` metric reads 0), not truncated. 0 disables
-    # the limit. A sample_limit set directly on either job in
+    # Max samples per scrape (counted after metric_relabel_configs) for the cadvisor and
+    # prometheus-autodiscovery jobs. A scrape over the limit is dropped whole (the target's
+    # `up` metric reads 0), not truncated. 0 disables the limit. A sample_limit set directly on either job in
     # gateway.receivers.prometheus.config.scrape_configs takes precedence.
     sampleLimit: 10000
   targetAllocator:
