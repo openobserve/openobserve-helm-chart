@@ -76,9 +76,15 @@ spec:
   podSecurityContext:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- $receivers := deepCopy .Values.gateway.receivers }}
+  {{- range (dig "prometheus" "config" "scrape_configs" list $receivers) }}
+  {{- if and (has .job_name (list "cadvisor" "prometheus-autodiscovery")) (not (hasKey . "sample_limit")) }}
+  {{- $_ := set . "sample_limit" (int64 $.Values.gateway.prometheus.sampleLimit) }}
+  {{- end }}
+  {{- end }}
   config:
     receivers:
-      {{- toYaml .Values.gateway.receivers | nindent 6 }}
+      {{- toYaml $receivers | nindent 6 }}
     connectors:
       {{- toYaml .Values.gateway.connectors | nindent 6 }}
     processors:
