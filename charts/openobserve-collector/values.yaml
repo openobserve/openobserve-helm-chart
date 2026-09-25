@@ -404,8 +404,8 @@ gateway:
   prometheus:
     # Max samples per scrape (counted after metric_relabel_configs) for the cadvisor and
     # prometheus-autodiscovery jobs. A scrape over the limit is dropped whole (the target's
-    # `up` metric reads 0), not truncated. 0 disables the limit. A sample_limit set directly on either job in
-    # gateway.receivers.prometheus.config.scrape_configs takes precedence.
+    # `up` metric reads 0), not truncated. 0 disables the limit. A sample_limit set directly
+    # on either job in gateway.receivers.prometheus.config.scrape_configs takes precedence.
     sampleLimit: 10000
   targetAllocator:
     enabled: false
