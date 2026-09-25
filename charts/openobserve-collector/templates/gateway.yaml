@@ -77,7 +77,7 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- $sampleLimit := dig "prometheus" "sampleLimit" "" .Values.gateway }}
-  {{- if not (and (or (kindIs "int64" $sampleLimit) (kindIs "int" $sampleLimit) (kindIs "float64" $sampleLimit)) (ge (int64 $sampleLimit) 0)) }}
+  {{- if not (and (or (kindIs "int64" $sampleLimit) (kindIs "int" $sampleLimit) (kindIs "float64" $sampleLimit)) (eq (float64 $sampleLimit) (float64 (int64 $sampleLimit))) (ge (int64 $sampleLimit) 0)) }}
   {{- fail "gateway.prometheus.sampleLimit must be a non-negative integer" }}
   {{- end }}
   {{- $receivers := deepCopy .Values.gateway.receivers }}
