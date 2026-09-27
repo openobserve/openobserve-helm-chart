@@ -423,7 +423,7 @@ annotations:
 
 ### Limits
 
-- Max **10,000 samples** per scrape. Scrapes exceeding this are dropped entirely.
+- Max **10,000 samples** per scrape by default (`gateway.prometheus.sampleLimit`, shared with the cadvisor job). A scrape exceeding it is dropped entirely and the target's `up` metric reads 0.
 
 ---
 

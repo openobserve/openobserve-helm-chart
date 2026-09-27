@@ -43,6 +43,16 @@ with an ephemeral `emptyDir`. Previously the PVC was always created. If you were
 `persistence.enabled: false` and unknowingly still getting a PVC, you will now get ephemeral
 storage — set it back to `true` if you need the PVC.
 
+### openobserve-collector 0.5.0 — scrape `sample_limit` moved to `gateway.prometheus.sampleLimit`
+
+The `cadvisor` and `prometheus-autodiscovery` jobs no longer carry a literal `sample_limit`
+in `gateway.receivers.prometheus.config.scrape_configs`; the template sets it from
+`gateway.prometheus.sampleLimit` (default `10000`; `0` = no per-job limit). Default installs render
+unchanged. If you override `scrape_configs`, a `sample_limit` you set on either job still
+wins — but if your copy **omits** it on either job (to run unlimited, or to inherit a
+`global.sample_limit`), that job now gets 10000: set `gateway.prometheus.sampleLimit: 0`
+to keep the previous behavior.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the

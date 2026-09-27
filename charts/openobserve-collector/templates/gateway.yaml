@@ -76,9 +76,19 @@ spec:
   podSecurityContext:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- $sampleLimit := dig "prometheus" "sampleLimit" 10000 .Values.gateway }}
+  {{- if not (and (or (kindIs "int64" $sampleLimit) (kindIs "int" $sampleLimit) (kindIs "float64" $sampleLimit)) (eq (float64 $sampleLimit) (float64 (int64 $sampleLimit))) (ge (int64 $sampleLimit) 0)) }}
+  {{- fail "gateway.prometheus.sampleLimit must be a non-negative integer" }}
+  {{- end }}
+  {{- $receivers := deepCopy .Values.gateway.receivers }}
+  {{- range (dig "prometheus" "config" "scrape_configs" list $receivers) }}
+  {{- if and (has .job_name (list "cadvisor" "prometheus-autodiscovery")) (not (hasKey . "sample_limit")) }}
+  {{- $_ := set . "sample_limit" (int64 $sampleLimit) }}
+  {{- end }}
+  {{- end }}
   config:
     receivers:
-      {{- toYaml .Values.gateway.receivers | nindent 6 }}
+      {{- toYaml $receivers | nindent 6 }}
     connectors:
       {{- toYaml .Values.gateway.connectors | nindent 6 }}
     processors:
