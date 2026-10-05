@@ -96,6 +96,10 @@ auth:
   # MCP authentication for o2ai (optional)
   O2_MCP_USERNAME: "root@example.com" # MCP authentication username
   O2_MCP_PASSWORD: "Complexpass#123" # MCP authentication password
+  # Shared secret between OpenObserve and o2ai (optional, opt-in). When set, o2ai gets it as O2_INTERNAL_API_SECRET
+  # and rejects sre-rca calls without a matching x-o2-internal-secret header; OpenObserve gets it as O2_AI_INTERNAL_SECRET
+  # and sends that header. Requires an OpenObserve image that sends the header. Generate with: openssl rand -hex 32
+  O2_AI_INTERNAL_SECRET: ""
 
   existingRootUserSecret:
     # Existing secret with OpenObserve root user credentials.

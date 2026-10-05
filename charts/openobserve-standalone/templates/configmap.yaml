@@ -271,7 +271,7 @@ data:
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   {{- if .Values.enterprise.enabled }}
-  {{- if and (or (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (eq .Values.enterprise.parameters.O2_AI_ENABLED true)) (not .Values.enterprise.o2ai.enabled) }}
+  {{- if and (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (not .Values.enterprise.o2ai.enabled) }}
     {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.o2ai.enabled is not true. SRE Agent is required for AI features!" }}
   {{- end }}
   # Enterprise parameters

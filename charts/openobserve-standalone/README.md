@@ -143,6 +143,32 @@ aiGateway:
 
 **Deploy Envoy Gateway and AI Gateway**: For instructions on deploying Envoy Gateway with AI routing capabilities, rate limiting, and metrics blocking, see: [https://github.com/openobserve/o2-envoy-gateway](https://github.com/openobserve/o2-envoy-gateway)
 
+#### Internal Secret Between OpenObserve and O2 AI (optional)
+
+Set `auth.O2_AI_INTERNAL_SECRET` to make O2 AI accept incident root-cause-analysis (`sre-rca`) requests only from callers that present a shared secret:
+
+```yaml
+auth:
+  O2_AI_INTERNAL_SECRET: "<random value, e.g. from: openssl rand -hex 32>"
+```
+
+When set, the value is stored in the chart's Secret and the same value is given to both sides:
+
+- the O2 AI container as `O2_INTERNAL_API_SECRET`: it rejects `sre-rca` requests with 401 unless the `x-o2-internal-secret` header matches
+- the OpenObserve container as `O2_AI_INTERNAL_SECRET`: it sends that header on `sre-rca` calls
+
+This is opt-in and empty by default, in which case nothing is set on either side. Only enable it with an OpenObserve image that sends the `x-o2-internal-secret` header; an older image would get 401 from the agent and incident RCA would stop working. Once it is set, you can also make O2 AI refuse to start without the secret:
+
+```yaml
+enterprise:
+  o2ai:
+    extraEnv:
+      - name: O2_REQUIRE_INTERNAL_SECRET
+        value: "true"
+```
+
+Setting or changing the value through `auth.O2_AI_INTERNAL_SECRET` restarts O2 AI and the OpenObserve pods together, because each pod template carries a checksum of it, so both sides switch at the same time.
+
 #### Important Notes
 
 - **Validation**: The deployment will fail if `O2_AI_ENABLED` is set to `"true"` but `enterprise.o2ai.enabled` is not `true`

@@ -23,6 +23,9 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.auth.O2_AI_INTERNAL_SECRET }}
+        checksum/o2-ai-internal-secret: {{ printf "%s-%s" $.Release.Name . | sha256sum }}
+        {{- end }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: openobserve
