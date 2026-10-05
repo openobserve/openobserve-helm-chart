@@ -172,6 +172,7 @@ externalSecret:
 #   ZO_REPORT_USER_PASSWORD: ""
 #   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
 #   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
+#   O2_AI_INTERNAL_SECRET: "" # Optional; when present it is injected into both OpenObserve and o2ai (see auth.O2_AI_INTERNAL_SECRET)
 
 # Credentials for authentication. Will be stored in a k8s secret
 auth:
@@ -197,6 +198,10 @@ auth:
   O2_AI_API_KEY: "" # AI API key for o2ai
   O2_MCP_USERNAME: "" # MCP authentication username for o2ai (optional)
   O2_MCP_PASSWORD: "" # MCP authentication password for o2ai (optional)
+  # Shared secret between OpenObserve and o2ai (optional, opt-in). When set, o2ai gets it as O2_INTERNAL_API_SECRET
+  # and rejects sre-rca calls without a matching x-o2-internal-secret header; OpenObserve gets it as O2_AI_INTERNAL_SECRET
+  # and sends that header. Requires an OpenObserve image that sends the header. Generate with: openssl rand -hex 32
+  O2_AI_INTERNAL_SECRET: ""
 
 config:
   ZO_APP_NAME: "openobserve"

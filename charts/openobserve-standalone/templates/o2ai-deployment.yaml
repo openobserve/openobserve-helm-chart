@@ -26,6 +26,9 @@ spec:
         role: o2ai
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/o2ai-configmap.yaml") . | sha256sum }}
+        {{- with .Values.auth.O2_AI_INTERNAL_SECRET }}
+        checksum/o2-ai-internal-secret: {{ printf "%s-%s" $.Release.Name . | sha256sum }}
+        {{- end }}
         {{- with .Values.podAnnotations.o2ai }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -69,6 +72,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "openobserve.fullname" . }}
                   key: O2_MCP_PASSWORD
+            {{- end }}
+            {{- if .Values.auth.O2_AI_INTERNAL_SECRET }}
+            - name: O2_INTERNAL_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.fullname" . }}
+                  key: O2_AI_INTERNAL_SECRET
             {{- end }}
             {{- with .Values.enterprise.o2ai.extraEnv }}
             {{- toYaml . | nindent 12 }}
