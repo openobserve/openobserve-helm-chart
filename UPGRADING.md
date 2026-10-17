@@ -53,6 +53,19 @@ wins — but if your copy **omits** it on either job (to run unlimited, or to in
 `global.sample_limit`), that job now gets 10000: set `gateway.prometheus.sampleLimit: 0`
 to keep the previous behavior.
 
+### openobserve-collector 0.5.1 — collector 0.163.1 renames `container.image.tag`
+
+The gateway now emits `container.image.tags` (an array) instead of `container.image.tag`: upstream
+k8sattributes stops emitting the old key from collector 0.161. In OpenObserve the
+fields change name and shape: on metrics `container_image_tag` becomes `container_image_tags`, and
+on traces `service_container_image_tag` becomes `service_container_image_tags`. The new value is
+stored as a JSON array string, so update saved queries, dashboards and alerts that filter on it:
+`container_image_tag = '1.25'` becomes `container_image_tags = '["1.25"]'`.
+
+Also from 0.161, `container.cpu.usage`, `k8s.pod.cpu.usage` and `k8s.node.cpu.usage` are computed
+as the rate of the matching `*.cpu.time` counter between scrapes, so they are not reported on the
+first scrape after an agent starts.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the

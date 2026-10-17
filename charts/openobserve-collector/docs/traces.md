@@ -74,7 +74,7 @@ The `k8sattributes` processor enriches every span with Kubernetes metadata:
 | `k8s.container.name` | Container name |
 | `k8s.cluster.uid` | Cluster UID |
 | `container.image.name` | Container image name |
-| `container.image.tag` | Container image tag |
+| `container.image.tags` | Container image tags (when the span carries `k8s.container.name` or `container.id`) |
 | `service.name` | From `app.kubernetes.io/name` label |
 | `service.version` | From `app.kubernetes.io/version` label |
 
