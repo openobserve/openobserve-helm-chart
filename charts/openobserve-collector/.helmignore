@@ -28,6 +28,7 @@ __MACOSX/
 
 # Other
 secrets.yaml
+obi-k8s.md
 test/
 t_*.*
 

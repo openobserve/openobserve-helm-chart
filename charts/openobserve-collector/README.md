@@ -4,7 +4,8 @@ OpenObserve collector is an opinionated helm chart for deploying the OpenObserve
 
 - Deploy the OpenObserve collector to a Kubernetes cluster
 - Capture logs and metrics from the cluster and send it to OpenObserve cloud or a self hosted installation
-- Configure auto-instrumentation in your cluster to capture traces from your applications written in following languages (Java, .Net, nodejs, python and Go )
+- Configure auto-instrumentation in your cluster to capture traces from your applications written in following languages (Java, .Net, nodejs, python and Go; Go is deprecated in favour of eBPF tracing)
+- Optionally trace selected workloads with eBPF, with no code changes (see [eBPF tracing](#ebpf-tracing))
 
 ## Prerequisites
 
@@ -22,11 +23,13 @@ Wait for 2 minutes after installing cert-manger for the webhook to be ready befo
 
 ### OpenTelemetry operator
 
-If you already have OpenTelemetry operator installed then you can skip this step.
+If you already have OpenTelemetry operator installed then you can skip this step. eBPF tracing needs operator v0.142.0 or later.
 
 ```bash
-kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml
+kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.161.0/opentelemetry-operator.yaml
 ```
+
+Go auto-instrumentation (deprecated) also needs the operator's `--enable-go-instrumentation` flag, which the upstream manifest leaves off; [opentelemetry-operator.yaml](../../opentelemetry-operator.yaml) in this repository is the same manifest with it added.
 
 Official documentation can be found at https://opentelemetry.io/docs/kubernetes/operator/
 
@@ -60,6 +63,25 @@ agent:
     azure.workload.identity/use: "true"
 ```
 
+## eBPF tracing
+
+`ebpf.enabled: true` adds a separate DaemonSet, `<fullname>-ebpf`, that traces selected
+processes with the collector's `obi` receiver (OpenTelemetry eBPF Instrumentation). Choose
+what to trace by port, executable path or command line; at least one is required:
+
+```yaml
+ebpf:
+  enabled: true
+  trace:
+    ports: [8080, "9000-9100"]
+    exePaths: ["/app/checkout*"]
+    cmdLines: ["*reports.py*"]
+```
+
+It needs OpenTelemetry operator v0.142.0 or later. On older operators `spec.hostPID` is
+rejected or silently dropped, and then nothing is traced. The eBPF pods are privileged and
+share the host PID namespace, so the release namespace must allow privileged pods. See
+[docs/traces.md](docs/traces.md#ebpf-tracing) for details and limits.
 
 ## Development
 
