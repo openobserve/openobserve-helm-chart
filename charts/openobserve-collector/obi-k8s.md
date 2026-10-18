@@ -250,8 +250,10 @@ Details that are easy to get wrong:
 - `already-instrumented` only stops OBI from *exporting* spans for a process once it
   sees that process export OTLP itself. OBI still instruments the process, and still
   injects its own agent into a JVM or Node.js process that already carries an SDK
-  agent. Detection needs the export in plain text: an HTTP path ending in
-  `/v1/traces`, or the gRPC `TraceService/Export` call. HTTPS exports are missed.
+  agent. Detection needs an HTTP path ending in `/v1/traces`, or the gRPC
+  `TraceService/Export` call, seen in plain text or through OBI's TLS hooks
+  (OpenSSL, Go). Exports over TLS that OBI can't see, such as Java's own TLS, and
+  failed exports are missed.
   The `port: 4317` is only used for gRPC exporters with no
   `OTEL_EXPORTER_OTLP_ENDPOINT` set. Spans from before the first export are still
   sent. The rule must stand alone in its exclude rule. OBI keeps this knowledge in
