@@ -7,8 +7,24 @@ You can add following to your pods/namespaces to auto instrument your applicatio
   2. NodeJS: instrumentation.opentelemetry.io/inject-nodejs: "openobserve-collector/openobserve-nodejs"
   3. Python: instrumentation.opentelemetry.io/inject-python: "openobserve-collector/openobserve-python"
   4. DotNet: instrumentation.opentelemetry.io/inject-dotnet: "openobserve-collector/openobserve-dotnet"
-  5. Go: instrumentation.opentelemetry.io/inject-go: "openobserve-collector/openobserve-go" , instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/path/to/container/executable"
+  5. Go (deprecated, use ebpf.enabled instead): instrumentation.opentelemetry.io/inject-go: "openobserve-collector/openobserve-go" , instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/path/to/container/executable"
   6. OpenTelemetry SDK environment variables only: instrumentation.opentelemetry.io/inject-sdk: "true"
+{{- if .Values.ebpf.enabled }}
+
+eBPF tracing is enabled ({{ include "openobserve-collector.fullname" . }}-ebpf DaemonSet). It traces processes matching:
+{{- with .Values.ebpf.trace.ports }}
+  ports: {{ join ", " . }}
+{{- end }}
+{{- with .Values.ebpf.trace.exePaths }}
+  executable paths: {{ join ", " . }}
+{{- end }}
+{{- with .Values.ebpf.trace.cmdLines }}
+  command lines: {{ join ", " . }}
+{{- end }}
+
+It requires OpenTelemetry Operator v0.142.0 or later; older operators drop or reject spec.hostPID and the pods trace nothing.
+The release namespace must allow privileged pods.
+{{- end }}
 
 
 

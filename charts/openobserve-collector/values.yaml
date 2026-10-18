@@ -15,7 +15,7 @@ exporters:
 
 k8sCluster: "cluster1"
 
-# managementState for the OpenTelemetryCollector CRs (agent & gateway).
+# managementState for the OpenTelemetryCollector CRs (agent, gateway and ebpf).
 # "managed" (default) lets the opentelemetry-operator reconcile the collector.
 # Some operator versions require this field to be present on the v1beta1 CRD, so it
 # is always rendered. Set to "unmanaged" to have the operator stop reconciling.
@@ -76,7 +76,8 @@ kube-state-metrics:
       cpu: 100m
       memory: 128Mi
 
-# If Opentelemetry operator should be installed with the chart. If you already have the operator installed, set enabled to false. Refer https://opentelemetry.io/docs/kubernetes/operator/ and https://opentelemetry.io/docs/kubernetes/helm/operator/
+# Unused: the chart has no opentelemetry-operator dependency and does not install the operator.
+# Install it separately (see README.md). Refer https://opentelemetry.io/docs/kubernetes/operator/
 opentelemetry-operator:
   enabled: false
   admissionWebhooks:
@@ -84,7 +85,6 @@ opentelemetry-operator:
       enabled: false
       autoGenerateCert: true
   manager:
-    # auto-instrumentation can be enabled for go which is disabled by default. go auto-instrumentation uses eBPF and requires privileged mode.
     featureGates: "--operator.autoinstrumentation.go=true"
 
 ## Auto-Instrumentation resource to be installed in the cluster
@@ -93,16 +93,50 @@ opentelemetry-operator:
 ##  NodeJS: instrumentation.opentelemetry.io/inject-nodejs: "true"
 ##  Python: instrumentation.opentelemetry.io/inject-python: "true"
 ##  DotNet: instrumentation.opentelemetry.io/inject-dotnet: "true"
-##  Go: instrumentation.opentelemetry.io/inject-go: "true" , instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/path/to/container/executable"
+##  Go (deprecated, use ebpf below): instrumentation.opentelemetry.io/inject-go: "true" , instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/path/to/container/executable"
 ##  OpenTelemetry SDK environment variables only: instrumentation.opentelemetry.io/inject-sdk: "true"
 autoinstrumentation:
   enabled: true
   # Sampling rate for traces (0.0 to 1.0). 0.1 = 10%, 1.0 = 100%
   samplingRate: "1.0"
-  # Go instrumentation image version
+  # Go instrumentation image version.
+  # Deprecated: the Go Instrumentation (openobserve-go) will be removed in a later
+  # release; trace Go services with ebpf below instead.
   goImageVersion: "v0.23.0"
   # Enable Python logs auto-instrumentation
   pythonLogsEnabled: false
+
+# eBPF tracing: a separate privileged DaemonSet running the obi receiver. Traces the
+# selected processes without code changes and sends spans through the gateway (or
+# straight to OpenObserve when the gateway is disabled).
+# Requires opentelemetry-operator v0.142.0 or later, and a release namespace that
+# allows privileged pods. Don't select apps that already send their own traces.
+ebpf:
+  enabled: false
+  # What to trace. Each non-empty list is one rule; a process matching any is traced.
+  # At least one must be set when enabled. Globs may not contain ',', '{' or '}'.
+  trace:
+    ports: []        # ports and ranges, e.g. [8080, "9000-9100"]
+    exePaths: []     # executable path globs, e.g. ["/app/checkout*"]
+    cmdLines: []     # command-line globs, e.g. ["*reports.py*"]
+  nodeSelector: {}
+  affinity:          # the receiver is built for Linux on amd64 and arm64 only
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - {key: kubernetes.io/os, operator: In, values: [linux]}
+              - {key: kubernetes.io/arch, operator: In, values: [amd64, arm64]}
+  tolerations:
+    - operator: Exists
+  resources: {}
+  # Fixed sizes, not percentages: the host's /sys/fs/cgroup is mounted in the pod.
+  # Raise limit_mib together with any memory limit in resources. eBPF maps add
+  # about 130Mi the limiter can't see, so a memory limit should be at least 768Mi.
+  memoryLimiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
 
 agent:
   enabled: true
@@ -663,7 +697,7 @@ gateway:
             static_configs:
               - targets: ["kube-state-metrics.kube-system.svc.cluster.local:8080"]
             metric_relabel_configs:
-              # Keep the most useful kube-state-metrics for a Datadog-equivalent view
+              # Keep the most useful kube-state-metrics for workload, node and resource views
               - action: keep
                 regex: "kube_(pod_info|pod_created|pod_status_phase|pod_status_ready|pod_status_reason|pod_container_info|pod_container_status_ready|pod_container_status_restarts_total|pod_container_resource_requests|pod_container_resource_limits|pod_container_status_waiting.*|pod_container_status_terminated_reason|pod_owner|pod_spec_volumes_persistentvolumeclaims_info|pod_container_security_context_privileged|pod_container_security_context_run_as_user|pod_container_security_context_run_as_non_root|deployment_status_replicas.*|deployment_spec_replicas|deployment_created|daemonset_created|daemonset_status.*|statefulset_replicas|statefulset_created|statefulset_status.*|replicaset_status.*|replicaset_spec_replicas|replicaset_created|replicaset_owner|replicaset_annotations|service_info|service_created|service_spec_type|service_status_load_balancer_ingress|endpoint_address|node_status_condition|node_status_allocatable|node_info|node_spec_taint|node_created|namespace_status_phase|namespace_created|persistentvolumeclaim_status_phase|persistentvolumeclaim_info|persistentvolumeclaim_access_mode|persistentvolumeclaim_resource_requests_storage_bytes|persistentvolumeclaim_created|persistentvolume_info|persistentvolume_created|persistentvolume_status_phase|persistentvolume_capacity_bytes|persistentvolume_access_mode|persistentvolume_reclaim_policy|horizontalpodautoscaler_info|horizontalpodautoscaler_created|horizontalpodautoscaler_status.*|horizontalpodautoscaler_spec.*|job_info|job_created|job_status.*|job_spec.*|job_complete|job_failed|job_owner|cronjob_info|cronjob_created|cronjob_status_active|cronjob_spec_suspend|cronjob_next_schedule_time|ingress_info|ingress_created|ingress_path|ingress_tls|ingress_labels|networkpolicy_created|networkpolicy_spec_ingress_rules|networkpolicy_spec_egress_rules|resourcequota|limitrange|serviceaccount_info|serviceaccount_created)"
                 source_labels: [__name__]

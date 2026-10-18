@@ -66,6 +66,22 @@ Also from 0.161, `container.cpu.usage`, `k8s.pod.cpu.usage` and `k8s.node.cpu.us
 as the rate of the matching `*.cpu.time` counter between scrapes, so they are not reported on the
 first scrape after an agent starts.
 
+### openobserve-collector 0.6.0 — eBPF tracing; Go `Instrumentation` deprecated
+
+The new `ebpf` values add an optional eBPF tracing DaemonSet. It is off by default, and with
+`ebpf.enabled: false` the chart renders the same resources as 0.5.1, so upgrading needs no
+action. To enable it, the OpenTelemetry Operator must be **v0.142.0 or later** (tested with v0.161.0): older operators
+reject or silently drop `spec.hostPID`, and the pods then trace nothing. If that happened, upgrading
+the operator does not restore the field: run `helm upgrade --force` (`--force-replace` on Helm 4), or delete the
+`<fullname>-ebpf` `OpenTelemetryCollector` and upgrade. The release namespace must also allow
+privileged pods.
+
+The Go `Instrumentation` resource (`openobserve-go`) and `autoinstrumentation.goImageVersion`
+are deprecated and will be removed in a later release; they keep working in 0.6.0. To migrate a
+pod, remove its `instrumentation.opentelemetry.io/inject-go` annotation and select the app with
+`ebpf.trace` (port, executable path or command line). Don't select a pod with `ebpf.trace` while
+it still uses the Go sidecar, or its spans are duplicated.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the
