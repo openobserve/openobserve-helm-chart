@@ -123,6 +123,4 @@ The `k8sattributes` processor enriches all object documents with:
 | `k8s.deployment.name` | Deployment owning the gateway |
 | `k8s.replicaset.name` | ReplicaSet owning the gateway |
 | `k8s.statefulset.name` | StatefulSet name (for gateway itself) |
-| `container.image.name` | Gateway container image |
-| `container.image.tag` | Gateway container image tag |
 | `k8s.cluster.uid` | Cluster UID |

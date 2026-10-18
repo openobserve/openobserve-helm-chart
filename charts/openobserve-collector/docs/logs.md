@@ -46,8 +46,6 @@ From the file path and Kubernetes metadata:
 | `log.file.path` | `/var/log/pods/...` | filelog receiver |
 | `service.name` | `nginx` | from `app.kubernetes.io/name` label |
 | `service.version` | `1.2.3` | from `app.kubernetes.io/version` label |
-| `container.image.name` | `nginx` | k8sattributes processor |
-| `container.image.tag` | `1.25` | k8sattributes processor |
 
 ---
 
