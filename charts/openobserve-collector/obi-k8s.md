@@ -376,8 +376,13 @@ The connector also matches spans per gateway replica (`store.ttl: 30s`). With mo
 than one replica and no trace-ID load balancing in front, client and server spans
 can reach different replicas and the edge is lost. This applies to SDK spans
 already; OBI on every node makes it more likely, since it sends far more spans.
-The gateway defaults to one replica; test 13 records its memory use with eBPF
-spans.
+The gateway defaults to one replica, so every node's eBPF spans reach one pod; test
+13 records its memory use with eBPF spans. Size it with `gateway.resources`.
+`gateway.autoscaler` adds replicas, with the edge loss above.
+
+The eBPF collector exports to the gateway in plain-text OTLP/HTTP inside the
+cluster, as the SDK instrumentation does. The `collectors` exclude rule keeps OBI
+from tracing the eBPF collector, so its own exports produce no spans.
 
 With `gateway.enabled: false`, spans go straight to OpenObserve through
 `otlphttp/openobserve`, with no service graph.
@@ -502,6 +507,9 @@ unaffected.
   the DaemonSet, its image or its configuration effectively has root on every
   node it runs on. That is the same trust level the agent's hostPath mount of `/`
   already requires, but the DaemonSet should be documented as such.
+- With the gateway enabled, the eBPF collector holds no OpenObserve credentials.
+  Only with `gateway.enabled: false` does its config carry the
+  `otlphttp/openobserve` exporter and its `Authorization` header.
 - Spans include HTTP methods, full URL paths and status codes, and query strings.
   OBI redacts values of query parameters with known sensitive names, but not
   paths: a token carried in a path (`/reset/<token>`) or in an unrecognised
