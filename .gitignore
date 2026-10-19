@@ -14,3 +14,5 @@ t_*.*
 .idea
 
 .vscode/
+# the live Helm repo index lives in S3; publish.yml fetches and merges it
+/index.yaml
