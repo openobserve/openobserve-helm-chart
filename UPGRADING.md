@@ -82,6 +82,34 @@ pod, remove its `instrumentation.opentelemetry.io/inject-go` annotation and sele
 `ebpf.trace` (port, executable path or command line). Don't select a pod with `ebpf.trace` while
 it still uses the Go sidecar, or its spans are duplicated.
 
+### openobserve 1.0.3 / openobserve-standalone 1.0.2 — service graph settings for OpenObserve 1.2.0
+
+OpenObserve 1.2.0 removes the first-generation service graph job. Its settings
+`O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS`, `O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES` and
+`O2_SERVICE_GRAPH_EXCLUDE_INTERNAL_SPANS` are gone from `enterprise.parameters` and are ignored by
+the server; remove them from your values. The rollup that replaces it is tuned with
+`O2_SERVICE_GRAPH_INTERVAL_SECS` and `O2_SERVICE_GRAPH_FLUSH_SECS` (both default `60`).
+
+`enterprise.parameters.O2_SERVICE_GRAPH_ENABLED` now defaults to `"true"`, matching the server's
+default, so enterprise installs start building the service graph after the upgrade. Set it to
+`"false"` to keep it off. If a collector in front of OpenObserve also runs the OpenTelemetry
+`servicegraph` connector for the same organization, the service graph page uses only OpenObserve's
+series, but your own PromQL over `traces_service_graph_*` counts every request twice unless it
+matches `trace_stream` (see the openobserve-collector 0.7.0 entry below).
+
+The new `config.ZO_SSRF_ALLOW_LOOPBACK`, `config.ZO_SKIP_SSRF_CHECKS`, `config.ZO_SSRF_ALLOWED_CIDRS`
+and `config.ZO_SSRF_ALLOWED_HOSTS` keys, and `enterprise.parameters.O2_AGENT_SIGNALS_PROCESSING_INTERVAL_SECS`,
+expose existing server settings with the server's defaults; they need no action.
+
+### openobserve-collector 0.7.0 — `servicegraph` connector off by default
+
+The gateway still defines the `servicegraph` connector but no longer puts it in its pipelines, so
+it stops sending the `traces_service_graph_*` metrics. OpenObserve Enterprise builds the service
+graph from traces on the server and writes metrics under the same names. If you rely on the
+connector's metrics (for example with the open-source edition), add `servicegraph` back to the
+metrics receivers and traces exporters as shown in
+[traces.md — Service Graph](charts/openobserve-collector/docs/traces.md#service-graph).
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the

@@ -27,7 +27,7 @@ where Kubernetes needs something else. The departures are:
 - What gets traced is chosen with values that mirror the Linux script's flags:
   ports, executable paths and command lines.
 - Spans go through the gateway, like SDK spans from the chart's `Instrumentation`
-  resources, so the gateway's service graph covers eBPF-traced services too. With
+  resources, so a gateway `servicegraph` connector, if you add one, covers eBPF-traced services too. With
   the gateway disabled they go straight to OpenObserve. Spans from processes on the
   node itself, outside any pod, are dropped.
 - Traced processes add a W3C `traceparent` header to outgoing plain-text HTTP
@@ -352,8 +352,9 @@ lets each one choose its own name.
 ## Where spans go
 
 Spans go through the gateway, the route SDK spans from the chart's `Instrumentation`
-resources already take. The reason is the gateway's `servicegraph` connector: it
-only sees spans that pass through it. With eBPF spans sent straight to OpenObserve,
+resources already take. The reason is the gateway's `servicegraph` connector, which
+the chart ran by default when this was written (0.7.0 turned it off): it only sees
+spans that pass through it. With eBPF spans sent straight to OpenObserve,
 services traced only by OBI would be missing from the service graph, and so would
 calls between an OBI-traced service and an SDK-instrumented one. Covering services
 nobody instrumented is what OBI is for.
@@ -388,7 +389,7 @@ cluster, as the SDK instrumentation does. The `collectors` exclude rule keeps OB
 from tracing the eBPF collector, so its own exports produce no spans.
 
 With `gateway.enabled: false`, spans go straight to OpenObserve through
-`otlphttp/openobserve`, with no service graph.
+`otlphttp/openobserve`, bypassing any gateway `servicegraph` connector.
 
 Test 11 confirmed this route. Spans from pods kept OBI's `service.name` and
 `k8s.*` attributes; the gateway added `k8s.app.instance`, `k8s.pod.ip`,
