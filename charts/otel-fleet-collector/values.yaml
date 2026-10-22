@@ -1,0 +1,123 @@
+# Default values for otel-fleet-collector.
+#
+# The chart runs one OpenTelemetry Collector per node under the OpAMP supervisor. The
+# collector configuration is NOT part of this chart: the supervisor enrols against
+# OpenObserve with the fleet enrollment token and receives its configuration from the
+# server (Fleet management in the OpenObserve UI).
+
+image:
+  repository: o2cr.ai/openobserve/otel-fleet-collector
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.163.1"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+opamp:
+  # The OpAMP endpoint of the OpenObserve server, as a websocket URL:
+  #   ws://<host>:5080/api/<org>/v1/opamp   or   wss://<host>/api/<org>/v1/opamp
+  # The "Add collector" dialog in the OpenObserve UI prints it. Required.
+  endpoint: ""
+  # The fleet enrollment token from the same dialog. Stored in a Secret created by the
+  # chart. Leave empty and set existingSecret to keep the token out of values.
+  token: ""
+  # Name of an existing Secret in the release namespace holding the enrollment token.
+  # Takes precedence over opamp.token.
+  existingSecret: ""
+  # Key inside existingSecret that holds the token.
+  existingSecretKey: token
+  # Skip TLS certificate verification (self-signed OpenObserve). Plain ws:// endpoints
+  # get `tls.insecure: true` automatically, like the Docker install command does.
+  insecureTls: false
+
+supervisor:
+  # Forward the collector's own logs to the pod's stdout/stderr so `kubectl logs` shows them.
+  passthroughLogs: true
+
+storage:
+  # Supervisor state (instance id, last received config) on the node, so a pod restart
+  # or upgrade keeps the same agent identity in Fleet management.
+  hostPath: /var/lib/opampsupervisor
+
+# Host log directories mounted read-only into the collector, since server-delivered
+# configurations commonly use the filelog receiver to collect container logs.
+hostLogs:
+  enabled: true
+  paths:
+    - /var/log/pods
+    - /var/lib/docker/containers
+
+# The image is distroless (no shell) and runs as uid 65532. This init container, run as
+# root, chowns the hostPath state directory to that uid and renders the enrollment
+# token into supervisor.yaml.
+initContainer:
+  image:
+    repository: busybox
+    tag: "1.37"
+    pullPolicy: IfNotPresent
+  resources: {}
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# Extra environment variables for the supervisor (and, through it, the collector).
+extraEnv: []
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+# Run on every node, including control-plane nodes.
+tolerations:
+  - operator: Exists
+
+affinity: {}
+
+priorityClassName: ""
+
+# The supervisor stops the collector with SIGTERM and SIGKILLs it after 10s; keep this >= 15.
+terminationGracePeriodSeconds: 30
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+
+extraVolumes: []
+extraVolumeMounts: []

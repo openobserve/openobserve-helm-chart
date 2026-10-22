@@ -1,0 +1,40 @@
+apiVersion: v2
+name: otel-fleet-collector
+description: OpenTelemetry Collector managed by OpenObserve Fleet management (OpAMP supervisor) on every node
+
+# A chart can be either an 'application' or a 'library' chart.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed: the otel-fleet-collector image tag
+# (opampsupervisor + otelcol-contrib of the same upstream release).
+appVersion: "0.163.1"
+
+maintainers:
+  - name: OpenObserve
+    email: hello@openobserve.ai
+    url: https://openobserve.ai
+home: https://openobserve.ai
+icon: https://openobserve.ai/img/logo/logo.svg
+sources:
+  - https://github.com/openobserve/openobserve-helm-chart
+  - https://github.com/openobserve/otel-fleet-collector
+keywords:
+  - openobserve
+  - opentelemetry
+  - otel-collector
+  - opamp
+  - fleet
+  - observability
+annotations:
+  artifacthub.io/category: monitoring-logging
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/links: |
+    - name: Documentation
+      url: https://openobserve.ai/docs/
+    - name: Source
+      url: https://github.com/openobserve/openobserve-helm-chart
