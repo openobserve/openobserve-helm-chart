@@ -115,3 +115,11 @@ metrics receivers and traces exporters as shown in
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the
 upstream release notes for migration steps before upgrading:
 <https://github.com/openobserve/openobserve/releases>.
+
+### otel-fleet-collector 0.1.1 — runs as root when collecting host logs
+
+With `hostLogs.enabled: true` (the default) the supervisor container now runs as root with the
+`DAC_READ_SEARCH` capability, because node log files under `/var/log/pods` are root-owned and
+not world-readable; 0.1.0 ran as uid 65532 and the `filelog` receiver read nothing. The init
+container re-chowns the state directory on each node to root, so a plain `helm upgrade` is
+enough. Set `hostLogs.enabled: false` to keep the non-root setup (and no host log collection).
