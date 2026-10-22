@@ -1,0 +1,15 @@
+The OpenObserve fleet collector is being rolled out as a DaemonSet ({{ include "otel-fleet-collector.fullname" . }})
+in namespace {{ .Release.Namespace }}.
+
+Each pod enrols with OpenObserve over OpAMP at
+  {{ include "otel-fleet-collector.opampEndpoint" . }}
+and receives its collector configuration from the server. Within a minute the nodes
+appear under Fleet management in the OpenObserve UI; assign a configuration there.
+
+Check the rollout:
+
+  kubectl -n {{ .Release.Namespace }} rollout status daemonset/{{ include "otel-fleet-collector.fullname" . }}
+  kubectl -n {{ .Release.Namespace }} logs daemonset/{{ include "otel-fleet-collector.fullname" . }}
+
+Supervisor state (the agent identity) lives on each node at {{ .Values.storage.hostPath }};
+delete that directory on a node to re-enrol it with a new instance id.

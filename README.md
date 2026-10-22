@@ -5,6 +5,7 @@ Following charts are available in this repository:
 - [openobserve](charts/openobserve/README.md)
 - [openobserve-standalone](charts/openobserve-standalone/README.md)
 - [openobserve-collector](charts/openobserve-collector/README.md)
+- [otel-fleet-collector](charts/otel-fleet-collector/README.md) — collectors managed by OpenObserve Fleet management (OpAMP)
 
 
 Add the repository to your helm installation:
