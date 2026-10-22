@@ -914,32 +914,8 @@ gateway:
     # memory_ballast:
     #   # Memory Ballast size should be max 1/3 to 1/2 of memory. It's a large buffer that is pre-allocated in the memory to help stabilize and reduce the garbage collection (GC) pressure on the Go runtime.
     #   size_mib: 512
-  connectors:
-    servicegraph:
-      latency_histogram_buckets:
-        [
-          2ms,
-          4ms,
-          6ms,
-          8ms,
-          10ms,
-          50ms,
-          100ms,
-          200ms,
-          400ms,
-          800ms,
-          1s,
-          1400ms,
-          2s,
-          5s,
-          10s,
-          15s,
-        ]
-      dimensions:
-        - http.method
-      store:
-        ttl: 30s
-        max_items: 10000
+  # OpenObserve builds the service graph from traces itself; see docs/traces.md before adding the servicegraph connector here.
+  connectors: {}
   service:
     extensions: [health_check, zpages]
     pipelines:
@@ -949,7 +925,7 @@ gateway:
           [memory_limiter, resourcedetection, attributes, k8sattributes, transform/strip_crd_spec, batch]
         exporters: [otlphttp/openobserve_k8s_events]
       metrics:
-        receivers: [otlp, servicegraph, prometheus]
+        receivers: [otlp, prometheus]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
         exporters: [otlphttp/openobserve]
@@ -957,4 +933,4 @@ gateway:
         receivers: [otlp]
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
-        exporters: [otlphttp/openobserve, servicegraph] 
+        exporters: [otlphttp/openobserve] 

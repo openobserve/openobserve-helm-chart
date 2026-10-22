@@ -184,14 +184,17 @@ With `externalSecret.enabled: true`, add an `O2_AI_INTERNAL_SECRET` key to your 
 
 ### Service Graph
 
-Visualize service dependencies and interactions:
+Visualize service dependencies and interactions. OpenObserve builds the service graph from ingested traces on the server side (on by default), so you do not need the OpenTelemetry `servicegraph` connector in your collector; running both for the same organization double counts requests.
 
 ```yaml
 enterprise:
   parameters:
     O2_SERVICE_GRAPH_ENABLED: "true"
-    O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS: "300"
+    O2_SERVICE_GRAPH_INTERVAL_SECS: "60"
+    O2_SERVICE_GRAPH_FLUSH_SECS: "60"
 ```
+
+Only data older than `ZO_CACHE_DELAY_SECS` (default 300) is rolled up, so new edges show up after that delay.
 
 ### Incidents Management
 
