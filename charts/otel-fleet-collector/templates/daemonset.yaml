@@ -39,13 +39,13 @@ spec:
       priorityClassName: {{ . }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
-      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "otel-fleet-collector.podSecurityContext" . | nindent 8 }}
       initContainers:
-        # Runs as root: the hostPath state directory is created root-owned, and the
-        # distroless supervisor image has no shell to render the token into the config.
+        # Runs as root: the distroless supervisor image has no shell to render the token
+        # into the config, and the hostPath state directory must be owned by whichever uid
+        # the supervisor runs as (a node installed with the other hostLogs setting, or an
+        # older chart, may have it owned by the other one).
         - name: init
           image: "{{ .Values.initContainer.image.repository }}:{{ .Values.initContainer.image.tag }}"
           imagePullPolicy: {{ .Values.initContainer.image.pullPolicy }}
@@ -66,7 +66,7 @@ spec:
             - /bin/sh
             - -ec
             - |
-              chown -R 65532:65532 /var/lib/opampsupervisor
+              chown -R {{ ternary "0:0" "65532:65532" .Values.hostLogs.enabled }} /var/lib/opampsupervisor
               AUTH=$(printf 'fleet:%s' "$O2_FLEET_TOKEN" | base64 | tr -d '\n')
               sed "s|__O2_FLEET_AUTH__|$AUTH|g" /etc/opampsupervisor-template/supervisor.yaml > /etc/opampsupervisor/supervisor.yaml
           env:
@@ -91,10 +91,8 @@ spec:
         - name: supervisor
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.securityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- include "otel-fleet-collector.securityContext" . | nindent 12 }}
           env:
             - name: K8S_NODE_NAME
               valueFrom:

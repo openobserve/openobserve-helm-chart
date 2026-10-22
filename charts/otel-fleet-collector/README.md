@@ -41,13 +41,14 @@ helm upgrade --install otel-fleet-collector openobserve/otel-fleet-collector \
 ## What gets deployed
 
 - A **DaemonSet** with one pod per node (control-plane nodes included by default) running the
-  supervisor as uid 65532, `hostNetwork: false`, read-only root filesystem.
+  supervisor with `hostNetwork: false`, a read-only root filesystem, no privilege escalation,
+  all capabilities dropped and the `RuntimeDefault` seccomp profile. See
+  [Running as root](#running-as-root) for the uid.
 - A **ConfigMap** with the `supervisor.yaml` template and a **Secret** with the token. An init
   container renders `Authorization: Basic base64("fleet:<token>")` into
   `/etc/opampsupervisor/supervisor.yaml`; the base64 is never something you provide.
 - Supervisor state on the node at `storage.hostPath` (default `/var/lib/opampsupervisor`), so a
-  pod restart or chart upgrade keeps the node's agent instance id in Fleet management. The init
-  container chowns that directory to uid 65532.
+  pod restart or chart upgrade keeps the node's agent instance id in Fleet management.
 - `/var/log/pods` and `/var/lib/docker/containers` mounted read-only, for server-delivered
   configurations that use the `filelog` receiver.
 - A ServiceAccount (no RBAC rules; add a ClusterRole yourself if the configuration you assign
@@ -79,6 +80,22 @@ storage:
   directory: /var/lib/opampsupervisor
 ```
 
+## Running as root
+
+Node log files are owned by root and not world-readable (`/var/log/pods` is
+`drwxr-x--- root root`, the files `-rw-r----- root root`), so a non-root collector reads
+nothing from them. Like the upstream OpenTelemetry collector chart does for log collection,
+this chart therefore runs the supervisor container **as root** when `hostLogs.enabled` is
+`true` (the default), with only the `DAC_READ_SEARCH` capability added: it grants read access
+to root-owned files and nothing more. The read-only root filesystem, `allowPrivilegeEscalation:
+false`, the other dropped capabilities and the seccomp profile stay in place, and the state
+directory on the node remains root-owned.
+
+With `hostLogs.enabled: false` the pod runs as the image's non-root uid 65532 and no capability
+is added. Either way the init container chowns the state directory on the node to the uid the
+supervisor runs as, so switching the setting on an existing install, or upgrading from chart
+0.1.0 (which always ran as 65532), keeps working.
+
 ## Values
 
 | Key | Default | Description |
@@ -94,9 +111,9 @@ storage:
 | `opamp.insecureTls` | `false` | Skip TLS verification (self-signed certificates). `ws://` endpoints get `tls.insecure: true` regardless |
 | `supervisor.passthroughLogs` | `true` | Forward the collector's logs to the pod's stdout |
 | `storage.hostPath` | `/var/lib/opampsupervisor` | Node directory for supervisor state (instance id, last config) |
-| `hostLogs.enabled` | `true` | Mount host log directories read-only |
+| `hostLogs.enabled` | `true` | Mount host log directories read-only and run the supervisor as root with `DAC_READ_SEARCH` (see [Running as root](#running-as-root)); `false` runs as uid 65532 |
 | `hostLogs.paths` | `[/var/log/pods, /var/lib/docker/containers]` | Which directories |
-| `initContainer.image.repository` | `busybox` | Image of the init container that chowns the state dir and renders the token |
+| `initContainer.image.repository` | `busybox` | Image of the init container that renders the token and chowns the state dir |
 | `initContainer.image.tag` | `1.37` | |
 | `initContainer.image.pullPolicy` | `IfNotPresent` | |
 | `initContainer.resources` | `{}` | |
@@ -105,8 +122,8 @@ storage:
 | `serviceAccount.name` | `""` | Generated from the release name when empty |
 | `podAnnotations` | `{}` | |
 | `podLabels` | `{}` | |
-| `podSecurityContext` | uid/gid 65532, `runAsNonRoot`, `RuntimeDefault` seccomp | Pod security context |
-| `securityContext` | no privilege escalation, read-only root fs, all capabilities dropped | Supervisor container security context |
+| `podSecurityContext` | uid/gid 65532, `runAsNonRoot`, `RuntimeDefault` seccomp | Pod security context; with `hostLogs.enabled` the chart sets uid/gid 0 and `runAsNonRoot: false` |
+| `securityContext` | no privilege escalation, read-only root fs, all capabilities dropped | Supervisor container security context; with `hostLogs.enabled` the chart adds `DAC_READ_SEARCH` |
 | `extraEnv` | `[]` | Extra env vars for the supervisor container |
 | `resources` | `{}` | Supervisor container resources |
 | `nodeSelector` | `{}` | |

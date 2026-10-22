@@ -41,15 +41,26 @@ storage:
 
 # Host log directories mounted read-only into the collector, since server-delivered
 # configurations commonly use the filelog receiver to collect container logs.
+#
+# Node log files are root-owned and not world-readable (/var/log/pods is
+# drwxr-x--- root root), so with hostLogs.enabled the supervisor container runs as
+# root with the DAC_READ_SEARCH capability added, which grants read-only access to
+# root-owned files; the same approach the upstream OpenTelemetry collector chart takes
+# for log collection. The hostPath state directory is then root-owned. Everything
+# else stays locked down: read-only root filesystem, no privilege escalation, all other
+# capabilities dropped, RuntimeDefault seccomp.
+#
+# With hostLogs.enabled: false the pod runs as the image's non-root uid 65532 instead,
+# and the init container chowns the state directory to that uid.
 hostLogs:
   enabled: true
   paths:
     - /var/log/pods
     - /var/lib/docker/containers
 
-# The image is distroless (no shell) and runs as uid 65532. This init container, run as
-# root, chowns the hostPath state directory to that uid and renders the enrollment
-# token into supervisor.yaml.
+# The image is distroless (no shell). This init container, run as root, renders the
+# enrollment token into supervisor.yaml and chowns the hostPath state directory to the
+# uid the supervisor runs as (root with hostLogs.enabled, 65532 otherwise).
 initContainer:
   image:
     repository: busybox
@@ -72,6 +83,8 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
+# Pod security context. With hostLogs.enabled (see above) the chart overrides
+# runAsUser/runAsGroup to 0 and runAsNonRoot to false; otherwise these apply as is.
 podSecurityContext:
   runAsNonRoot: true
   runAsUser: 65532
@@ -79,6 +92,8 @@ podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
+# Supervisor container security context. With hostLogs.enabled the chart adds the
+# DAC_READ_SEARCH capability; otherwise this applies as is.
 securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true

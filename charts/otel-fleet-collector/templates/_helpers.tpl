@@ -114,3 +114,33 @@ whenever the server is not https, plus the explicit opamp.insecureTls switch.
 {{- $ep := include "otel-fleet-collector.opampEndpoint" . }}
 {{- if or .Values.opamp.insecureTls (not (or (hasPrefix "wss://" $ep) (hasPrefix "https://" $ep))) }}true{{- end }}
 {{- end }}
+
+{{/*
+Pod security context. Reading node log files needs root (they are root-owned and not
+world-readable), so with hostLogs.enabled the pod runs as uid/gid 0.
+*/}}
+{{- define "otel-fleet-collector.podSecurityContext" -}}
+{{- $ctx := deepCopy (.Values.podSecurityContext | default dict) }}
+{{- if .Values.hostLogs.enabled }}
+{{- $ctx = mustMergeOverwrite $ctx (dict "runAsUser" 0 "runAsGroup" 0 "runAsNonRoot" false) }}
+{{- end }}
+{{- toYaml $ctx }}
+{{- end }}
+
+{{/*
+Supervisor container security context. With hostLogs.enabled, DAC_READ_SEARCH is added so
+root can read the root-owned log files; nothing else changes.
+*/}}
+{{- define "otel-fleet-collector.securityContext" -}}
+{{- $ctx := deepCopy (.Values.securityContext | default dict) }}
+{{- if .Values.hostLogs.enabled }}
+{{- $caps := $ctx.capabilities | default dict }}
+{{- $add := $caps.add | default list }}
+{{- if not (has "DAC_READ_SEARCH" $add) }}
+{{- $add = append $add "DAC_READ_SEARCH" }}
+{{- end }}
+{{- $_ := set $caps "add" $add }}
+{{- $_ := set $ctx "capabilities" $caps }}
+{{- end }}
+{{- toYaml $ctx }}
+{{- end }}
