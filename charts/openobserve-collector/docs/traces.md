@@ -137,20 +137,12 @@ The gateway's `k8sattributes` processor enriches every span it receives with Kub
 
 ## Service Graph
 
-OpenObserve Enterprise builds the service graph from ingested traces on the server side (`O2_SERVICE_GRAPH_ENABLED`, on by default from OpenObserve 1.2.0), so the chart no longer runs the OpenTelemetry `servicegraph` connector by default.
+OpenObserve Enterprise builds the service graph from ingested traces on the server side (`O2_SERVICE_GRAPH_ENABLED`, on by default from OpenObserve 1.2.0), so the gateway defines the OpenTelemetry `servicegraph` connector but leaves it out of its pipelines.
 
-Don't run both for the same organization: the connector's `traces_service_graph_*` metrics and the server-side rollup are counted together, and every request is counted twice. Add the connector only when OpenObserve does not build the service graph for that organization (the open-source edition, or `O2_SERVICE_GRAPH_ENABLED: "false"`):
+To turn it on, add `servicegraph` to both the metrics pipeline's receivers and the traces pipeline's exporters. A connector used on only one side stops the collector from starting:
 
 ```yaml
 gateway:
-  connectors:
-    servicegraph:
-      latency_histogram_buckets: [2ms, 4ms, 6ms, 8ms, 10ms, 50ms, 100ms, 200ms, 400ms, 800ms, 1s, 1400ms, 2s, 5s, 10s, 15s]
-      dimensions:
-        - http.method
-      store:
-        ttl: 30s
-        max_items: 10000
   service:
     pipelines:
       metrics:
@@ -159,7 +151,9 @@ gateway:
         exporters: [otlphttp/openobserve, servicegraph]
 ```
 
-Helm replaces lists instead of merging them, so `receivers` and `exporters` above are the full lists; add any other receivers or exporters you already use. A connector must appear in both pipelines, or the collector fails to start.
+Helm replaces lists instead of merging them, so these are the full lists; keep any other receivers or exporters you already use.
+
+The connector is mainly useful when OpenObserve does not build the service graph for that organization (the open-source edition, or `O2_SERVICE_GRAPH_ENABLED: "false"`). When both write `traces_service_graph_*` for the same organization, the service graph page uses only OpenObserve's series (from OpenObserve 1.2.0), but a PromQL query that sums these metrics without a `trace_stream` matcher counts every request twice.
 
 See [metrics.md — Service Graph](metrics.md#12-service-graph) for the generated metrics.
 

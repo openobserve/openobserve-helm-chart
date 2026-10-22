@@ -184,7 +184,7 @@ With `externalSecret.enabled: true`, add an `O2_AI_INTERNAL_SECRET` key to your 
 
 ### Service Graph
 
-Visualize service dependencies and interactions. OpenObserve builds the service graph from ingested traces on the server side (on by default), so you do not need the OpenTelemetry `servicegraph` connector in your collector; running both for the same organization double counts requests.
+Visualize service dependencies and interactions. OpenObserve builds the service graph from ingested traces on the server side (on by default), so you do not need the OpenTelemetry `servicegraph` connector in your collector. If both write for the same organization, the service graph page uses only OpenObserve's series, but your own PromQL over `traces_service_graph_*` counts requests twice unless it matches `trace_stream`.
 
 ```yaml
 enterprise:
