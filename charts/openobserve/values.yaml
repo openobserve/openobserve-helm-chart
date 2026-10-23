@@ -193,6 +193,7 @@ auth:
   ZO_RUM_CLIENT_TOKEN: ""
   ZO_REPORT_USER_EMAIL: "" # Check details at https://github.com/openobserve/o2_report_server
   ZO_REPORT_USER_PASSWORD: ""
+  ZO_REPORT_SERVER_SECRET: "" # Shared by OpenObserve and the report server; empty means the chart generates one and keeps it across upgrades
   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
   O2_AI_API_KEY: "" # AI API key for o2ai
