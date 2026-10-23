@@ -54,6 +54,11 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "reportserver"
+            - name: ZO_REPORT_SERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.reportServerSecretName" . }}
+                  key: ZO_REPORT_SERVER_SECRET
             {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.reportserver.extraEnv) }}
             {{- . | nindent 12 }}
             {{- end }}

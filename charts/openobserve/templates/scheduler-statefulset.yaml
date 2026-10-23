@@ -116,6 +116,11 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "alertmanager"
+            - name: ZO_REPORT_SERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.reportServerSecretName" . }}
+                  key: ZO_REPORT_SERVER_SECRET
             - name: K8S_CONTAINER_NAME
               value: "{{ .Chart.Name }}-scheduler"
             {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}

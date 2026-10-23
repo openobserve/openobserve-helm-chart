@@ -28,7 +28,6 @@ spec:
         {{- with .Values.auth.O2_AI_INTERNAL_SECRET }}
         checksum/o2-ai-internal-secret: {{ printf "%s-%s" $.Release.Name . | sha256sum }}
         {{- end }}
-        checksum/report-server-secret: {{ printf "%s-%s" $.Release.Name (include "openobserve.reportServerSecret" $) | sha256sum }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: alertquerier

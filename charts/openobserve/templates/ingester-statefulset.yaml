@@ -229,6 +229,11 @@ spec:
           env:
             - name: ZO_NODE_ROLE
               value: "ingester"
+            - name: ZO_REPORT_SERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.reportServerSecretName" . }}
+                  key: ZO_REPORT_SERVER_SECRET
             - name: K8S_CONTAINER_NAME
               value: "{{ .Chart.Name }}-ingester"
             {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}

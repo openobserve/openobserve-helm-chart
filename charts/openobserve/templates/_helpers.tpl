@@ -128,11 +128,18 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Effective ZO_REPORT_SERVER_SECRET: the user's value, else the one in the existing Secret, else a new random one.
+Name of the dedicated Secret that holds ZO_REPORT_SERVER_SECRET.
+*/}}
+{{- define "openobserve.reportServerSecretName" -}}
+{{- printf "%s-report-server" (include "openobserve.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Effective ZO_REPORT_SERVER_SECRET: the user's value, else the one in the existing dedicated Secret, else a new random one.
 */}}
 {{- define "openobserve.reportServerSecret" -}}
 {{- if not .Values.auth.ZO_REPORT_SERVER_SECRET -}}
-{{- $existing := lookup "v1" "Secret" .Release.Namespace (include "openobserve.fullname" .) | default dict -}}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace (include "openobserve.reportServerSecretName" .) | default dict -}}
 {{- $stored := dig "data" "ZO_REPORT_SERVER_SECRET" "" $existing | b64dec -}}
 {{- /* Cached in .Values so every include in one render (Secret and all checksums) sees the same value. */ -}}
 {{- $_ := set .Values.auth "ZO_REPORT_SERVER_SECRET" ($stored | default (randAlphaNum 48)) -}}
