@@ -116,24 +116,63 @@ whenever the server is not https, plus the explicit opamp.insecureTls switch.
 {{- end }}
 
 {{/*
+Which collector this release runs: "agent" (DaemonSet, one per node) or "gateway"
+(StatefulSet). Exactly one: a release enrols with one fleet token, and a fleet shares one
+configuration, so agents and gateways are separate releases in separate fleets.
+*/}}
+{{- define "otel-fleet-collector.role" -}}
+{{- range $k := list "storage" "hostLogs" "updateStrategy" }}
+{{- if hasKey $.Values $k }}
+{{- fail (printf "%s moved to agent.%s in chart 0.2.0" $k $k) }}
+{{- end }}
+{{- end }}
+{{- range $k := list "resources" "nodeSelector" "tolerations" "affinity" }}
+{{- if hasKey $.Values $k }}
+{{- fail (printf "%s moved to agent.%s and gateway.%s in chart 0.2.0" $k $k $k) }}
+{{- end }}
+{{- end }}
+{{- if and .Values.agent.enabled .Values.gateway.enabled }}
+{{- fail "enable one of agent.enabled and gateway.enabled per release: agents and gateways enrol in different fleets, so install them as two releases with their own tokens" }}
+{{- else if .Values.agent.enabled }}agent
+{{- else if .Values.gateway.enabled }}gateway
+{{- else }}
+{{- fail "set agent.enabled=true (DaemonSet) or gateway.enabled=true (StatefulSet)" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Whether node log directories are mounted; only agents read node files.
+*/}}
+{{- define "otel-fleet-collector.hostLogs" -}}
+{{- if and (eq (include "otel-fleet-collector.role" .) "agent") .Values.agent.hostLogs.enabled }}true{{- end }}
+{{- end }}
+
+{{/*
+ClusterRole name, prefixed with the namespace since ClusterRoles are cluster-scoped.
+*/}}
+{{- define "otel-fleet-collector.clusterRoleName" -}}
+{{- printf "%s-%s" .Release.Namespace (include "otel-fleet-collector.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Pod security context. Reading node log files needs root (they are root-owned and not
-world-readable), so with hostLogs.enabled the pod runs as uid/gid 0.
+world-readable), so with agent.hostLogs.enabled the pod runs as uid/gid 0.
 */}}
 {{- define "otel-fleet-collector.podSecurityContext" -}}
 {{- $ctx := deepCopy (.Values.podSecurityContext | default dict) }}
-{{- if .Values.hostLogs.enabled }}
+{{- if include "otel-fleet-collector.hostLogs" . }}
 {{- $ctx = mustMergeOverwrite $ctx (dict "runAsUser" 0 "runAsGroup" 0 "runAsNonRoot" false) }}
 {{- end }}
 {{- toYaml $ctx }}
 {{- end }}
 
 {{/*
-Supervisor container security context. With hostLogs.enabled, DAC_READ_SEARCH is added so
-root can read the root-owned log files; nothing else changes.
+Supervisor container security context. With agent.hostLogs.enabled, DAC_READ_SEARCH is added
+so root can read the root-owned log files; nothing else changes.
 */}}
 {{- define "otel-fleet-collector.securityContext" -}}
 {{- $ctx := deepCopy (.Values.securityContext | default dict) }}
-{{- if .Values.hostLogs.enabled }}
+{{- if include "otel-fleet-collector.hostLogs" . }}
 {{- $caps := $ctx.capabilities | default dict }}
 {{- $add := $caps.add | default list }}
 {{- if not (has "DAC_READ_SEARCH" $add) }}
