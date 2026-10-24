@@ -1,9 +1,12 @@
 # Default values for otel-fleet-collector.
 #
-# The chart runs one OpenTelemetry Collector per node under the OpAMP supervisor. The
-# collector configuration is NOT part of this chart: the supervisor enrols against
-# OpenObserve with the fleet enrollment token and receives its configuration from the
-# server (Fleet management in the OpenObserve UI).
+# The chart runs OpenTelemetry Collectors under the OpAMP supervisor, either as agents
+# (agent.enabled, a DaemonSet with one collector per node) or as gateways
+# (gateway.enabled, a StatefulSet). One release runs exactly one of the two: a release
+# enrols with one fleet enrollment token and every collector of a fleet runs the same
+# configuration, so agents and gateways are two releases in two fleets. The collector
+# configuration is NOT part of this chart: the supervisor enrols against OpenObserve and
+# receives its configuration from the server (Fleet management in the OpenObserve UI).
 
 image:
   repository: o2cr.ai/openobserve/otel-fleet-collector
@@ -34,33 +37,106 @@ supervisor:
   # Forward the collector's own logs to the pod's stdout/stderr so `kubectl logs` shows them.
   passthroughLogs: true
 
-storage:
-  # Supervisor state (instance id, last received config) on the node, so a pod restart
-  # or upgrade keeps the same agent identity in Fleet management.
-  hostPath: /var/lib/opampsupervisor
-
-# Host log directories mounted read-only into the collector, since server-delivered
-# configurations commonly use the filelog receiver to collect container logs.
-#
-# Node log files are root-owned and not world-readable (/var/log/pods is
-# drwxr-x--- root root), so with hostLogs.enabled the supervisor container runs as
-# root with the DAC_READ_SEARCH capability added, which grants read-only access to
-# root-owned files; the same approach the upstream OpenTelemetry collector chart takes
-# for log collection. The hostPath state directory is then root-owned. Everything
-# else stays locked down: read-only root filesystem, no privilege escalation, all other
-# capabilities dropped, RuntimeDefault seccomp.
-#
-# With hostLogs.enabled: false the pod runs as the image's non-root uid 65532 instead,
-# and the init container chowns the state directory to that uid.
-hostLogs:
+# Agent: a DaemonSet with one collector per node, for node-local data (pod logs, journald,
+# host metrics, kubelet stats, OTLP from the pods on that node).
+agent:
   enabled: true
-  paths:
-    - /var/log/pods
-    - /var/lib/docker/containers
+
+  storage:
+    # Supervisor state (instance id, last received config) on the node, so a pod restart
+    # or upgrade keeps the same agent identity in Fleet management.
+    hostPath: /var/lib/opampsupervisor
+
+  # Host log directories mounted read-only into the collector, since server-delivered
+  # configurations commonly use the filelog receiver to collect container logs.
+  #
+  # Node log files are root-owned and not world-readable (/var/log/pods is
+  # drwxr-x--- root root), so with hostLogs.enabled the supervisor container runs as
+  # root with the DAC_READ_SEARCH capability added, which grants read-only access to
+  # root-owned files; the same approach the upstream OpenTelemetry collector chart takes
+  # for log collection. The hostPath state directory is then root-owned. Everything
+  # else stays locked down: read-only root filesystem, no privilege escalation, all other
+  # capabilities dropped, RuntimeDefault seccomp.
+  #
+  # With hostLogs.enabled: false the pod runs as the image's non-root uid 65532 instead,
+  # and the init container chowns the state directory to that uid.
+  hostLogs:
+    enabled: true
+    paths:
+      - /var/log/pods
+      - /var/lib/docker/containers
+
+  # Supervisor container resources.
+  resources: {}
+
+  nodeSelector: {}
+
+  # Run on every node, including control-plane nodes.
+  tolerations:
+    - operator: Exists
+
+  affinity: {}
+
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+
+# Gateway: a StatefulSet for cluster-level collection (k8s_cluster, k8s_events, Prometheus
+# scraping), OTLP from the agents, tail sampling and one egress to OpenObserve. It mounts
+# nothing from the nodes and runs as uid 65532 without capabilities.
+gateway:
+  enabled: false
+
+  # Every replica runs the fleet's configuration. k8s_cluster, k8s_events and k8sobjects
+  # bound to the k8s_leader_elector extension run on one replica at a time, but the
+  # prometheus receiver cannot be, so with more replicas every replica scrapes every target
+  # and the samples are duplicated; tail_sampling also needs all spans of a trace on one
+  # replica. Keep 1 replica when the configuration uses either.
+  replicas: 1
+
+  # One volume per replica for the supervisor state (instance id, last received config), so
+  # a rescheduled pod keeps its identity in Fleet management. With enabled: false the state
+  # is an emptyDir and every new pod enrols as a new collector.
+  persistence:
+    enabled: true
+    size: 1Gi
+    # Empty uses the cluster's default StorageClass; "-" sets storageClassName: "".
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+
+  # ClusterIP Service the agents export OTLP to, plus a headless Service for per-pod DNS.
+  # The fleet configuration's otlp receiver must listen on 0.0.0.0, not the default localhost.
+  service:
+    enabled: true
+    type: ClusterIP
+    annotations: {}
+    ports:
+      - name: otlp-grpc
+        port: 4317
+      - name: otlp-http
+        port: 4318
+
+  # Read access to cluster objects (k8s_cluster, k8s_events, k8sobjects, k8sattributes,
+  # kubernetes_sd_configs) and the Leases k8s_leader_elector takes.
+  clusterRole:
+    create: true
+    # Extra rules appended to the ClusterRole.
+    rules: []
+
+  # Supervisor container resources.
+  resources: {}
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
 
 # The image is distroless (no shell). This init container, run as root, renders the
-# enrollment token into supervisor.yaml and chowns the hostPath state directory to the
-# uid the supervisor runs as (root with hostLogs.enabled, 65532 otherwise).
+# enrollment token into supervisor.yaml and chowns the state directory to the uid the
+# supervisor runs as (root for agents with hostLogs.enabled, 65532 otherwise).
 initContainer:
   image:
     repository: busybox
@@ -83,7 +159,7 @@ serviceAccount:
 podAnnotations: {}
 podLabels: {}
 
-# Pod security context. With hostLogs.enabled (see above) the chart overrides
+# Pod security context. For agents with hostLogs.enabled (see above) the chart overrides
 # runAsUser/runAsGroup to 0 and runAsNonRoot to false; otherwise these apply as is.
 podSecurityContext:
   runAsNonRoot: true
@@ -92,8 +168,8 @@ podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
 
-# Supervisor container security context. With hostLogs.enabled the chart adds the
-# DAC_READ_SEARCH capability; otherwise this applies as is.
+# Supervisor container security context. For agents with hostLogs.enabled the chart adds
+# the DAC_READ_SEARCH capability; otherwise this applies as is.
 securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
@@ -104,35 +180,10 @@ securityContext:
 # Extra environment variables for the supervisor (and, through it, the collector).
 extraEnv: []
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 500m
-  #   memory: 512Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-nodeSelector: {}
-
-# Run on every node, including control-plane nodes.
-tolerations:
-  - operator: Exists
-
-affinity: {}
-
 priorityClassName: ""
 
 # The supervisor stops the collector with SIGTERM and SIGKILLs it after 10s; keep this >= 15.
 terminationGracePeriodSeconds: 30
-
-updateStrategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 1
 
 extraVolumes: []
 extraVolumeMounts: []
