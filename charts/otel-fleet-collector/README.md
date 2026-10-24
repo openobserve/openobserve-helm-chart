@@ -63,7 +63,7 @@ For a gateway, in its own fleet and with that fleet's token:
 ```bash
 helm upgrade --install otel-fleet-collector-gateway openobserve/otel-fleet-collector \
   --namespace openobserve-collector --create-namespace \
-  --set agent.enabled=false --set gateway.enabled=true --set gateway.replicas=1 \
+  --set agent.enabled=false --set gateway.enabled=true \
   --set image.repository=o2cr.ai/openobserve/otel-fleet-collector \
   --set image.tag='0.163.1' \
   --set opamp.endpoint='ws://openobserve.example.com:5080/api/default/v1/opamp' \
