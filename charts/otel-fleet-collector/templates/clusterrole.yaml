@@ -1,0 +1,64 @@
+{{- if and (eq (include "otel-fleet-collector.role" .) "gateway") .Values.gateway.clusterRole.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "otel-fleet-collector.clusterRoleName" . }}
+  labels:
+    {{- include "otel-fleet-collector.labels" . | nindent 4 }}
+rules:
+  # k8s_cluster, k8s_events, k8sobjects, k8sattributes and prometheus kubernetes_sd_configs.
+  - apiGroups: [""]
+    resources:
+      - events
+      - namespaces
+      - namespaces/status
+      - nodes
+      - nodes/spec
+      - pods
+      - pods/status
+      - replicationcontrollers
+      - replicationcontrollers/status
+      - resourcequotas
+      - services
+      - endpoints
+      - persistentvolumes
+      - persistentvolumeclaims
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [daemonsets, deployments, replicasets, statefulsets]
+    verbs: [get, list, watch]
+  - apiGroups: [batch]
+    resources: [jobs, cronjobs]
+    verbs: [get, list, watch]
+  - apiGroups: [autoscaling]
+    resources: [horizontalpodautoscalers]
+    verbs: [get, list, watch]
+  - apiGroups: [events.k8s.io]
+    resources: [events]
+    verbs: [get, list, watch]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices]
+    verbs: [get, list, watch]
+  # k8s_leader_elector: one replica runs the cluster-wide receivers.
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, patch]
+  {{- with .Values.gateway.clusterRole.rules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "otel-fleet-collector.clusterRoleName" . }}
+  labels:
+    {{- include "otel-fleet-collector.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "otel-fleet-collector.clusterRoleName" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "otel-fleet-collector.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace | quote }}
+{{- end }}

@@ -1,0 +1,41 @@
+{{- if eq (include "otel-fleet-collector.role" .) "gateway" }}
+# A StatefulSet rather than a Deployment: stable pod names and one volume per replica keep
+# each gateway's supervisor instance id across restarts, so Fleet management keeps seeing
+# the same collectors instead of new ones after every reschedule.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "otel-fleet-collector.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "otel-fleet-collector.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.gateway.replicas }}
+  serviceName: {{ include "otel-fleet-collector.fullname" . }}-headless
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      {{- include "otel-fleet-collector.selectorLabels" . | nindent 6 }}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    {{- include "otel-fleet-collector.podTemplate" . | nindent 4 }}
+  {{- with .Values.gateway.persistence }}
+  {{- if .enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: state
+        labels:
+          {{- include "otel-fleet-collector.selectorLabels" $ | nindent 10 }}
+      spec:
+        accessModes:
+          {{- toYaml .accessModes | nindent 10 }}
+        {{- if .storageClass }}
+        storageClassName: {{ ternary "" .storageClass (eq .storageClass "-") | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .size }}
+  {{- end }}
+  {{- end }}
+{{- end }}
