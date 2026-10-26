@@ -73,7 +73,7 @@ Create the name of the service account to use
 Name of the dedicated Secret that holds ZO_REPORT_SERVER_SECRET.
 */}}
 {{- define "openobserve.reportServerSecretName" -}}
-{{- printf "%s-report-server" (include "openobserve.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-report-server" (include "openobserve.fullname" . | trunc 49 | trimSuffix "-") }}
 {{- end }}
 
 {{/*
