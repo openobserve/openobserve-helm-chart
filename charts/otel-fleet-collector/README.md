@@ -142,6 +142,7 @@ capabilities:
   reports_available_components: true
 agent:
   executable: /usr/local/bin/otelcol-contrib
+  config_apply_timeout: 30s
   passthrough_logs: true
   env:
     O2_ENDPOINT: http://openobserve.example.com:5080/api/default
