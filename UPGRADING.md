@@ -123,7 +123,7 @@ to your own Secret is needed.
 With `helm template` or ArgoCD, the chart cannot read the existing Secret, so an empty value
 changes on every render: set `auth.ZO_REPORT_SERVER_SECRET` explicitly.
 
-### openobserve 1.0.5 / openobserve-standalone 1.0.4 — master encryption key reaches OpenObserve
+### openobserve 1.1.3 / openobserve-standalone 1.1.3 — master encryption key reaches OpenObserve
 
 `enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY` was rendered as `ZO_MASTER_ENCRYPTION_KEY`, a name
 OpenObserve never reads, so installs that set it ran with no master key. The chart now renders it as
