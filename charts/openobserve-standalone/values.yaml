@@ -100,6 +100,7 @@ auth:
   # and rejects sre-rca calls without a matching x-o2-internal-secret header; OpenObserve gets it as O2_AI_INTERNAL_SECRET
   # and sends that header. Requires an OpenObserve image that sends the header. Generate with: openssl rand -hex 32
   O2_AI_INTERNAL_SECRET: ""
+  ZO_REPORT_SERVER_SECRET: "" # Shared by OpenObserve and the report server; empty means the chart generates one and keeps it across upgrades
 
   existingRootUserSecret:
     # Existing secret with OpenObserve root user credentials.

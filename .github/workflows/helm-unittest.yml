@@ -1,0 +1,33 @@
+name: Helm Unit Tests
+
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
+      - '.github/workflows/helm-unittest.yml'
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.14.4'
+
+      - name: Install helm-unittest
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --version v1.0.3
+
+      - name: Run chart tests
+        run: |
+          for d in charts/*/ ; do
+            [ -d "$d/tests" ] || continue
+            helm dependency build "$d"
+            helm unittest "$d"
+          done

@@ -110,6 +110,19 @@ connector's metrics (for example with the open-source edition), add `servicegrap
 metrics receivers and traces exporters as shown in
 [traces.md — Service Graph](charts/openobserve-collector/docs/traces.md#service-graph).
 
+### openobserve 1.0.4 / openobserve-standalone 1.0.3 — shared secret between OpenObserve and the report server
+
+The charts now create a Secret `<fullname>-report-server` holding `ZO_REPORT_SERVER_SECRET`, so
+OpenObserve and the report server share one secret; newer report-server images refuse to start
+without it. If `auth.ZO_REPORT_SERVER_SECRET` is empty, the chart generates a random value on install
+and keeps it on later `helm upgrade`s. It is injected only into the pods that use it: ingester,
+scheduler and reportserver (in openobserve-standalone, the single OpenObserve pod), which restart
+once when it first appears. The Secret is created also with `externalSecret.enabled`, so no change
+to your own Secret is needed.
+
+With `helm template` or ArgoCD, the chart cannot read the existing Secret, so an empty value
+changes on every render: set `auth.ZO_REPORT_SERVER_SECRET` explicitly.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the
