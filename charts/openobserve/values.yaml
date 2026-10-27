@@ -173,6 +173,7 @@ externalSecret:
 #   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
 #   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
 #   O2_AI_INTERNAL_SECRET: "" # Optional; when present it is injected into both OpenObserve and o2ai (see auth.O2_AI_INTERNAL_SECRET)
+#   O2_MASTER_ENCRYPTION_KEY: "" # Optional; encrypts stored secrets at rest (see enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY)
 
 # Credentials for authentication. Will be stored in a k8s secret
 auth:
