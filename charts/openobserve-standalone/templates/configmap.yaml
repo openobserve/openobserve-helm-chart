@@ -71,10 +71,6 @@ data:
   ZO_RESULT_CACHE_ENABLED: "{{ .Values.config.ZO_RESULT_CACHE_ENABLED }}"
   ZO_METRICS_CACHE_ENABLED: "{{ .Values.config.ZO_METRICS_CACHE_ENABLED }}"
   ZO_METRICS_CACHE_MAX_ENTRIES: "{{ .Values.config.ZO_METRICS_CACHE_MAX_ENTRIES }}"
-  ZO_SSRF_ALLOW_LOOPBACK: "{{ .Values.config.ZO_SSRF_ALLOW_LOOPBACK }}"
-  ZO_SKIP_SSRF_CHECKS: "{{ .Values.config.ZO_SKIP_SSRF_CHECKS }}"
-  ZO_SSRF_ALLOWED_CIDRS: "{{ .Values.config.ZO_SSRF_ALLOWED_CIDRS }}"
-  ZO_SSRF_ALLOWED_HOSTS: "{{ .Values.config.ZO_SSRF_ALLOWED_HOSTS }}"
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "{{ .Values.config.ZO_QUERY_OPTIMIZATION_NUM_FIELDS }}"
   ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "{{ .Values.config.ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS }}"
   ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "{{ .Values.config.ZO_USER_DEFINED_SCHEMA_MAX_FIELDS }}"
@@ -296,8 +292,9 @@ data:
   {{- else if .Values.enterprise.o2ai.enabled }}
   O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-o2ai.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
   {{- end }}
-  ZO_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
-  ZO_MASTER_ENCRYPTION_KEY: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY }}"
+  {{- if .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}
+  O2_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
+  {{- end }}
   O2_SERVICE_GRAPH_ENABLED: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_ENABLED }}"
   O2_SERVICE_GRAPH_INTERVAL_SECS: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_INTERVAL_SECS }}"
   O2_SERVICE_GRAPH_FLUSH_SECS: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_FLUSH_SECS }}"

@@ -155,10 +155,6 @@ config:
   ZO_UI_ENABLED: "true"
   ZO_UI_SQL_BASE64_ENABLED: "false"
   ZO_WEB_URL: ""
-  ZO_SSRF_ALLOW_LOOPBACK: "false"
-  ZO_SKIP_SSRF_CHECKS: "false"
-  ZO_SSRF_ALLOWED_CIDRS: ""
-  ZO_SSRF_ALLOWED_HOSTS: ""
   ZO_BASE_URI: ""
   ZO_META_STORE: "sqlite"
   ZO_META_POSTGRES_DSN: ""
@@ -616,7 +612,7 @@ enterprise:
     O2_AI_ENABLED: "false"
     O2_AGENT_URL: "" # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: "" # Leave empty to use default auto-generated URL
-    ZO_MASTER_ENCRYPTION_ALGORITHM: "" # MUST be empty if key is empty
+    ZO_MASTER_ENCRYPTION_ALGORITHM: ""
     ZO_MASTER_ENCRYPTION_KEY: ""
     # Service Graph features
     O2_SERVICE_GRAPH_ENABLED: "true"

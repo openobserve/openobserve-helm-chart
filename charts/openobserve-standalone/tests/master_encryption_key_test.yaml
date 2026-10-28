@@ -1,0 +1,71 @@
+suite: master encryption key
+set:
+  enterprise.enabled: true
+tests:
+  - it: puts the key in the Secret under the name the code reads
+    template: templates/secret.yaml
+    set:
+      enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY: a2V5
+    asserts:
+      - equal:
+          path: stringData.O2_MASTER_ENCRYPTION_KEY
+          value: a2V5
+  - it: leaves the key out of the Secret when it is empty
+    template: templates/secret.yaml
+    asserts:
+      - notExists:
+          path: stringData.O2_MASTER_ENCRYPTION_KEY
+  - it: keeps the key out of the ConfigMap
+    template: templates/configmap.yaml
+    set:
+      enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY: a2V5
+    asserts:
+      - notExists:
+          path: data.O2_MASTER_ENCRYPTION_KEY
+      - notExists:
+          path: data.ZO_MASTER_ENCRYPTION_KEY
+  - it: renders the algorithm under the name the code reads
+    template: templates/configmap.yaml
+    set:
+      enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM: aes-256-siv
+    asserts:
+      - equal:
+          path: data.O2_MASTER_ENCRYPTION_ALGORITHM
+          value: aes-256-siv
+  - it: leaves an empty algorithm unset so the code default applies
+    template: templates/configmap.yaml
+    asserts:
+      - notExists:
+          path: data.O2_MASTER_ENCRYPTION_ALGORITHM
+      - notExists:
+          path: data.ZO_MASTER_ENCRYPTION_ALGORITHM
+  - it: restarts the OpenObserve pod when the key changes
+    template: templates/openobserve-statefulset.yaml
+    set:
+      enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY: a2V5
+    asserts:
+      - exists:
+          path: spec.template.metadata.annotations["checksum/master-encryption-key"]
+  - it: does not restart the pod for an empty key
+    template: templates/openobserve-statefulset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations["checksum/master-encryption-key"]
+  - it: does not restart the pod when enterprise is off and the key never reaches it
+    template: templates/openobserve-statefulset.yaml
+    set:
+      enterprise.enabled: false
+      enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY: a2V5
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations["checksum/master-encryption-key"]
+  - it: changes the checksum when the key changes
+    template: templates/openobserve-statefulset.yaml
+    release:
+      name: r
+    set:
+      enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY: b3RoZXI=
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["checksum/master-encryption-key"]
+          value: 61f4e78d5cf3de4dcae7c516e38772c644845decdc2f384d7c2c3acff2bd9073
