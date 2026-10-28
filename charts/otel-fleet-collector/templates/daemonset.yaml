@@ -1,0 +1,19 @@
+{{- if eq (include "otel-fleet-collector.role" .) "agent" }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "otel-fleet-collector.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "otel-fleet-collector.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "otel-fleet-collector.selectorLabels" . | nindent 6 }}
+  {{- with .Values.agent.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  template:
+    {{- include "otel-fleet-collector.podTemplate" . | nindent 4 }}
+{{- end }}

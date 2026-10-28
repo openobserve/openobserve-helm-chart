@@ -19,7 +19,7 @@ All metrics are sent to the `default` stream in OpenObserve.
 | [kube-controller-manager](#9-kube-controller-manager) | Gateway | 30s | Reconciliation errors, queue depth |
 | [prometheus-autodiscovery](#10-prometheus-autodiscovery) | Gateway | 30s | Any annotated pod's custom metrics |
 | [k8s_cluster](#11-k8s-cluster) | Gateway | 10s | Cluster-level resource usage/conditions |
-| [servicegraph](#12-service-graph) | Gateway | on traces | Service-to-service call metrics |
+| [servicegraph](#12-service-graph) | Gateway | off by default | Service-to-service call metrics |
 
 ---
 
@@ -469,10 +469,10 @@ Cluster-level resource allocation metrics from the Kubernetes API:
 
 ## 12. Service Graph
 
-**Connector:** `servicegraph`
+**Connector:** `servicegraph` (not in the default pipelines, see [traces.md — Service Graph](traces.md#service-graph))
 **Source:** Traces (computed from spans)
 
-Derived from distributed traces — measures service-to-service call patterns:
+When enabled, derived from distributed traces — measures service-to-service call patterns:
 
 | Metric | Description |
 |--------|-------------|

@@ -25,7 +25,7 @@ This chart deploys an OpenTelemetry Collector stack (agent DaemonSet + gateway S
 │    ├─ kube-controller-manager                       │
 │    └─ prometheus-autodiscovery (annotated pods)     │
 │  • Distributed traces      (otlp receiver)          │
-│  • Service graph metrics   (servicegraph connector) │
+│  • Service graph: built by OpenObserve from traces  │
 └──────────────────────────┬──────────────────────────┘
                            │ OTLP HTTP
               ┌────────────▼────────────┐

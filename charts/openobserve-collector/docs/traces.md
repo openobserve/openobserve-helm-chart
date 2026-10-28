@@ -86,7 +86,7 @@ Selection caveats:
 
 ### Where spans go
 
-Spans go to the gateway, like SDK spans from the `Instrumentation` resources, so the service graph covers eBPF-traced services too. With `gateway.enabled: false` they go straight to OpenObserve through `otlphttp/openobserve`, with no service graph. Spans without `k8s.pod.uid` (processes outside any pod) are dropped before they leave the node.
+Spans go to the gateway, like SDK spans from the `Instrumentation` resources, so a gateway `servicegraph` connector, if you add one, covers eBPF-traced services too. With `gateway.enabled: false` they go straight to OpenObserve through `otlphttp/openobserve`, bypassing any gateway `servicegraph` connector. Spans without `k8s.pod.uid` (processes outside any pod) are dropped before they leave the node.
 
 OBI sets `service.name` and the `k8s.*` attributes itself. It names a service from, in order: `OTEL_SERVICE_NAME` or `service.name` in `OTEL_RESOURCE_ATTRIBUTES` (process, then pod spec), the pod annotation `resource.opentelemetry.io/service.name`, the pod labels `app.kubernetes.io/instance` then `app.kubernetes.io/name`, then the owner or pod name. Note that the gateway uses `app.kubernetes.io/name` only, so for a Helm-installed app eBPF spans can carry the release name while SDK spans and logs carry the chart name.
 
@@ -137,11 +137,27 @@ The gateway's `k8sattributes` processor enriches every span it receives with Kub
 
 ## Service Graph
 
-The `servicegraph` connector processes incoming traces and derives **service-to-service call metrics** automatically. No configuration needed in applications.
+OpenObserve Enterprise builds the service graph from ingested traces on the server side (`O2_SERVICE_GRAPH_ENABLED`, on by default from OpenObserve 1.2.0), so the gateway defines the OpenTelemetry `servicegraph` connector but leaves it out of its pipelines.
+
+To turn it on, add `servicegraph` to both the metrics pipeline's receivers and the traces pipeline's exporters. A connector used on only one side stops the collector from starting:
+
+```yaml
+gateway:
+  service:
+    pipelines:
+      metrics:
+        receivers: [otlp, servicegraph, prometheus]
+      traces:
+        exporters: [otlphttp/openobserve, servicegraph]
+```
+
+Helm replaces lists instead of merging them, so these are the full lists; keep any other receivers or exporters you already use.
+
+The connector is mainly useful when OpenObserve does not build the service graph for that organization (the open-source edition, or `O2_SERVICE_GRAPH_ENABLED: "false"`). When both write `traces_service_graph_*` for the same organization, the service graph page uses only OpenObserve's series (from OpenObserve 1.2.0), but a PromQL query that sums these metrics without a `trace_stream` matcher counts every request twice.
 
 See [metrics.md — Service Graph](metrics.md#12-service-graph) for the generated metrics.
 
-**How it works:**
+**How the connector works:**
 1. Client span and matching server span are paired by trace/span ID
 2. Latency is computed from the span duration
 3. Metrics are emitted with `client` and `server` service labels

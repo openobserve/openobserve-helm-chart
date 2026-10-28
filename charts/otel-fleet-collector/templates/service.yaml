@@ -1,0 +1,46 @@
+{{- if and (eq (include "otel-fleet-collector.role" .) "gateway") .Values.gateway.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "otel-fleet-collector.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "otel-fleet-collector.labels" . | nindent 4 }}
+  {{- with .Values.gateway.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.gateway.service.type }}
+  selector:
+    {{- include "otel-fleet-collector.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- range .Values.gateway.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .name }}
+      protocol: TCP
+    {{- end }}
+---
+# Per-pod DNS for the StatefulSet, and the target of a loadbalancing exporter that routes
+# every span of a trace to the same gateway replica (needed by tail_sampling).
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "otel-fleet-collector.fullname" . }}-headless
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "otel-fleet-collector.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    {{- include "otel-fleet-collector.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- range .Values.gateway.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .name }}
+      protocol: TCP
+    {{- end }}
+{{- end }}

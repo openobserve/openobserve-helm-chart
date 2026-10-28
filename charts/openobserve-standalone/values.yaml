@@ -6,17 +6,17 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v1.0.1"
+    tag: "v1.1.2"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v1.0.1"
+    tag: "v1.1.2"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
   o2ai:
     repository: ghcr.io/openobserve/o2-ai
-    tag: "v1.0.1"
+    tag: "v1.1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -100,6 +100,7 @@ auth:
   # and rejects sre-rca calls without a matching x-o2-internal-secret header; OpenObserve gets it as O2_AI_INTERNAL_SECRET
   # and sends that header. Requires an OpenObserve image that sends the header. Generate with: openssl rand -hex 32
   O2_AI_INTERNAL_SECRET: ""
+  ZO_REPORT_SERVER_SECRET: "" # Shared by OpenObserve and the report server; empty means the chart generates one and keeps it across upgrades
 
   existingRootUserSecret:
     # Existing secret with OpenObserve root user credentials.
@@ -175,6 +176,7 @@ config:
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_num"
   ZO_FEATURE_SHARED_MEMTABLE_ENABLED: "false"
   ZO_FEATURE_QUERY_STREAMING_AGGS: "true"
+  ZO_FEATURE_PROFILING_ENABLED: "true" # show the Profiles module in the UI
   ZO_UTF8_VIEW_ENABLED: "false"
   ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "10000"
   ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES: "10000"
@@ -182,6 +184,10 @@ config:
   ZO_RESULT_CACHE_ENABLED: "false"
   ZO_METRICS_CACHE_ENABLED: "true"
   ZO_METRICS_CACHE_MAX_ENTRIES: "10000"
+  ZO_SSRF_ALLOW_LOOPBACK: "false" # allow outbound notifications to loopback addresses; single-node/CI only
+  ZO_SKIP_SSRF_CHECKS: "false" # skips all SSRF checks, not only loopback
+  ZO_SSRF_ALLOWED_CIDRS: "" # use comma to split multiple CIDRs exempt from SSRF checks
+  ZO_SSRF_ALLOWED_HOSTS: "" # use comma to split multiple hosts exempt from SSRF checks
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "0"
   ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "150"
   ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "200"
@@ -342,7 +348,7 @@ config:
   ZO_HISTOGRAM_ENABLED: "true" # show/hide histogram on logs page by default
   ZO_SGRAPH_ENABLED: "true"
   # Synthetics (introduced in v1.0.1)
-  ZO_SYNTHETICS_ENABLED: "false"
+  ZO_SYNTHETICS_ENABLED: "true"
   ZO_SYNTHETICS_API_ENDPOINT: ""
   ZO_SYNTHETICS_BROWSERS: "chromium"
   ZO_SYNTHETICS_DEVICES: "desktop:1440:900"
@@ -365,6 +371,7 @@ config:
   ZO_ALERT_COMPOSITE_SWEEP_SECS: "300"
   ZO_ALERT_EVAL_LEDGER_RETENTION_DAYS: "97"
   ZO_ALERT_TEST_SEND_PER_MINUTE: "6"
+  ZO_ALERT_SCHEDULE_CONCURRENCY: "50" # max alert jobs pulled from the scheduler per cycle
   # Other (introduced in v1.0.1)
   ZO_AI_SESSION_OWNER_TTL: "86400" # seconds
   ZO_TRACE_TIME_INDEX_ENABLED: "true"
@@ -612,10 +619,11 @@ enterprise:
     ZO_MASTER_ENCRYPTION_ALGORITHM: "" # MUST be empty if key is empty
     ZO_MASTER_ENCRYPTION_KEY: ""
     # Service Graph features
-    O2_SERVICE_GRAPH_ENABLED: "false"
-    O2_SERVICE_GRAPH_PROCESSING_INTERVAL_SECS: "300"
-    O2_SERVICE_GRAPH_QUERY_TIME_RANGE_MINUTES: "10"
-    O2_SERVICE_GRAPH_EXCLUDE_INTERNAL_SPANS: "false"
+    O2_SERVICE_GRAPH_ENABLED: "true"
+    O2_SERVICE_GRAPH_INTERVAL_SECS: "60" # how often the rollup job runs
+    O2_SERVICE_GRAPH_FLUSH_SECS: "60" # window width; one sample per series per window
+    # Agent signals features
+    O2_AGENT_SIGNALS_PROCESSING_INTERVAL_SECS: "3600"
     # Incidents and RCA features
     O2_INCIDENTS_ENABLED: "false"
     O2_INCIDENTS_RCA_ENABLED: "false"
