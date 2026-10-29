@@ -1,4 +1,6 @@
-{{- if and (eq (include "otel-fleet-collector.role" .) "gateway") .Values.gateway.clusterRole.create }}
+{{- $roleName := include "otel-fleet-collector.role" . }}
+{{- $clusterRole := (index .Values $roleName).clusterRole }}
+{{- if $clusterRole.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -6,6 +8,18 @@ metadata:
   labels:
     {{- include "otel-fleet-collector.labels" . | nindent 4 }}
 rules:
+  {{- if eq $roleName "agent" }}
+  # k8sattributes (pod metadata such as k8s.pod.ip on the node's telemetry) and kubeletstats.
+  - apiGroups: [""]
+    resources: [pods, namespaces, nodes]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [nodes/stats]
+    verbs: [get]
+  - apiGroups: [apps]
+    resources: [replicasets]
+    verbs: [get, list, watch]
+  {{- else }}
   # k8s_cluster, k8s_events, k8sobjects, k8sattributes and prometheus kubernetes_sd_configs.
   - apiGroups: [""]
     resources:
@@ -43,7 +57,8 @@ rules:
   - apiGroups: [coordination.k8s.io]
     resources: [leases]
     verbs: [get, list, watch, create, update, patch]
-  {{- with .Values.gateway.clusterRole.rules }}
+  {{- end }}
+  {{- with $clusterRole.rules }}
   {{- toYaml . | nindent 2 }}
   {{- end }}
 ---
