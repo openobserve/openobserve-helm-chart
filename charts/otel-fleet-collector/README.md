@@ -106,6 +106,12 @@ from the pod, so a configuration can rely on these and nothing else:
 | `O2_ENDPOINT`, `O2_TOKEN` | yes | yes | the `otlphttp` exporter to OpenObserve |
 | `/var/log/pods`, `/var/lib/docker/containers` | with `agent.hostLogs.enabled` | no | `filelog` |
 | `/hostfs` (the node's `/`, read-only) | with `agent.hostMetrics.enabled` | no | `hostmetrics` `root_path` |
+| RBAC: pods, namespaces, nodes, replicasets, `nodes/stats`, `nodes/proxy` | yes | no | `k8sattributes`, `kubeletstats` |
+| RBAC: cluster objects, events, leases, `nodes/metrics`, `/metrics/cadvisor` | no | yes | `k8s_cluster`, `k8sobjects`, `k8s_events`, `prometheus` |
+
+The enrollment token decides the fleet a collector joins, so install agents and gateways with
+their own fleets' tokens. A collector enrolled with another fleet's token, the default fleet's
+included, is placed in that fleet and runs its configuration.
 
 Node metrics on the agents, with the cluster name falling back to `unknown` when `clusterName`
 is not set:
@@ -192,7 +198,8 @@ For agents:
   `hostmetrics` receiver's `root_path`, and the node's IP as `K8S_NODE_IP` for `kubeletstats`.
 - A ServiceAccount, and a **ClusterRole** and binding (`agent.clusterRole`) with read access to
   pods, namespaces, nodes and replicasets for the `k8sattributes` processor, plus `nodes/stats`
-  for `kubeletstats`. Releases upgraded from 0.2.x get it too.
+  and `nodes/proxy` for `kubeletstats` (it reads the kubelet's `/pods`). Releases upgraded from
+  0.2.x get it too.
 
 For gateways:
 
@@ -207,8 +214,11 @@ For gateways:
   for per-pod DNS. The fleet configuration's `otlp` receiver must listen on `0.0.0.0`; the
   collector default is `localhost`.
 - A **ClusterRole** and binding (`gateway.clusterRole`) with read access to the objects
-  `k8s_cluster`, `k8s_events`, `k8sobjects`, `k8sattributes` and `kubernetes_sd_configs` read,
-  plus `coordination.k8s.io/leases` for `k8s_leader_elector`.
+  `k8s_cluster`, `k8s_events`, `k8sobjects`, `k8sattributes` and `kubernetes_sd_configs` read
+  (ingresses, network policies, storage classes, limit ranges and service accounts included),
+  the kubelet's `nodes/metrics`, `/metrics` and `/metrics/cadvisor` for `prometheus`, and
+  `coordination.k8s.io/leases` for `k8s_leader_elector`. Configmaps, RBAC objects and CRDs only
+  with `gateway.clusterRole.sensitiveObjects`.
 
 Both get:
 
@@ -284,7 +294,7 @@ fails to render with a message naming the new key, rather than silently dropping
 | `agent.hostLogs.enabled` | `true` | Mount host log directories read-only and run the supervisor as root with `DAC_READ_SEARCH` (see [Running as root](#running-as-root)); `false` runs as uid 65532 |
 | `agent.hostLogs.paths` | `[/var/log/pods, /var/lib/docker/containers]` | Which directories |
 | `agent.hostMetrics.enabled` | `true` | Mount the node's `/` read-only at `/hostfs` for `hostmetrics` with `root_path: /hostfs` |
-| `agent.clusterRole.create` | `true` | ClusterRole and binding for `k8sattributes` and `kubeletstats` |
+| `agent.clusterRole.create` | `true` | ClusterRole and binding for `k8sattributes` and `kubeletstats` (`nodes/stats`, `nodes/proxy`) |
 | `agent.clusterRole.rules` | `[]` | Extra rules appended to the ClusterRole |
 | `agent.resources` | `{}` | Supervisor container resources |
 | `agent.nodeSelector` | `{}` | |
@@ -302,6 +312,7 @@ fails to render with a message naming the new key, rather than silently dropping
 | `gateway.service.annotations` | `{}` | |
 | `gateway.service.ports` | `otlp-grpc` 4317, `otlp-http` 4318 | Also the container ports |
 | `gateway.clusterRole.create` | `true` | ClusterRole and binding for the cluster receivers and leader election |
+| `gateway.clusterRole.sensitiveObjects` | `false` | Also read configmaps, RBAC objects and CRDs for `k8sobjects` |
 | `gateway.clusterRole.rules` | `[]` | Extra rules appended to the ClusterRole |
 | `gateway.resources` | `{}` | Supervisor container resources |
 | `gateway.nodeSelector` | `{}` | |

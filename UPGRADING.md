@@ -148,13 +148,18 @@ For OpenObserve application upgrades (the `appVersion` / image tag), always cons
 upstream release notes for migration steps before upgrading:
 <https://github.com/openobserve/openobserve/releases>.
 
-### otel-fleet-collector 0.4.0 — node IP and /hostfs on agents
+### otel-fleet-collector 0.4.0 — node IP, /hostfs and wider RBAC
 
 Agents now get `K8S_NODE_IP` and, with `agent.hostMetrics.enabled: true` (the default), the
-node's `/` mounted read-only at `/hostfs`. If you added either through `extraEnv`,
-`extraVolumes` or `extraVolumeMounts`, remove them before upgrading: a second `hostfs` volume or
-`/hostfs` mount makes the DaemonSet invalid. Set `agent.hostMetrics.enabled: false` to keep the
-node's root filesystem out of the pod.
+node's `/` mounted read-only at `/hostfs`. A plain `helm upgrade` is enough: when `extraEnv`
+already sets `K8S_NODE_IP`, or `extraVolumes` / `extraVolumeMounts` already provide a `hostfs`
+volume or a `/hostfs` mount, the chart leaves its own out, and you can drop yours afterwards. Set
+`agent.hostMetrics.enabled: false` to keep the node's root filesystem out of the pod.
+
+The agent ClusterRole adds `nodes/proxy` (kubeletstats reads the kubelet's `/pods`). The gateway
+ClusterRole adds `nodes/metrics`, `nodes/proxy`, `/metrics`, `/metrics/cadvisor`, ingresses,
+network policies, storage classes, limit ranges and service accounts; configmaps, RBAC objects
+and CRDs need `gateway.clusterRole.sensitiveObjects: true`.
 
 ### otel-fleet-collector 0.1.1 — runs as root when collecting host logs
 

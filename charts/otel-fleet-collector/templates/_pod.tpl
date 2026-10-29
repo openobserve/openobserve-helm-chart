@@ -99,7 +99,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        {{- if $agent }}
+        {{- if include "otel-fleet-collector.nodeIP" . }}
         # The node's IP, for kubeletstats (https://${env:K8S_NODE_IP}:10250): node names
         # often do not resolve from inside a pod.
         - name: K8S_NODE_IP

@@ -13,8 +13,10 @@ rules:
   - apiGroups: [""]
     resources: [pods, namespaces, nodes]
     verbs: [get, list, watch]
+  # nodes/proxy: kubeletstats reads the kubelet's /pods for extra_metadata_labels, volume
+  # metrics and the limit/request utilization metrics; without it every scrape is refused (403).
   - apiGroups: [""]
-    resources: [nodes/stats]
+    resources: [nodes/stats, nodes/proxy]
     verbs: [get]
   - apiGroups: [apps]
     resources: [replicasets]
@@ -37,6 +39,20 @@ rules:
       - endpoints
       - persistentvolumes
       - persistentvolumeclaims
+      - limitranges
+      - serviceaccounts
+    verbs: [get, list, watch]
+  # prometheus: the kubelet's cAdvisor and /metrics endpoints.
+  - apiGroups: [""]
+    resources: [nodes/metrics, nodes/proxy]
+    verbs: [get]
+  - nonResourceURLs: [/metrics, /metrics/cadvisor]
+    verbs: [get]
+  - apiGroups: [networking.k8s.io]
+    resources: [ingresses, networkpolicies]
+    verbs: [get, list, watch]
+  - apiGroups: [storage.k8s.io]
+    resources: [storageclasses]
     verbs: [get, list, watch]
   - apiGroups: [apps]
     resources: [daemonsets, deployments, replicasets, statefulsets]
@@ -57,6 +73,18 @@ rules:
   - apiGroups: [coordination.k8s.io]
     resources: [leases]
     verbs: [get, list, watch, create, update, patch]
+  {{- if $clusterRole.sensitiveObjects }}
+  # k8sobjects for configmaps, RBAC objects and CRDs: cluster configuration, so opt-in.
+  - apiGroups: [""]
+    resources: [configmaps]
+    verbs: [get, list, watch]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [roles, clusterroles, rolebindings, clusterrolebindings]
+    verbs: [get, list, watch]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, watch]
+  {{- end }}
   {{- end }}
   {{- with $clusterRole.rules }}
   {{- toYaml . | nindent 2 }}

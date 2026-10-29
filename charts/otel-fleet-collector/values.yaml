@@ -81,13 +81,17 @@ agent:
     enabled: true
 
   # Read access to pods, namespaces, nodes and replicasets for the k8sattributes processor (pod
-  # IP, deployment name and labels of the pods on the node), and nodes/stats for kubeletstats.
+  # IP, deployment name and labels of the pods on the node), and nodes/stats + nodes/proxy for
+  # kubeletstats.
   clusterRole:
     create: true
     # Extra rules appended to the ClusterRole.
     rules: []
 
-  # Supervisor container resources.
+  # Supervisor container resources. Left empty like the upstream collector charts; for
+  # production set a memory limit above the configuration's memory_limiter (for example
+  # requests 100m / 256Mi and limits.memory 768Mi with limit_mib: 512). Add /var/log/journal to
+  # hostLogs.paths when the configuration uses the journald receiver.
   resources: {}
 
   nodeSelector: {}
@@ -140,13 +144,19 @@ gateway:
         port: 4318
 
   # Read access to cluster objects (k8s_cluster, k8s_events, k8sobjects, k8sattributes,
-  # kubernetes_sd_configs) and the Leases k8s_leader_elector takes.
+  # kubernetes_sd_configs), the kubelet's cAdvisor and /metrics endpoints for prometheus, and
+  # the Leases k8s_leader_elector takes.
   clusterRole:
     create: true
+    # Also read configmaps, RBAC objects and CRDs for k8sobjects. Off by default: it hands
+    # cluster configuration to the telemetry pipeline.
+    sensitiveObjects: false
     # Extra rules appended to the ClusterRole.
     rules: []
 
-  # Supervisor container resources.
+  # Supervisor container resources. For production set a memory limit above the
+  # configuration's memory_limiter (for example requests 200m / 512Mi and limits.memory 1536Mi
+  # with limit_mib: 1024).
   resources: {}
 
   nodeSelector: {}

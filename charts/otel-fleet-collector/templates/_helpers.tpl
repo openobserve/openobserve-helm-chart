@@ -148,10 +148,24 @@ Whether node log directories are mounted; only agents read node files.
 {{- end }}
 
 {{/*
-Whether the node's root filesystem is mounted at /hostfs for hostmetrics; agents only.
+Whether the node's root filesystem is mounted at /hostfs for hostmetrics; agents only. Skipped
+when extraVolumes / extraVolumeMounts already provide it (installs that added it by hand before
+0.4.0), since a second volume or mount of the same name makes the DaemonSet invalid.
 */}}
 {{- define "otel-fleet-collector.hostMetrics" -}}
-{{- if and (eq (include "otel-fleet-collector.role" .) "agent") .Values.agent.hostMetrics.enabled }}true{{- end }}
+{{- $own := false }}
+{{- range .Values.extraVolumes }}{{- if eq (toString .name) "hostfs" }}{{- $own = true }}{{- end }}{{- end }}
+{{- range .Values.extraVolumeMounts }}{{- if eq (toString .mountPath) "/hostfs" }}{{- $own = true }}{{- end }}{{- end }}
+{{- if and (eq (include "otel-fleet-collector.role" .) "agent") .Values.agent.hostMetrics.enabled (not $own) }}true{{- end }}
+{{- end }}
+
+{{/*
+Whether the chart sets K8S_NODE_IP; agents only, unless extraEnv already sets it.
+*/}}
+{{- define "otel-fleet-collector.nodeIP" -}}
+{{- $own := false }}
+{{- range .Values.extraEnv }}{{- if eq (toString .name) "K8S_NODE_IP" }}{{- $own = true }}{{- end }}{{- end }}
+{{- if and (eq (include "otel-fleet-collector.role" .) "agent") (not $own) }}true{{- end }}
 {{- end }}
 
 {{/*
