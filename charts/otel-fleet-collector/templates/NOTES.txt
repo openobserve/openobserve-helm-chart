@@ -51,3 +51,21 @@ tail_sampling processor in the configuration runs on every replica: scraped samp
 duplicated and traces are sampled from partial spans.
 {{- end }}
 {{- end }}
+
+Fleet configurations for this {{ include "otel-fleet-collector.role" . }} can rely on:
+  env:   K8S_NODE_NAME, K8S_POD_NAME, K8S_NAMESPACE, O2_ENDPOINT, O2_TOKEN
+{{- if include "otel-fleet-collector.nodeIP" . }}, K8S_NODE_IP{{- end }}
+{{- if .Values.clusterName }}, K8S_CLUSTER_NAME={{ .Values.clusterName }}{{- end }}
+{{- if include "otel-fleet-collector.hostLogs" . }}
+  paths: {{ join ", " .Values.agent.hostLogs.paths }} (read-only)
+{{- end }}
+{{- if include "otel-fleet-collector.hostMetrics" . }}
+  paths: /hostfs = the node's / (read-only), for hostmetrics root_path
+{{- end }}
+The enrollment token decides the fleet: use a token of the {{ include "otel-fleet-collector.role" . }} fleet, not the
+default fleet's, or the collector is placed in that fleet and runs its configuration.
+{{- if not .Values.clusterName }}
+
+WARNING: clusterName is not set, so K8S_CLUSTER_NAME is missing. Set it per cluster
+(--set clusterName=<name>); configurations tagging k8s.cluster.name from it fall back or fail.
+{{- end }}

@@ -40,7 +40,8 @@ supervisor:
 # Name of this Kubernetes cluster, exposed to the collector as the K8S_CLUSTER_NAME environment
 # variable. Kubernetes has no cluster name of its own, so a fleet configuration shared by several
 # clusters tags its data with `${env:K8S_CLUSTER_NAME}` (see the chart README). The collector also
-# gets K8S_NODE_NAME, K8S_POD_NAME and K8S_NAMESPACE.
+# gets K8S_NODE_NAME, K8S_POD_NAME and K8S_NAMESPACE, and agents K8S_NODE_IP (the node's IP, for
+# kubeletstats). Fleet configurations can rely on these and on nothing else from the pod.
 clusterName: ""
 
 # Agent: a DaemonSet with one collector per node, for node-local data (pod logs, journald,
@@ -72,14 +73,25 @@ agent:
       - /var/log/pods
       - /var/lib/docker/containers
 
+  # The node's root filesystem mounted read-only at /hostfs, so fleet configurations can use the
+  # hostmetrics receiver with `root_path: /hostfs` and report the node's disks, filesystems,
+  # network and processes rather than the collector container's. A configuration that sets
+  # root_path: /hostfs fails to start without it ("stat /hostfs: no such file or directory").
+  hostMetrics:
+    enabled: true
+
   # Read access to pods, namespaces, nodes and replicasets for the k8sattributes processor (pod
-  # IP, deployment name and labels of the pods on the node), and nodes/stats for kubeletstats.
+  # IP, deployment name and labels of the pods on the node), and nodes/stats + nodes/proxy for
+  # kubeletstats.
   clusterRole:
     create: true
     # Extra rules appended to the ClusterRole.
     rules: []
 
-  # Supervisor container resources.
+  # Supervisor container resources. Left empty like the upstream collector charts; for
+  # production set a memory limit above the configuration's memory_limiter (for example
+  # requests 100m / 256Mi and limits.memory 768Mi with limit_mib: 512). Add /var/log/journal to
+  # hostLogs.paths when the configuration uses the journald receiver.
   resources: {}
 
   nodeSelector: {}
@@ -132,13 +144,19 @@ gateway:
         port: 4318
 
   # Read access to cluster objects (k8s_cluster, k8s_events, k8sobjects, k8sattributes,
-  # kubernetes_sd_configs) and the Leases k8s_leader_elector takes.
+  # kubernetes_sd_configs), the kubelet's cAdvisor and /metrics endpoints for prometheus, and
+  # the Leases k8s_leader_elector takes.
   clusterRole:
     create: true
+    # Also read configmaps, RBAC objects and CRDs for k8sobjects. Off by default: it hands
+    # cluster configuration to the telemetry pipeline.
+    sensitiveObjects: false
     # Extra rules appended to the ClusterRole.
     rules: []
 
-  # Supervisor container resources.
+  # Supervisor container resources. For production set a memory limit above the
+  # configuration's memory_limiter (for example requests 200m / 512Mi and limits.memory 1536Mi
+  # with limit_mib: 1024).
   resources: {}
 
   nodeSelector: {}
