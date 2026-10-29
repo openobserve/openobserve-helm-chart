@@ -148,6 +148,13 @@ Whether node log directories are mounted; only agents read node files.
 {{- end }}
 
 {{/*
+Whether the node's root filesystem is mounted at /hostfs for hostmetrics; agents only.
+*/}}
+{{- define "otel-fleet-collector.hostMetrics" -}}
+{{- if and (eq (include "otel-fleet-collector.role" .) "agent") .Values.agent.hostMetrics.enabled }}true{{- end }}
+{{- end }}
+
+{{/*
 ClusterRole name, prefixed with the namespace since ClusterRoles are cluster-scoped.
 */}}
 {{- define "otel-fleet-collector.clusterRoleName" -}}

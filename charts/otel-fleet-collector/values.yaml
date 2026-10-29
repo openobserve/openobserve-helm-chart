@@ -40,7 +40,8 @@ supervisor:
 # Name of this Kubernetes cluster, exposed to the collector as the K8S_CLUSTER_NAME environment
 # variable. Kubernetes has no cluster name of its own, so a fleet configuration shared by several
 # clusters tags its data with `${env:K8S_CLUSTER_NAME}` (see the chart README). The collector also
-# gets K8S_NODE_NAME, K8S_POD_NAME and K8S_NAMESPACE.
+# gets K8S_NODE_NAME, K8S_POD_NAME and K8S_NAMESPACE, and agents K8S_NODE_IP (the node's IP, for
+# kubeletstats). Fleet configurations can rely on these and on nothing else from the pod.
 clusterName: ""
 
 # Agent: a DaemonSet with one collector per node, for node-local data (pod logs, journald,
@@ -71,6 +72,13 @@ agent:
     paths:
       - /var/log/pods
       - /var/lib/docker/containers
+
+  # The node's root filesystem mounted read-only at /hostfs, so fleet configurations can use the
+  # hostmetrics receiver with `root_path: /hostfs` and report the node's disks, filesystems,
+  # network and processes rather than the collector container's. A configuration that sets
+  # root_path: /hostfs fails to start without it ("stat /hostfs: no such file or directory").
+  hostMetrics:
+    enabled: true
 
   # Read access to pods, namespaces, nodes and replicasets for the k8sattributes processor (pod
   # IP, deployment name and labels of the pods on the node), and nodes/stats for kubeletstats.

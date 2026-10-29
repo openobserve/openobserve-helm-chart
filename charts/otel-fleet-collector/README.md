@@ -95,6 +95,38 @@ Every collector gets its own pod's `K8S_NODE_NAME`, `K8S_POD_NAME` and `K8S_NAME
 per cluster at install time (`--set clusterName=prod-us-east`); one fleet configuration then
 serves every cluster and each collector fills in its own values.
 
+A fleet configuration only replaces the collector's YAML; environment variables and mounts come
+from the pod, so a configuration can rely on these and nothing else:
+
+| Variable or path | Agents | Gateways | Use |
+|------------------|--------|----------|-----|
+| `K8S_NODE_NAME`, `K8S_POD_NAME`, `K8S_NAMESPACE` | yes | yes | `k8sattributes` `node_from_env_var`, the collector's own identity |
+| `K8S_NODE_IP` | yes | no | `kubeletstats` endpoint; node names often do not resolve from a pod |
+| `K8S_CLUSTER_NAME` | when `clusterName` is set | when `clusterName` is set | `k8s.cluster.name` |
+| `O2_ENDPOINT`, `O2_TOKEN` | yes | yes | the `otlphttp` exporter to OpenObserve |
+| `/var/log/pods`, `/var/lib/docker/containers` | with `agent.hostLogs.enabled` | no | `filelog` |
+| `/hostfs` (the node's `/`, read-only) | with `agent.hostMetrics.enabled` | no | `hostmetrics` `root_path` |
+
+Node metrics on the agents, with the cluster name falling back to `unknown` when `clusterName`
+is not set:
+
+```yaml
+receivers:
+  hostmetrics:
+    root_path: /hostfs
+    collection_interval: 30s
+    scrapers: { cpu: {}, memory: {}, load: {}, disk: {}, filesystem: {}, network: {} }
+  kubeletstats:
+    auth_type: serviceAccount
+    endpoint: "https://${env:K8S_NODE_IP}:10250"
+    insecure_skip_verify: true
+    metric_groups: [node, pod, container, volume]
+processors:
+  resource/cluster:
+    attributes:
+      - { key: k8s.cluster.name, value: "${env:K8S_CLUSTER_NAME:-unknown}", action: upsert }
+```
+
 To tag every pod log line with the cluster, node, pod and pod IP, assign the agent fleet a
 configuration like this:
 
@@ -156,6 +188,8 @@ For agents:
   pod restart or chart upgrade keeps the node's agent instance id in Fleet management.
 - `/var/log/pods` and `/var/lib/docker/containers` mounted read-only, for server-delivered
   configurations that use the `filelog` receiver.
+- The node's `/` mounted read-only at `/hostfs` (`agent.hostMetrics.enabled`), for the
+  `hostmetrics` receiver's `root_path`, and the node's IP as `K8S_NODE_IP` for `kubeletstats`.
 - A ServiceAccount, and a **ClusterRole** and binding (`agent.clusterRole`) with read access to
   pods, namespaces, nodes and replicasets for the `k8sattributes` processor, plus `nodes/stats`
   for `kubeletstats`. Releases upgraded from 0.2.x get it too.
@@ -249,6 +283,7 @@ fails to render with a message naming the new key, rather than silently dropping
 | `agent.storage.hostPath` | `/var/lib/opampsupervisor` | Node directory for supervisor state (instance id, last config) |
 | `agent.hostLogs.enabled` | `true` | Mount host log directories read-only and run the supervisor as root with `DAC_READ_SEARCH` (see [Running as root](#running-as-root)); `false` runs as uid 65532 |
 | `agent.hostLogs.paths` | `[/var/log/pods, /var/lib/docker/containers]` | Which directories |
+| `agent.hostMetrics.enabled` | `true` | Mount the node's `/` read-only at `/hostfs` for `hostmetrics` with `root_path: /hostfs` |
 | `agent.clusterRole.create` | `true` | ClusterRole and binding for `k8sattributes` and `kubeletstats` |
 | `agent.clusterRole.rules` | `[]` | Extra rules appended to the ClusterRole |
 | `agent.resources` | `{}` | Supervisor container resources |
