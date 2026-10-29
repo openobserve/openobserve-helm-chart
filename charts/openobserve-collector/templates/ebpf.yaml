@@ -9,8 +9,10 @@
 {{- fail (printf "ebpf.trace.%s must be a list, e.g. --set 'ebpf.trace.%s={...}'" $name $name) }}
 {{- end }}
 {{- end }}
-{{- if not (or $ports $exePaths $cmdLines) }}
-{{- fail "ebpf.enabled is true but ebpf.trace.ports, ebpf.trace.exePaths and ebpf.trace.cmdLines are all empty: set at least one to choose what to trace" }}
+{{- $network := (.Values.ebpf.network | default (dict)).enabled }}
+{{- $tracing := or $ports $exePaths $cmdLines }}
+{{- if not (or $tracing $network) }}
+{{- fail "ebpf.enabled is true but ebpf.trace.ports, ebpf.trace.exePaths and ebpf.trace.cmdLines are all empty: set at least one to choose what to trace, or set ebpf.network.enabled=true" }}
 {{- end }}
 {{- $openPorts := list }}
 {{- range $ports }}
@@ -48,6 +50,10 @@ spec:
   mode: daemonset
   # spec.hostPID needs opentelemetry-operator v0.142.0 or later.
   hostPID: true
+  {{- if $network }}
+  # Network flow capture watches the node's interfaces, not only the pod's.
+  hostNetwork: true
+  {{- end }}
   serviceAccount: {{ include "openobserve-collector.serviceAccountName" . }}
   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
   {{- with .Values.image.imagePullSecrets }}
@@ -102,6 +108,14 @@ spec:
     receivers:
       obi:
         version: "2.0"
+        {{- if $network }}
+        network:
+          capture:
+            enabled: true
+        # Network flow metrics only, not application RED metrics.
+        metrics:
+          features: [network]
+        {{- end }}
         safety:
           enforce_system_capabilities: true
         engine:
@@ -199,9 +213,28 @@ spec:
         {{- toYaml (index .Values.exporters "otlphttp/openobserve") | nindent 8 }}
       {{- end }}
     service:
+      {{- if $network }}
+      # On the host network, keep the collector's own metrics off the node's addresses.
+      telemetry:
+        metrics:
+          readers:
+            - pull:
+                exporter:
+                  prometheus:
+                    host: 127.0.0.1
+                    port: 8888
+      {{- end }}
       pipelines:
+        {{- if $tracing }}
         traces:
           receivers: [obi]
           processors: [memory_limiter, filter/node_processes, attributes, batch]
           exporters: [{{ if .Values.gateway.enabled }}otlphttp/gateway{{ else }}otlphttp/openobserve{{ end }}]
+        {{- end }}
+        {{- if $network }}
+        metrics:
+          receivers: [obi]
+          processors: [memory_limiter, attributes, batch]
+          exporters: [{{ if .Values.gateway.enabled }}otlphttp/gateway{{ else }}otlphttp/openobserve{{ end }}]
+        {{- end }}
 {{- end }}

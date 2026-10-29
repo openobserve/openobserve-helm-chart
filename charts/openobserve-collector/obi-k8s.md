@@ -87,8 +87,8 @@ Rules for combining them:
 
 - Each non-empty list among `ports`, `exePaths` and `cmdLines` becomes one include
   rule. A process is traced if it matches any of them.
-- With `ebpf.enabled: true` and all three lists empty, the
-  chart fails to render. There is no "trace everything" default, matching the Linux
+- With `ebpf.enabled: true`, all three lists empty and `ebpf.network.enabled: false`,
+  the chart fails to render. There is no "trace everything" default, matching the Linux
   script, where tracing is on only when a `--trace-*` flag is given.
 
 Validation in the template, with the same limits as the Linux script:
@@ -504,6 +504,56 @@ In 0.6.0:
 A later release removes them. The Java, Node.js, Python and .NET resources are
 unaffected.
 
+## Network flows
+
+Added in chart 0.8.0. `ebpf.network.enabled: true` makes the same receiver also
+export `obi.network.flow.bytes`: bytes between workloads, for any TCP or UDP
+protocol, for a cluster dependency map. It works with or without `ebpf.trace`
+selectors. With none, the receiver keeps only the three exclude rules, so OBI
+instruments no process, and the template renders no traces pipeline.
+
+The template adds to the receiver:
+
+```yaml
+network:
+  capture:
+    enabled: true
+metrics:
+  features: [network]
+```
+
+and a metrics pipeline:
+
+```yaml
+metrics:
+  receivers: [obi]
+  processors: [memory_limiter, attributes, batch]
+  exporters: [otlphttp/gateway]   # otlphttp/openobserve when gateway.enabled is false
+```
+
+- `metrics.features: [network]` is explicit so OBI doesn't also send application
+  metrics for traced processes.
+- `filter/node_processes` is not in the metrics pipeline: flow metrics carry no
+  `k8s.pod.uid`, and flows to and from nodes are wanted.
+- The pods run with `hostNetwork: true`, so OBI sees the node's interfaces and not
+  only the pod's. The operator then sets `dnsPolicy: ClusterFirstWithHostNet`, so
+  the gateway's `*.svc` address still resolves. The collector's own metrics are bound to
+  `127.0.0.1:8888` (`service.telemetry`), not the node's addresses, so they aren't
+  reachable from other pods or hosts; port 8888 must still be free on the node's
+  loopback, and the operator's `-monitoring` Service for it gets connection refused.
+- No RBAC changes: OBI resolves owners from the pods, services and nodes it already
+  watches.
+- OBI's default labels only: direction, source and destination owner name and type,
+  and namespace. Pod names, addresses and ports are off, which keeps the number of
+  series low (about 290 series on the test cluster). The receiver in OBI v0.15.2
+  can't change the label set. `k8s.cluster.name` may be empty: OBI reads it only
+  from eksctl, AKS or Cluster API node labels, so it was empty on k3s; the chart's `k8s_cluster` label is there instead.
+- The same bytes are reported more than once: by both nodes for traffic between
+  nodes, and on the client's node once against the Service and once against the
+  workload behind it. Which workloads talk is exact; byte totals are only exact when
+  either workload's pods all run on one node. See
+  [docs/metrics.md](docs/metrics.md#13-ebpf-network-flows).
+
 ## Security considerations
 
 - The eBPF pods are privileged and share the host PID namespace. They can read the
@@ -587,6 +637,27 @@ cert-manager v1.21.2, and a self-hosted OpenObserve.
 | 13 | Recorded; see [Receiver configuration](#receiver-configuration) |
 | 14 | Pass. Only the chart version label and one NOTES line differ |
 | 15 | Pass. The operator starts with `--enable-go-instrumentation`, and an `inject-go` pod got the sidecar and sent spans |
+
+### Network flows
+
+Run on 2026-10-29 on the same cluster (chart 0.8.0), sending to a self-hosted
+OpenObserve through the gateway. Test traffic: a curl loop to nginx and a
+`redis-cli` loop to Redis, clients in one namespace on one node, servers in another
+namespace on the other node.
+
+| # | Test | Result |
+|---|---|---|
+| N1 | `helm template` with `ebpf.network.enabled` false, against chart 0.7.0 | Pass. Identical apart from the chart version label with eBPF off, and with tracing on for ports, exe paths and command lines |
+| N2 | `helm template`: network only; network and tracing; neither | Pass. Network only renders no include rules and no traces pipeline; neither still fails, now also naming `ebpf.network.enabled` |
+| N3 | Install network only | Pass. Pods `Running` on both nodes, `hostNetwork: true`, `dnsPolicy: ClusterFirstWithHostNet`; no errors in the logs |
+| N4 | Flow metrics in OpenObserve | Pass. Stream `obi_network_flow_bytes`; owners and namespaces set for both the HTTP and the Redis flows, e.g. `netcli/cacheclient` (Deployment) to `netsrv/cache` (Deployment), `direction=request`. DNS to CoreDNS shows as `direction=unknown`. Outside addresses have empty owners; host processes and host-network pods show as `Node` with the node name |
+| N5 | Double counting | Each cross-node flow came from both nodes, and the client's node reported it against both the Service and the Deployment: three series with the same rate. The query in docs/metrics.md returns it once (each test workload ran on one node) |
+| N6 | No application metrics | Pass. OBI sent no RED metrics with tracing on |
+| N7 | DNS to the gateway under `hostNetwork` | Pass. Metrics and spans reached the gateway by its `*.svc` name |
+| N8 | Memory (`kubectl top`) | Network only: 82 MiB per eBPF pod. Network and tracing: 377 and 448 MiB, within the 350-456 MiB of tracing alone (test 13) |
+| N9 | Tracing with network on | Pass. Spans from all six test services, `k8s.*` attributes from the traced pods, and 226 traces spanning both nodes in 15 minutes |
+| N10 | Port clashes | None. Only port 8888 is bound on the node, and nothing else used it |
+| N11 | Collector metrics on loopback | Pass. `ss` shows only `127.0.0.1:8888` on both nodes; `curl` to each node IP on 8888 is refused from the other node and from the host; `127.0.0.1:8888/metrics` answers on the node; flows and spans still arrive |
 
 ## References
 
