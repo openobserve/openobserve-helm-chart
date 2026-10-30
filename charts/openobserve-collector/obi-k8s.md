@@ -551,7 +551,8 @@ metrics:
 - The same bytes are reported more than once: by both nodes for traffic between
   nodes, and on the client's node once against the Service and once against the
   workload behind it. Which workloads talk is exact; byte totals are only exact when
-  either workload's pods all run on one node. See
+  either workload's pods all run on one node, or summed over the `Service` rows for
+  traffic sent to a Service. See
   [docs/metrics.md](docs/metrics.md#13-ebpf-network-flows).
 
 ## Security considerations
@@ -658,6 +659,20 @@ namespace on the other node.
 | N9 | Tracing with network on | Pass. Spans from all six test services, `k8s.*` attributes from the traced pods, and 226 traces spanning both nodes in 15 minutes |
 | N10 | Port clashes | None. Only port 8888 is bound on the node, and nothing else used it |
 | N11 | Collector metrics on loopback | Pass. `ss` shows only `127.0.0.1:8888` on both nodes; `curl` to each node IP on 8888 is refused from the other node and from the host; `127.0.0.1:8888/metrics` answers on the node; flows and spans still arrive |
+
+### Network flows, multi-service
+
+Run on 2026-10-29 on the same cluster, network and tracing on, with services in
+four namespaces and the `api` pods on both nodes.
+
+| Check | Result |
+|---|---|
+| Edges | Pass. All 6 edges across the 4 namespaces correct; owner types seen: `Deployment`, `StatefulSet`, `CronJob`, `Job`, `DaemonSet`, `Pod`, `Node`, `Service`. Jobs whose names contain a `-` show as a `CronJob` (see [docs/metrics.md](docs/metrics.md#13-ebpf-network-flows)) |
+| Bytes, client on one node | `max` 203.0 MB for 200 MB sent (exact) |
+| Bytes, clients on both nodes | `max` 158.9 MB (0.78x), `sum` 310.4 MB (1.53x); the `Service` rows summed: 202.0 MB |
+| Series | 417 over 15 minutes |
+| Memory | eBPF pods 458-466 MiB with network and tracing; gateway 196-215 MiB |
+| Upgrade | Pass. `helm upgrade --reset-then-reuse-values --set ebpf.enabled=true --set ebpf.network.enabled=true` (Helm 3.22.1) kept the existing trace selectors |
 
 ## References
 
