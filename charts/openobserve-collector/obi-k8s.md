@@ -550,9 +550,10 @@ metrics:
   from eksctl, AKS or Cluster API node labels, so it was empty on k3s; the chart's `k8s_cluster` label is there instead.
 - The same bytes are reported more than once: by both nodes for traffic between
   nodes, and on the client's node once against the Service and once against the
-  workload behind it. Which workloads talk is exact; byte totals are only exact when
-  either workload's pods all run on one node, or summed over the `Service` rows for
-  traffic sent to a Service. See
+  workload behind it. Which workloads talk is exact; byte totals count each byte once
+  only when either workload's pods all run on one node, or summed over the `Service` rows
+  for traffic sent to a Service, and include packet headers. Connections already open
+  when the eBPF pods start have `direction` `unknown` until they reconnect. See
   [docs/metrics.md](docs/metrics.md#13-ebpf-network-flows).
 
 ## Security considerations
@@ -668,7 +669,7 @@ four namespaces and the `api` pods on both nodes.
 | Check | Result |
 |---|---|
 | Edges | Pass. All 6 edges across the 4 namespaces correct; owner types seen: `Deployment`, `StatefulSet`, `CronJob`, `Job`, `DaemonSet`, `Pod`, `Node`, `Service`. Jobs whose names contain a `-` show as a `CronJob` (see [docs/metrics.md](docs/metrics.md#13-ebpf-network-flows)) |
-| Bytes, client on one node | `max` 203.0 MB for 200 MB sent (exact) |
+| Bytes, client on one node | `max` 203.0 MB for 200 MB sent (counted once; the rest is packet headers) |
 | Bytes, clients on both nodes | `max` 158.9 MB (0.78x), `sum` 310.4 MB (1.53x); the `Service` rows summed: 202.0 MB |
 | Series | 417 over 15 minutes |
 | Memory | eBPF pods 458-466 MiB with network and tracing; gateway 196-215 MiB |
