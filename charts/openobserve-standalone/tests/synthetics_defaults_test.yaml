@@ -1,0 +1,63 @@
+suite: synthetics settings in the ConfigMap
+templates:
+  - templates/configmap.yaml
+tests:
+  - it: leaves the server defaults alone when no synthetics key is set
+    asserts:
+      - equal:
+          path: data.ZO_SYNTHETICS_ENABLED
+          value: "true"
+      - notExists:
+          path: data.ZO_SYNTHETICS_API_ENDPOINT
+      - notExists:
+          path: data.ZO_SYNTHETICS_BROWSERS
+      - notExists:
+          path: data.ZO_SYNTHETICS_DEVICES
+      - notExists:
+          path: data.ZO_SYNTHETICS_LAMBDA_BROWSER
+      - notExists:
+          path: data.ZO_SYNTHETICS_LAMBDA_NET
+      - notExists:
+          path: data.ZO_SYNTHETICS_INSTALL_SCRIPT_URL
+      - notExists:
+          path: data.ZO_SYNTHETICS_RECORDER_EXTENSION_URL
+      - notExists:
+          path: data.ZO_SYNTHETICS_AGENT_STALE_SECS
+      - notExists:
+          path: data.ZO_SYNTHETICS_JOB_LEASE_SECS
+      - notExists:
+          path: data.ZO_SYNTHETICS_MAX_CHECK_BUDGET_SECS
+      - notExists:
+          path: data.ZO_SYNTHETICS_MAX_NET_TIMEOUT_MS
+      - notExists:
+          path: data.ZO_SYNTHETICS_SCHEDULER_JITTER_ENABLED
+      - notExists:
+          path: data.ZO_SYNTHETICS_ORPHAN_DETECTION_ENABLED
+  - it: writes a synthetics key the operator sets
+    set:
+      config.ZO_SYNTHETICS_ENABLED: "false"
+      config.ZO_SYNTHETICS_LAMBDA_NET: o2-synthetics-net-probe
+    asserts:
+      - equal:
+          path: data.ZO_SYNTHETICS_ENABLED
+          value: "false"
+      - equal:
+          path: data.ZO_SYNTHETICS_LAMBDA_NET
+          value: o2-synthetics-net-probe
+      - notExists:
+          path: data.ZO_SYNTHETICS_LAMBDA_BROWSER
+  - it: writes false and 0 set as YAML bool and int, not only as strings
+    set:
+      config.ZO_SYNTHETICS_ENABLED: false
+      config.ZO_SYNTHETICS_SCHEDULER_JITTER_ENABLED: false
+      config.ZO_SYNTHETICS_AGENT_STALE_SECS: 0
+    asserts:
+      - equal:
+          path: data.ZO_SYNTHETICS_ENABLED
+          value: "false"
+      - equal:
+          path: data.ZO_SYNTHETICS_SCHEDULER_JITTER_ENABLED
+          value: "false"
+      - equal:
+          path: data.ZO_SYNTHETICS_AGENT_STALE_SECS
+          value: "0"
