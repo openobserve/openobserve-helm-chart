@@ -28,6 +28,8 @@ data:
       reports_available_components: true
     agent:
       executable: /usr/local/bin/otelcol-contrib
+      # The 5s default also covers stopping the old collector and is too short for slow hosts.
+      config_apply_timeout: 30s
     {{- if .Values.supervisor.passthroughLogs }}
       passthrough_logs: true
     {{- end }}

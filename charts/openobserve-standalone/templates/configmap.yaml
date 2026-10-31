@@ -40,6 +40,10 @@ data:
   ZO_UI_ENABLED: "{{ .Values.config.ZO_UI_ENABLED }}"
   ZO_UI_SQL_BASE64_ENABLED: "{{ .Values.config.ZO_UI_SQL_BASE64_ENABLED }}"
   ZO_WEB_URL: "{{ .Values.config.ZO_WEB_URL }}"
+  ZO_SSRF_ALLOW_LOOPBACK: {{ .Values.config.ZO_SSRF_ALLOW_LOOPBACK | quote }}
+  ZO_SKIP_SSRF_CHECKS: {{ .Values.config.ZO_SKIP_SSRF_CHECKS | quote }}
+  ZO_SSRF_ALLOWED_CIDRS: {{ .Values.config.ZO_SSRF_ALLOWED_CIDRS | quote }}
+  ZO_SSRF_ALLOWED_HOSTS: {{ .Values.config.ZO_SSRF_ALLOWED_HOSTS | quote }}
   ZO_BASE_URI: "{{ .Values.config.ZO_BASE_URI }}"
   ZO_META_STORE: "{{ .Values.config.ZO_META_STORE }}"
   # ZO_META_POSTGRES_DSN is intentionally NOT set here — it is a credential and is
@@ -59,6 +63,7 @@ data:
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "{{ .Values.config.ZO_FEATURE_QUERY_PARTITION_STRATEGY }}"
   ZO_FEATURE_SHARED_MEMTABLE_ENABLED: "{{ .Values.config.ZO_FEATURE_SHARED_MEMTABLE_ENABLED }}"
   ZO_FEATURE_QUERY_STREAMING_AGGS: "{{ .Values.config.ZO_FEATURE_QUERY_STREAMING_AGGS }}"
+  ZO_FEATURE_PROFILING_ENABLED: "{{ .Values.config.ZO_FEATURE_PROFILING_ENABLED }}"
   ZO_UTF8_VIEW_ENABLED: "{{ .Values.config.ZO_UTF8_VIEW_ENABLED }}"
   ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "{{ .Values.config.ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES }}"
   ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES: "{{ .Values.config.ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES }}"
@@ -66,10 +71,6 @@ data:
   ZO_RESULT_CACHE_ENABLED: "{{ .Values.config.ZO_RESULT_CACHE_ENABLED }}"
   ZO_METRICS_CACHE_ENABLED: "{{ .Values.config.ZO_METRICS_CACHE_ENABLED }}"
   ZO_METRICS_CACHE_MAX_ENTRIES: "{{ .Values.config.ZO_METRICS_CACHE_MAX_ENTRIES }}"
-  ZO_SSRF_ALLOW_LOOPBACK: "{{ .Values.config.ZO_SSRF_ALLOW_LOOPBACK }}"
-  ZO_SKIP_SSRF_CHECKS: "{{ .Values.config.ZO_SKIP_SSRF_CHECKS }}"
-  ZO_SSRF_ALLOWED_CIDRS: "{{ .Values.config.ZO_SSRF_ALLOWED_CIDRS }}"
-  ZO_SSRF_ALLOWED_HOSTS: "{{ .Values.config.ZO_SSRF_ALLOWED_HOSTS }}"
   ZO_QUERY_OPTIMIZATION_NUM_FIELDS: "{{ .Values.config.ZO_QUERY_OPTIMIZATION_NUM_FIELDS }}"
   ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS: "{{ .Values.config.ZO_SCHEMA_MAX_FIELDS_TO_ENABLE_UDS }}"
   ZO_USER_DEFINED_SCHEMA_MAX_FIELDS: "{{ .Values.config.ZO_USER_DEFINED_SCHEMA_MAX_FIELDS }}"
@@ -269,6 +270,7 @@ data:
   ZO_ALERT_COMPOSITE_SWEEP_SECS: "{{ .Values.config.ZO_ALERT_COMPOSITE_SWEEP_SECS }}"
   ZO_ALERT_EVAL_LEDGER_RETENTION_DAYS: "{{ .Values.config.ZO_ALERT_EVAL_LEDGER_RETENTION_DAYS }}"
   ZO_ALERT_TEST_SEND_PER_MINUTE: "{{ .Values.config.ZO_ALERT_TEST_SEND_PER_MINUTE }}"
+  ZO_ALERT_SCHEDULE_CONCURRENCY: "{{ .Values.config.ZO_ALERT_SCHEDULE_CONCURRENCY }}"
   # Other (introduced in v1.0.1)
   ZO_AI_SESSION_OWNER_TTL: "{{ .Values.config.ZO_AI_SESSION_OWNER_TTL }}"
   ZO_TRACE_TIME_INDEX_ENABLED: "{{ .Values.config.ZO_TRACE_TIME_INDEX_ENABLED }}"
@@ -290,8 +292,9 @@ data:
   {{- else if .Values.enterprise.o2ai.enabled }}
   O2_AGENT_URL: "http://{{ include "openobserve.fullname" . }}-o2ai.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8000"
   {{- end }}
-  ZO_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
-  ZO_MASTER_ENCRYPTION_KEY: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY }}"
+  {{- if .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}
+  O2_MASTER_ENCRYPTION_ALGORITHM: "{{ .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_ALGORITHM }}"
+  {{- end }}
   O2_SERVICE_GRAPH_ENABLED: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_ENABLED }}"
   O2_SERVICE_GRAPH_INTERVAL_SECS: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_INTERVAL_SECS }}"
   O2_SERVICE_GRAPH_FLUSH_SECS: "{{ .Values.enterprise.parameters.O2_SERVICE_GRAPH_FLUSH_SECS }}"

@@ -26,6 +26,10 @@ spec:
         {{- with .Values.auth.O2_AI_INTERNAL_SECRET }}
         checksum/o2-ai-internal-secret: {{ printf "%s-%s" $.Release.Name . | sha256sum }}
         {{- end }}
+        {{- if and .Values.enterprise.enabled .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY }}
+        checksum/master-encryption-key: {{ printf "%s-%s" $.Release.Name .Values.enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY | sha256sum }}
+        {{- end }}
+        checksum/report-server-secret: {{ printf "%s-%s" $.Release.Name (include "openobserve.reportServerSecret" $) | sha256sum }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: openobserve
@@ -94,6 +98,11 @@ spec:
             - secretRef:
                 name: {{ include "openobserve.fullname" . }}
           env:
+            - name: ZO_REPORT_SERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.reportServerSecretName" . }}
+                  key: ZO_REPORT_SERVER_SECRET
             {{- if .Values.auth.existingRootUserSecret.name }}
             - name: ZO_ROOT_USER_EMAIL
               valueFrom:

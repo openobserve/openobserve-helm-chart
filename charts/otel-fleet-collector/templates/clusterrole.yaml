@@ -1,4 +1,6 @@
-{{- if and (eq (include "otel-fleet-collector.role" .) "gateway") .Values.gateway.clusterRole.create }}
+{{- $roleName := include "otel-fleet-collector.role" . }}
+{{- $clusterRole := (index .Values $roleName).clusterRole }}
+{{- if $clusterRole.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -6,6 +8,20 @@ metadata:
   labels:
     {{- include "otel-fleet-collector.labels" . | nindent 4 }}
 rules:
+  {{- if eq $roleName "agent" }}
+  # k8sattributes (pod metadata such as k8s.pod.ip on the node's telemetry) and kubeletstats.
+  - apiGroups: [""]
+    resources: [pods, namespaces, nodes]
+    verbs: [get, list, watch]
+  # nodes/proxy: kubeletstats reads the kubelet's /pods for extra_metadata_labels, volume
+  # metrics and the limit/request utilization metrics; without it every scrape is refused (403).
+  - apiGroups: [""]
+    resources: [nodes/stats, nodes/proxy]
+    verbs: [get]
+  - apiGroups: [apps]
+    resources: [replicasets]
+    verbs: [get, list, watch]
+  {{- else }}
   # k8s_cluster, k8s_events, k8sobjects, k8sattributes and prometheus kubernetes_sd_configs.
   - apiGroups: [""]
     resources:
@@ -23,6 +39,20 @@ rules:
       - endpoints
       - persistentvolumes
       - persistentvolumeclaims
+      - limitranges
+      - serviceaccounts
+    verbs: [get, list, watch]
+  # prometheus: the kubelet's cAdvisor and /metrics endpoints.
+  - apiGroups: [""]
+    resources: [nodes/metrics, nodes/proxy]
+    verbs: [get]
+  - nonResourceURLs: [/metrics, /metrics/cadvisor]
+    verbs: [get]
+  - apiGroups: [networking.k8s.io]
+    resources: [ingresses, networkpolicies]
+    verbs: [get, list, watch]
+  - apiGroups: [storage.k8s.io]
+    resources: [storageclasses]
     verbs: [get, list, watch]
   - apiGroups: [apps]
     resources: [daemonsets, deployments, replicasets, statefulsets]
@@ -43,7 +73,20 @@ rules:
   - apiGroups: [coordination.k8s.io]
     resources: [leases]
     verbs: [get, list, watch, create, update, patch]
-  {{- with .Values.gateway.clusterRole.rules }}
+  {{- if $clusterRole.sensitiveObjects }}
+  # k8sobjects for configmaps, RBAC objects and CRDs: cluster configuration, so opt-in.
+  - apiGroups: [""]
+    resources: [configmaps]
+    verbs: [get, list, watch]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [roles, clusterroles, rolebindings, clusterrolebindings]
+    verbs: [get, list, watch]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, watch]
+  {{- end }}
+  {{- end }}
+  {{- with $clusterRole.rules }}
   {{- toYaml . | nindent 2 }}
   {{- end }}
 ---

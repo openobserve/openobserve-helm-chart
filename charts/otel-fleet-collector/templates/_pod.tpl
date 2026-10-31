@@ -6,6 +6,7 @@ Pod template shared by the agent DaemonSet and the gateway StatefulSet.
 {{- $role := index .Values $roleName }}
 {{- $agent := eq $roleName "agent" }}
 {{- $hostLogs := include "otel-fleet-collector.hostLogs" . -}}
+{{- $hostMetrics := include "otel-fleet-collector.hostMetrics" . -}}
 metadata:
   annotations:
     checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
@@ -98,6 +99,18 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        {{- if include "otel-fleet-collector.nodeIP" . }}
+        # The node's IP, for kubeletstats (https://${env:K8S_NODE_IP}:10250): node names
+        # often do not resolve from inside a pod.
+        - name: K8S_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        {{- end }}
+        {{- with .Values.clusterName }}
+        - name: K8S_CLUSTER_NAME
+          value: {{ . | quote }}
+        {{- end }}
         {{- with .Values.extraEnv }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -126,6 +139,12 @@ spec:
           readOnly: true
         {{- end }}
         {{- end }}
+        {{- if $hostMetrics }}
+        - name: hostfs
+          mountPath: /hostfs
+          readOnly: true
+          mountPropagation: HostToContainer
+        {{- end }}
         {{- with .Values.extraVolumeMounts }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -151,6 +170,11 @@ spec:
         path: {{ $p }}
         type: DirectoryOrCreate
     {{- end }}
+    {{- end }}
+    {{- if $hostMetrics }}
+    - name: hostfs
+      hostPath:
+        path: /
     {{- end }}
     {{- with .Values.extraVolumes }}
     {{- toYaml . | nindent 4 }}

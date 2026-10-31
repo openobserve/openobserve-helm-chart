@@ -6,17 +6,17 @@ image:
   oss:
     repository: o2cr.ai/openobserve/openobserve
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v1.0.1"
+    tag: "v1.1.2"
   enterprise:
     repository: o2cr.ai/openobserve/openobserve-enterprise
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v1.0.1"
+    tag: "v1.1.2"
   busybox:
     repository: public.ecr.aws/docker/library/busybox
     tag: 1.36.1
   o2ai:
     repository: ghcr.io/openobserve/o2-ai
-    tag: "v1.0.1"
+    tag: "v1.1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -100,6 +100,7 @@ auth:
   # and rejects sre-rca calls without a matching x-o2-internal-secret header; OpenObserve gets it as O2_AI_INTERNAL_SECRET
   # and sends that header. Requires an OpenObserve image that sends the header. Generate with: openssl rand -hex 32
   O2_AI_INTERNAL_SECRET: ""
+  ZO_REPORT_SERVER_SECRET: "" # Shared by OpenObserve and the report server; empty means the chart generates one and keeps it across upgrades
 
   existingRootUserSecret:
     # Existing secret with OpenObserve root user credentials.
@@ -171,6 +172,7 @@ config:
   ZO_FEATURE_QUERY_PARTITION_STRATEGY: "file_num"
   ZO_FEATURE_SHARED_MEMTABLE_ENABLED: "false"
   ZO_FEATURE_QUERY_STREAMING_AGGS: "true"
+  ZO_FEATURE_PROFILING_ENABLED: "true" # show the Profiles module in the UI
   ZO_UTF8_VIEW_ENABLED: "false"
   ZO_DATAFUSION_STREAMING_AGGS_CACHE_MAX_ENTRIES: "10000"
   ZO_DATAFUSION_FILE_STAT_CACHE_MAX_ENTRIES: "10000"
@@ -342,7 +344,7 @@ config:
   ZO_HISTOGRAM_ENABLED: "true" # show/hide histogram on logs page by default
   ZO_SGRAPH_ENABLED: "true"
   # Synthetics (introduced in v1.0.1)
-  ZO_SYNTHETICS_ENABLED: "false"
+  ZO_SYNTHETICS_ENABLED: "true"
   ZO_SYNTHETICS_API_ENDPOINT: ""
   ZO_SYNTHETICS_BROWSERS: "chromium"
   ZO_SYNTHETICS_DEVICES: "desktop:1440:900"
@@ -365,6 +367,7 @@ config:
   ZO_ALERT_COMPOSITE_SWEEP_SECS: "300"
   ZO_ALERT_EVAL_LEDGER_RETENTION_DAYS: "97"
   ZO_ALERT_TEST_SEND_PER_MINUTE: "6"
+  ZO_ALERT_SCHEDULE_CONCURRENCY: "50" # max alert jobs pulled from the scheduler per cycle
   # Other (introduced in v1.0.1)
   ZO_AI_SESSION_OWNER_TTL: "86400" # seconds
   ZO_TRACE_TIME_INDEX_ENABLED: "true"
@@ -609,7 +612,7 @@ enterprise:
     O2_AI_ENABLED: "false"
     O2_AGENT_URL: "" # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: "" # Leave empty to use default auto-generated URL
-    ZO_MASTER_ENCRYPTION_ALGORITHM: "" # MUST be empty if key is empty
+    ZO_MASTER_ENCRYPTION_ALGORITHM: ""
     ZO_MASTER_ENCRYPTION_KEY: ""
     # Service Graph features
     O2_SERVICE_GRAPH_ENABLED: "true"

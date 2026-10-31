@@ -122,11 +122,16 @@ autoinstrumentation:
 ebpf:
   enabled: false
   # What to trace. Each non-empty list is one rule; a process matching any is traced.
-  # At least one must be set when enabled. Globs may not contain ',', '{' or '}'.
+  # At least one must be set, unless network.enabled. Globs may not contain ',', '{' or '}'.
   trace:
     ports: []        # ports and ranges, e.g. [8080, "9000-9100"]
     exePaths: []     # executable path globs, e.g. ["/app/checkout*"]
     cmdLines: []     # command-line globs, e.g. ["*reports.py*"]
+  # Network flow metrics (obi.network.flow.bytes): bytes between workloads, any TCP
+  # or UDP protocol, labelled with source and destination owner and namespace. Runs
+  # the pods on the host network. Works with or without trace selectors.
+  network:
+    enabled: false
   nodeSelector: {}
   affinity:          # the receiver is built for Linux on amd64 and arm64 only
     nodeAffinity:

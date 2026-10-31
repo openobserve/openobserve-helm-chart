@@ -110,11 +110,56 @@ connector's metrics (for example with the open-source edition), add `servicegrap
 metrics receivers and traces exporters as shown in
 [traces.md — Service Graph](charts/openobserve-collector/docs/traces.md#service-graph).
 
+### openobserve 1.0.4 / openobserve-standalone 1.0.3 — shared secret between OpenObserve and the report server
+
+The charts now create a Secret `<fullname>-report-server` holding `ZO_REPORT_SERVER_SECRET`, so
+OpenObserve and the report server share one secret; newer report-server images refuse to start
+without it. If `auth.ZO_REPORT_SERVER_SECRET` is empty, the chart generates a random value on install
+and keeps it on later `helm upgrade`s. It is injected only into the pods that use it: ingester,
+scheduler and reportserver (in openobserve-standalone, the single OpenObserve pod), which restart
+once when it first appears. The Secret is created also with `externalSecret.enabled`, so no change
+to your own Secret is needed.
+
+With `helm template` or ArgoCD, the chart cannot read the existing Secret, so an empty value
+changes on every render: set `auth.ZO_REPORT_SERVER_SECRET` explicitly.
+
+### openobserve 1.1.3 / openobserve-standalone 1.1.3 — master encryption key reaches OpenObserve
+
+`enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY` was rendered as `ZO_MASTER_ENCRYPTION_KEY`, a name
+OpenObserve never reads, so installs that set it ran with no master key. The chart now renders it as
+`O2_MASTER_ENCRYPTION_KEY` in the chart's Secret, and `ZO_MASTER_ENCRYPTION_ALGORITHM` as
+`O2_MASTER_ENCRYPTION_ALGORITHM` in the ConfigMap, only when set. The OpenObserve pods restart once.
+
+If you set the key, check it before upgrading, because OpenObserve now reads it:
+
+- An invalid key, or an algorithm other than `aes-256-siv`, makes every OpenObserve pod fail at
+  boot. The key must be 64 random bytes, base64-encoded, for example from
+  `openssl rand -base64 64 | tr -d '\n'`. If you do not want encryption at rest, clear both values.
+- A valid key turns on encryption at rest for the first time: at boot OpenObserve re-encrypts the
+  stored secrets with it. From then on keep the key; if you lose it, those secrets cannot be read.
+
+If you set `O2_MASTER_ENCRYPTION_KEY` through `extraEnv` as a workaround, that value still wins and
+you can now remove it. With `externalSecret.enabled`, add `O2_MASTER_ENCRYPTION_KEY` to your own
+Secret instead.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the
 upstream release notes for migration steps before upgrading:
 <https://github.com/openobserve/openobserve/releases>.
+
+### otel-fleet-collector 0.4.0 — node IP, /hostfs and wider RBAC
+
+Agents now get `K8S_NODE_IP` and, with `agent.hostMetrics.enabled: true` (the default), the
+node's `/` mounted read-only at `/hostfs`. A plain `helm upgrade` is enough: when `extraEnv`
+already sets `K8S_NODE_IP`, or `extraVolumes` / `extraVolumeMounts` already provide a `hostfs`
+volume or a `/hostfs` mount, the chart leaves its own out, and you can drop yours afterwards. Set
+`agent.hostMetrics.enabled: false` to keep the node's root filesystem out of the pod.
+
+The agent ClusterRole adds `nodes/proxy` (kubeletstats reads the kubelet's `/pods`). The gateway
+ClusterRole adds `nodes/metrics`, `nodes/proxy`, `/metrics`, `/metrics/cadvisor`, ingresses,
+network policies, storage classes, limit ranges and service accounts; configmaps, RBAC objects
+and CRDs need `gateway.clusterRole.sensitiveObjects: true`.
 
 ### otel-fleet-collector 0.1.1 — runs as root when collecting host logs
 
