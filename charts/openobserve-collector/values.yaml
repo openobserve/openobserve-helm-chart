@@ -103,8 +103,9 @@ autoinstrumentation:
   # Deprecated: the Go Instrumentation (openobserve-go) will be removed in a later
   # release; trace Go services with ebpf below instead.
   goImageVersion: "v0.23.0"
-  # Optional complete image overrides. Empty values preserve the operator's
-  # defaults for DotNet, Java, NodeJS, and Python. Go keeps goImageVersion.
+  # Optional complete image overrides, e.g. for a private mirror. Empty values
+  # keep the operator's defaults for DotNet, Java, NodeJS, and Python; Go
+  # defaults to the GHCR image tagged goImageVersion.
   images:
     dotnet: ""
     go: ""

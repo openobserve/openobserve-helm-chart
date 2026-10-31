@@ -1,0 +1,84 @@
+suite: auto-instrumentation images
+templates:
+  - templates/instrumentation-dotnet.yaml
+  - templates/instrumentation-go.yaml
+  - templates/instrumentation-java.yaml
+  - templates/instrumentation-nodejs.yaml
+  - templates/instrumentation-python.yaml
+set:
+  gateway.enabled: false
+tests:
+  - it: defaults Go to the GHCR image tagged goImageVersion
+    template: templates/instrumentation-go.yaml
+    asserts:
+      - equal:
+          path: spec.go.image
+          value: ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.23.0
+  - it: follows goImageVersion when images.go is unset
+    template: templates/instrumentation-go.yaml
+    set:
+      autoinstrumentation.goImageVersion: v0.24.0
+    asserts:
+      - equal:
+          path: spec.go.image
+          value: ghcr.io/open-telemetry/opentelemetry-go-instrumentation/autoinstrumentation-go:v0.24.0
+  - it: overrides the Go image
+    template: templates/instrumentation-go.yaml
+    set:
+      autoinstrumentation.images.go: registry.example.com/otel/go:v1
+    asserts:
+      - equal:
+          path: spec.go.image
+          value: registry.example.com/otel/go:v1
+  - it: leaves the operator default image for DotNet
+    template: templates/instrumentation-dotnet.yaml
+    asserts:
+      - notExists:
+          path: spec.dotnet.image
+  - it: overrides the DotNet image
+    template: templates/instrumentation-dotnet.yaml
+    set:
+      autoinstrumentation.images.dotnet: registry.example.com/otel/dotnet:v1
+    asserts:
+      - equal:
+          path: spec.dotnet.image
+          value: registry.example.com/otel/dotnet:v1
+  - it: leaves the operator default image for Java
+    template: templates/instrumentation-java.yaml
+    asserts:
+      - notExists:
+          path: spec.java.image
+  - it: overrides the Java image
+    template: templates/instrumentation-java.yaml
+    set:
+      autoinstrumentation.images.java: registry.example.com/otel/java:v1
+    asserts:
+      - equal:
+          path: spec.java.image
+          value: registry.example.com/otel/java:v1
+  - it: leaves the operator default image for NodeJS
+    template: templates/instrumentation-nodejs.yaml
+    asserts:
+      - notExists:
+          path: spec.nodejs.image
+  - it: overrides the NodeJS image
+    template: templates/instrumentation-nodejs.yaml
+    set:
+      autoinstrumentation.images.nodejs: registry.example.com/otel/nodejs:v1
+    asserts:
+      - equal:
+          path: spec.nodejs.image
+          value: registry.example.com/otel/nodejs:v1
+  - it: leaves the operator default image for Python
+    template: templates/instrumentation-python.yaml
+    asserts:
+      - notExists:
+          path: spec.python.image
+  - it: overrides the Python image
+    template: templates/instrumentation-python.yaml
+    set:
+      autoinstrumentation.images.python: registry.example.com/otel/python:v1
+    asserts:
+      - equal:
+          path: spec.python.image
+          value: registry.example.com/otel/python:v1
