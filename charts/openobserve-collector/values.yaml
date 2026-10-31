@@ -99,10 +99,19 @@ autoinstrumentation:
   enabled: true
   # Sampling rate for traces (0.0 to 1.0). 0.1 = 10%, 1.0 = 100%
   samplingRate: "1.0"
-  # Go instrumentation image version.
+  # Go instrumentation image version, used unless images.go is set.
   # Deprecated: the Go Instrumentation (openobserve-go) will be removed in a later
   # release; trace Go services with ebpf below instead.
   goImageVersion: "v0.23.0"
+  # Optional complete image overrides, e.g. for a private mirror. Empty values
+  # keep the operator's defaults for DotNet, Java, NodeJS, and Python; Go
+  # defaults to the GHCR image tagged goImageVersion.
+  images:
+    dotnet: ""
+    go: ""
+    java: ""
+    nodejs: ""
+    python: ""
   # Enable Python logs auto-instrumentation
   pythonLogsEnabled: false
 
