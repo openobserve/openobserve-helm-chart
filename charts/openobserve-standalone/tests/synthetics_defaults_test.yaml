@@ -46,3 +46,18 @@ tests:
           value: o2-synthetics-net-probe
       - notExists:
           path: data.ZO_SYNTHETICS_LAMBDA_BROWSER
+  - it: writes false and 0 set as YAML bool and int, not only as strings
+    set:
+      config.ZO_SYNTHETICS_ENABLED: false
+      config.ZO_SYNTHETICS_SCHEDULER_JITTER_ENABLED: false
+      config.ZO_SYNTHETICS_AGENT_STALE_SECS: 0
+    asserts:
+      - equal:
+          path: data.ZO_SYNTHETICS_ENABLED
+          value: "false"
+      - equal:
+          path: data.ZO_SYNTHETICS_SCHEDULER_JITTER_ENABLED
+          value: "false"
+      - equal:
+          path: data.ZO_SYNTHETICS_AGENT_STALE_SECS
+          value: "0"
