@@ -86,8 +86,8 @@ share the host PID namespace, so the release namespace must allow privileged pod
 
 `ebpf.network.enabled: true` also sends network flow metrics from the same DaemonSet:
 `obi.network.flow.bytes`, the bytes sent between workloads over any TCP or UDP protocol,
-labelled with the source and destination owner (Deployment, StatefulSet, Node, ...) and
-namespace. Use it to map which workloads talk to each other. It works with or without
+labelled with the source and destination owner (Deployment, StatefulSet, Node, ...),
+namespace and node. Use it to map which workloads talk to each other. It works with or without
 trace selectors, and runs the eBPF pods on the host network. The collector's own metrics
 then listen on `127.0.0.1:8888` of each node, so that port must be free there, and the
 operator's `<fullname>-ebpf-collector-monitoring` Service can't be scraped:

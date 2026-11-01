@@ -129,8 +129,8 @@ ebpf:
     exePaths: []     # executable path globs, e.g. ["/app/checkout*"]
     cmdLines: []     # command-line globs, e.g. ["*reports.py*"]
   # Network flow metrics (obi.network.flow.bytes): bytes between workloads, any TCP
-  # or UDP protocol, labelled with source and destination owner and namespace. Runs
-  # the pods on the host network. Works with or without trace selectors.
+  # or UDP protocol, labelled with source and destination owner, namespace and node.
+  # Runs the pods on the host network. Works with or without trace selectors.
   network:
     enabled: false
   nodeSelector: {}
