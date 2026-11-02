@@ -88,3 +88,19 @@ Effective ZO_REPORT_SERVER_SECRET: the user's value, else the one in the existin
 {{- end -}}
 {{- .Values.auth.ZO_REPORT_SERVER_SECRET -}}
 {{- end }}
+
+{{/*
+Effective ZO_EXT_AUTH_SALT: the user's value, else the one already in this release's Secret, else a new random one.
+OpenObserve v1.1.0+ refuses to initialise a fresh install without a non-default salt of 16-48 bytes, and the salt must
+stay the same across restarts and nodes. A release whose Secret already exists but has no salt predates that
+requirement: it is left unset, so its effective salt (the server default) does not change on upgrade.
+*/}}
+{{- define "openobserve.extAuthSalt" -}}
+{{- if not .Values.auth.ZO_EXT_AUTH_SALT -}}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace (include "openobserve.fullname" .) | default dict -}}
+{{- $stored := dig "data" "ZO_EXT_AUTH_SALT" "" $existing | b64dec -}}
+{{- /* Cached in .Values so every include in one render sees the same value. */ -}}
+{{- $_ := set .Values.auth "ZO_EXT_AUTH_SALT" (ternary $stored (randAlphaNum 32) (not (empty $existing))) -}}
+{{- end -}}
+{{- .Values.auth.ZO_EXT_AUTH_SALT -}}
+{{- end }}
