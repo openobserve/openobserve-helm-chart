@@ -11,6 +11,11 @@ spec:
       app: openfga
   template:
     metadata:
+      {{- if include "openobserve.openfgaDatastoreURI" . }}
+      annotations:
+        # The URI moved from an inline env value to a Secret; roll the pod when it changes, as before.
+        checksum/openfga-datastore: {{ printf "%s-%s" $.Release.Name (include "openobserve.openfgaDatastoreURI" .) | sha256sum }}
+      {{- end }}
       labels:
         app: openfga
     spec:
@@ -22,17 +27,12 @@ spec:
           env:
             - name: OPENFGA_DATASTORE_ENGINE
               value: postgres
-            {{- if not .Values.externalSecret.enabled }}
-            {{- if .Values.postgres.enabled }}
+            {{- if include "openobserve.openfgaDatastoreURI" . }}
             - name: OPENFGA_DATASTORE_URI
-              value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
-            {{- else if .Values.auth.ZO_META_POSTGRES_DSN }}
-            - name: OPENFGA_DATASTORE_URI
-              value: "{{ .Values.auth.ZO_META_POSTGRES_DSN }}"
-            {{- else if .Values.config.ZO_META_POSTGRES_DSN }}
-            - name: OPENFGA_DATASTORE_URI
-              value: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
-            {{- end }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.openfgaDatastoreSecretName" . }}
+                  key: OPENFGA_DATASTORE_URI
             {{- end }}
           envFrom:
             - secretRef:  # postgres detail can be picked up from secret if not found anywhere else
@@ -68,17 +68,12 @@ spec:
           env:
             - name: OPENFGA_DATASTORE_ENGINE
               value: postgres
-            {{- if not .Values.externalSecret.enabled }}
-            {{- if .Values.postgres.enabled }}
+            {{- if include "openobserve.openfgaDatastoreURI" . }}
             - name: OPENFGA_DATASTORE_URI
-              value: "postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
-            {{- else if .Values.auth.ZO_META_POSTGRES_DSN }}
-            - name: OPENFGA_DATASTORE_URI
-              value: "{{ .Values.auth.ZO_META_POSTGRES_DSN }}"
-            {{- else if .Values.config.ZO_META_POSTGRES_DSN }}
-            - name: OPENFGA_DATASTORE_URI
-              value: "{{ .Values.config.ZO_META_POSTGRES_DSN }}"
-            {{- end }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.openfgaDatastoreSecretName" . }}
+                  key: OPENFGA_DATASTORE_URI
             {{- end }}
             - name: OPENFGA_LOG_FORMAT
               value: json
@@ -94,7 +89,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.config.ZO_HTTP_PORT }}
+              port: http
             initialDelaySeconds: {{ .Values.probes.openfga.config.livenessProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.openfga.config.livenessProbe.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.openfga.config.livenessProbe.timeoutSeconds | default 10 }}
@@ -104,7 +99,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.config.ZO_HTTP_PORT }}
+              port: http
             initialDelaySeconds: {{ .Values.probes.openfga.config.readinessProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.openfga.config.readinessProbe.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.openfga.config.readinessProbe.timeoutSeconds | default 10 }}
@@ -113,7 +108,7 @@ spec:
           startupProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.config.ZO_HTTP_PORT }}
+              port: http
             initialDelaySeconds: {{ .Values.probes.openfga.config.startupProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.openfga.config.startupProbe.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.probes.openfga.config.startupProbe.timeoutSeconds | default 10 }}

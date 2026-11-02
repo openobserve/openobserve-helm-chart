@@ -1,0 +1,54 @@
+suite: Dex and OpenFGA probes
+set:
+  enterprise.enabled: true
+  enterprise.dex.enabled: true
+  enterprise.openfga.enabled: true
+tests:
+  - it: points Dex probes at the Dex web port under the issuer path
+    template: templates/dex-deployment.yaml
+    set:
+      probes.dex.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+          value: {path: /dex/healthz, port: http}
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet
+          value: {path: /dex/healthz, port: http}
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet
+          value: {path: /dex/healthz, port: http}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {containerPort: 5556, name: http}
+  - it: uses /healthz when the Dex issuer has no path
+    template: templates/dex-deployment.yaml
+    set:
+      probes.dex.enabled: true
+      enterprise.dex.config.issuer: https://dex.example.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /healthz
+  - it: renders no Dex probes by default
+    template: templates/dex-deployment.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe
+  - it: points OpenFGA probes at the OpenFGA HTTP port
+    template: templates/openfga-deployment.yaml
+    set:
+      probes.openfga.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+          value: {path: /healthz, port: http}
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet
+          value: {path: /healthz, port: http}
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet
+          value: {path: /healthz, port: http}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {containerPort: 8080, name: http}

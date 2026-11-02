@@ -1,0 +1,57 @@
+suite: report server autoscaling
+tests:
+  - it: renders no HPA by default
+    template: templates/reportserver-hpa.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: renders the HPA when autoscaling.reportserver.enabled is set
+    template: templates/reportserver-hpa.yaml
+    set:
+      autoscaling.reportserver.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.scaleTargetRef.kind
+          value: Deployment
+      - equal:
+          path: spec.scaleTargetRef.name
+          value: RELEASE-NAME-openobserve-reportserver
+      - equal:
+          path: spec.metrics[0].resource.name
+          value: cpu
+      - equal:
+          path: spec.metrics[0].resource.target.averageUtilization
+          value: 80
+  - it: still honours the legacy top-level autoscaling.enabled key
+    template: templates/reportserver-hpa.yaml
+    set:
+      autoscaling.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.scaleTargetRef.kind
+          value: Deployment
+  - it: sets replicas on the Deployment when autoscaling is off
+    template: templates/reportserver-delpoyment.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 0
+  - it: leaves replicas to the HPA when autoscaling is on
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      autoscaling.reportserver.enabled: true
+    asserts:
+      - notExists:
+          path: spec.replicas
+  - it: sets the release namespace on the Deployment
+    template: templates/reportserver-delpoyment.yaml
+    release:
+      namespace: o2
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: o2
