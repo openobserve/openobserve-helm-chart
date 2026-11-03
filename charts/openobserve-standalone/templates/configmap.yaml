@@ -30,7 +30,6 @@ data:
   ZO_GRPC_TLS_CERT_DOMAIN: "{{ .Values.config.ZO_GRPC_TLS_CERT_DOMAIN }}"
   ZO_GRPC_TLS_CERT_PATH: "{{ .Values.config.ZO_GRPC_TLS_CERT_PATH }}"
   ZO_GRPC_TLS_KEY_PATH: "{{ .Values.config.ZO_GRPC_TLS_KEY_PATH }}"
-  ZO_INTERNAL_GRPC_TOKEN: "{{ .Values.config.ZO_INTERNAL_GRPC_TOKEN }}"
   ZO_DATA_DIR: "{{ .Values.config.ZO_DATA_DIR }}"
   ZO_DATA_DB_DIR: "{{ .Values.config.ZO_DATA_DB_DIR }}"
   ZO_DATA_WAL_DIR: "{{ .Values.config.ZO_DATA_WAL_DIR }}"
@@ -91,7 +90,6 @@ data:
   ZO_TRACING_SEARCH_ENABLED: "{{ .Values.config.ZO_TRACING_SEARCH_ENABLED }}"
   ZO_SEARCH_INSPECTOR_ENABLED: "{{ .Values.config.ZO_SEARCH_INSPECTOR_ENABLED }}"
   ZO_TRACING_HEADER_KEY: "{{ .Values.config.ZO_TRACING_HEADER_KEY }}"
-  ZO_TRACING_HEADER_VALUE: "{{ .Values.config.ZO_TRACING_HEADER_VALUE }}"
   OTEL_OTLP_HTTP_ENDPOINT: "{{ .Values.config.OTEL_OTLP_HTTP_ENDPOINT }}"
   ZO_TELEMETRY: "{{ .Values.config.ZO_TELEMETRY }}"
   ZO_TELEMETRY_HEARTBEAT: "{{ .Values.config.ZO_TELEMETRY_HEARTBEAT }}"
@@ -199,7 +197,6 @@ data:
   ZO_USAGE_REPORTING_ENABLED: "{{ .Values.config.ZO_USAGE_REPORTING_ENABLED }}"
   ZO_USAGE_REPORTING_MODE: "{{ .Values.config.ZO_USAGE_REPORTING_MODE }}"
   ZO_USAGE_REPORTING_URL: "{{ .Values.config.ZO_USAGE_REPORTING_URL }}"
-  ZO_USAGE_REPORTING_CREDS: "{{ .Values.config.ZO_USAGE_REPORTING_CREDS }}"
   ZO_USAGE_ORG: "{{ .Values.config.ZO_USAGE_ORG }}"
   ZO_USAGE_BATCH_SIZE: "{{ .Values.config.ZO_USAGE_BATCH_SIZE }}"
   ZO_PRINT_KEY_CONFIG: "{{ .Values.config.ZO_PRINT_KEY_CONFIG }}"
@@ -271,7 +268,6 @@ data:
 {{- end }}
   # Alerts — composite / charts / eval (introduced in v1.0.1)
   ZO_ALERT_CHART_ENABLED: "{{ .Values.config.ZO_ALERT_CHART_ENABLED }}"
-  ZO_ALERT_CHART_SIGNING_KEY: "{{ .Values.config.ZO_ALERT_CHART_SIGNING_KEY }}"
   ZO_ALERT_COMPOSITE_WRITES_ENABLED: "{{ .Values.config.ZO_ALERT_COMPOSITE_WRITES_ENABLED }}"
   ZO_ALERT_COMPOSITE_DEBOUNCE_SECS: "{{ .Values.config.ZO_ALERT_COMPOSITE_DEBOUNCE_SECS }}"
   ZO_ALERT_COMPOSITE_STALE_K: "{{ .Values.config.ZO_ALERT_COMPOSITE_STALE_K }}"
