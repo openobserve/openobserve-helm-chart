@@ -1,4 +1,5 @@
-{{- if and .Values.reportserver.enabled .Values.autoscaling.enabled  }}
+{{- /* The top-level autoscaling.enabled is a legacy key some installs set; it keeps working. */ -}}
+{{- if and .Values.reportserver.enabled (or .Values.autoscaling.reportserver.enabled .Values.autoscaling.enabled) }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -9,12 +10,12 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: StatefulSet
+    kind: Deployment
     name: {{ include "openobserve.fullname" . }}-reportserver
   minReplicas: {{ .Values.autoscaling.reportserver.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.reportserver.maxReplicas }}
   metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- if .Values.autoscaling.reportserver.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu

@@ -3,10 +3,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "openobserve.fullname" . }}-reportserver
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
+  {{- /* Leave replicas to the HPA when it is on (same condition as reportserver-hpa.yaml). */}}
+  {{- if not (or .Values.autoscaling.reportserver.enabled .Values.autoscaling.enabled) }}
   replicas: {{ .Values.replicaCount.reportserver }}
   {{- end }}
   selector:

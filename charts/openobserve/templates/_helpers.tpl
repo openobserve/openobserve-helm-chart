@@ -146,3 +146,24 @@ Effective ZO_REPORT_SERVER_SECRET: the user's value, else the one in the existin
 {{- end -}}
 {{- .Values.auth.ZO_REPORT_SERVER_SECRET -}}
 {{- end }}
+
+{{/*
+OpenFGA datastore URI, built the same way the OpenFGA Deployment used to inline it. Empty when the
+chart has no source for it (externalSecret, or no bundled/external Postgres configured); OpenFGA then
+reads OPENFGA_DATASTORE_URI from the shared Secret via envFrom, as before.
+*/}}
+{{- define "openobserve.openfgaDatastoreURI" -}}
+{{- if not .Values.externalSecret.enabled -}}
+{{- if .Values.postgres.enabled -}}
+postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable
+{{- else if .Values.auth.ZO_META_POSTGRES_DSN -}}
+{{ .Values.auth.ZO_META_POSTGRES_DSN }}
+{{- else if .Values.config.ZO_META_POSTGRES_DSN -}}
+{{ .Values.config.ZO_META_POSTGRES_DSN }}
+{{- end -}}
+{{- end -}}
+{{- end }}
+
+{{- define "openobserve.openfgaDatastoreSecretName" -}}
+{{- printf "%s-openfga-datastore" (include "openobserve.fullname" . | trunc 45 | trimSuffix "-") }}
+{{- end }}
