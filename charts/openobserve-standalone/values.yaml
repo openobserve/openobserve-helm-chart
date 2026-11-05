@@ -484,6 +484,11 @@ gateway:
         #   - name: eg-external
         #     namespace: custom-namespace
         #     sectionName: https
+        #   # ListenerSet (or any other parent kind) instead of a Gateway:
+        #   - name: my-listenerset
+        #     group: gateway.networking.k8s.io
+        #     kind: ListenerSet
+        #     sectionName: https
         hostnames:
           - "ui.openobserve.ai"
         rules:
