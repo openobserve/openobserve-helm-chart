@@ -203,6 +203,7 @@ auth:
   ZO_RUM_CLIENT_TOKEN: ""
   ZO_REPORT_USER_EMAIL: "" # Check details at https://github.com/openobserve/o2_report_server
   ZO_REPORT_USER_PASSWORD: ""
+  ZO_EXT_AUTH_SALT: "" # 16-48 bytes, required by OpenObserve v1.1.0+ on a new install and must not change afterwards. Empty: helm install/upgrade generates one and keeps it across upgrades. Without cluster access at render time (helm template, Argo CD) the chart cannot see the existing Secret, so set this value explicitly (e.g. openssl rand -hex 24)
   ZO_REPORT_SERVER_SECRET: "" # Shared by OpenObserve and the report server; empty means the chart generates one and keeps it across upgrades
   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
