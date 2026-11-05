@@ -1,0 +1,44 @@
+suite: HTTPRoute parentRefs
+templates:
+  - templates/httproute.yaml
+set:
+  gateway:
+    enabled: true
+    httpRoutes:
+      routes:
+        - name: ui
+          gateways:
+            - eg-external
+            - name: openobserve-listenerset
+              namespace: gateways
+              group: gateway.networking.k8s.io
+              kind: ListenerSet
+              sectionName: https
+              port: 443
+          hostnames:
+            - openobserve.example.com
+          rules:
+            - backendRefs:
+                - name: router
+                  port: 5080
+tests:
+  - it: keeps the simple string format pointing at a Gateway in the release namespace
+    release:
+      namespace: o2
+    asserts:
+      - equal:
+          path: spec.parentRefs[0]
+          value:
+            name: eg-external
+            namespace: o2
+  - it: passes group, kind and port through for object references
+    asserts:
+      - equal:
+          path: spec.parentRefs[1]
+          value:
+            name: openobserve-listenerset
+            namespace: gateways
+            group: gateway.networking.k8s.io
+            kind: ListenerSet
+            sectionName: https
+            port: 443

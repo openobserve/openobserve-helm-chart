@@ -26,6 +26,12 @@ spec:
     {{- else }}
     # Object format - full control over gateway reference
     - name: {{ .name }}
+      {{- with .group }}
+      group: {{ . }}
+      {{- end }}
+      {{- with .kind }}
+      kind: {{ . }}
+      {{- end }}
       {{- if .namespace }}
       namespace: {{ .namespace }}
       {{- else }}
@@ -33,6 +39,9 @@ spec:
       {{- end }}
       {{- if .sectionName }}
       sectionName: {{ .sectionName }}
+      {{- end }}
+      {{- with .port }}
+      port: {{ . }}
       {{- end }}
     {{- end }}
     {{- end }}
