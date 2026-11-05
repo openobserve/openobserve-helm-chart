@@ -20,7 +20,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
         # Dex reads its config only at start-up; restart it when the config changes.
-        checksum/dex-config: {{ include (print $.Template.BasePath "/dex-secret.yaml") . | sha256sum }}
+        checksum/dex-config: {{ (include (print $.Template.BasePath "/dex-secret.yaml") . | fromYaml).stringData | toJson | sha256sum }}
         {{- with include "openobserve.secretChecksumAnnotation" . }}
         {{- . | nindent 8 }}
         {{- end }}

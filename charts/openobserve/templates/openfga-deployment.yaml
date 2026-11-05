@@ -14,7 +14,7 @@ spec:
       {{- if include "openobserve.openfgaDatastoreURI" . }}
       annotations:
         # The URI moved from an inline env value to a Secret; roll the pod when it changes, as before.
-        checksum/openfga-datastore: {{ printf "%s-%s" $.Release.Name (include "openobserve.openfgaDatastoreURI" .) | sha256sum }}
+        checksum/openfga-datastore: {{ (include (print $.Template.BasePath "/openfga-datastore-secret.yaml") . | fromYaml).stringData | toJson | sha256sum }}
       {{- end }}
       labels:
         app: openfga
@@ -34,9 +34,13 @@ spec:
                   name: {{ include "openobserve.openfgaDatastoreSecretName" . }}
                   key: OPENFGA_DATASTORE_URI
             {{- end }}
+          {{- /* OpenFGA reads only OPENFGA_* variables. The external Secret may set OPENFGA_DATASTORE_URI; */}}
+          {{- /* the chart's own Secret has none, so OpenFGA doesn't load it and never sees the app's credentials. */}}
+          {{- if .Values.externalSecret.enabled }}
           envFrom:
-            - secretRef:  # postgres detail can be picked up from secret if not found anywhere else
-                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
+            - secretRef:
+                name: {{ .Values.externalSecret.name }}
+          {{- end }}
           resources:
             {{- if .Values.resources.openfga }}
             {{- toYaml .Values.resources.openfga | nindent 12 }}
@@ -77,9 +81,13 @@ spec:
             {{- end }}
             - name: OPENFGA_LOG_FORMAT
               value: json
+          {{- /* OpenFGA reads only OPENFGA_* variables. The external Secret may set OPENFGA_DATASTORE_URI; */}}
+          {{- /* the chart's own Secret has none, so OpenFGA doesn't load it and never sees the app's credentials. */}}
+          {{- if .Values.externalSecret.enabled }}
           envFrom:
             - secretRef:
-                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
+                name: {{ .Values.externalSecret.name }}
+          {{- end }}
           ports:
             - containerPort: 8080
               name: http

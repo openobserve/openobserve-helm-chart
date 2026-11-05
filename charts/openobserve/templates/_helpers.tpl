@@ -149,8 +149,8 @@ Effective ZO_REPORT_SERVER_SECRET: the user's value, else the one in the existin
 
 {{/*
 OpenFGA datastore URI, built the same way the OpenFGA Deployment used to inline it. Empty when the
-chart has no source for it (externalSecret, or no bundled/external Postgres configured); OpenFGA then
-reads OPENFGA_DATASTORE_URI from the shared Secret via envFrom, as before.
+chart has no source for it. With externalSecret, OpenFGA reads OPENFGA_DATASTORE_URI from the
+external Secret via envFrom; otherwise nothing sets it, as before.
 */}}
 {{- define "openobserve.openfgaDatastoreURI" -}}
 {{- if not .Values.externalSecret.enabled -}}
@@ -170,11 +170,11 @@ postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobse
 
 {{/*
 Pod annotation that restarts a workload when anything in the chart Secret changes. It hashes the
-rendered secret.yaml, so every key is covered. Empty with externalSecret, where pods don't read the
-chart Secret.
+data of the rendered secret.yaml, so every key is covered, but not its labels, so a chart version
+bump alone doesn't restart pods. Empty with externalSecret, where pods don't read the chart Secret.
 */}}
 {{- define "openobserve.secretChecksumAnnotation" -}}
 {{- if not .Values.externalSecret.enabled -}}
-checksum/secret: {{ include (print .Template.BasePath "/secret.yaml") . | sha256sum }}
+checksum/secret: {{ (include (print .Template.BasePath "/secret.yaml") . | fromYaml).stringData | toJson | sha256sum }}
 {{- end -}}
 {{- end }}

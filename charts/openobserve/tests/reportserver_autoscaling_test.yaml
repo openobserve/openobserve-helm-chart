@@ -8,10 +8,20 @@ tests:
   - it: renders the HPA when autoscaling.reportserver.enabled is set
     template: templates/reportserver-hpa.yaml
     set:
+      reportserver.enabled: true
       autoscaling.reportserver.enabled: true
+      autoscaling.reportserver.minReplicas: 2
+      autoscaling.reportserver.maxReplicas: 7
+      autoscaling.reportserver.targetCPUUtilizationPercentage: 55
     asserts:
       - hasDocuments:
           count: 1
+      - equal:
+          path: spec.minReplicas
+          value: 2
+      - equal:
+          path: spec.maxReplicas
+          value: 7
       - equal:
           path: spec.scaleTargetRef.kind
           value: Deployment
@@ -23,7 +33,7 @@ tests:
           value: cpu
       - equal:
           path: spec.metrics[0].resource.target.averageUtilization
-          value: 80
+          value: 55
   - it: fails on the old top-level autoscaling.enabled instead of scaling the report server to zero
     template: templates/reportserver-delpoyment.yaml
     set:

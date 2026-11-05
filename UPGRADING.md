@@ -154,17 +154,21 @@ chart now fails to render with a message, instead of silently scaling the report
   (`autoscaling.reportserver.minReplicas`, default 1), or
 - `replicaCount.reportserver: 1` (or the number you want) to keep a fixed count.
 
-`autoscaling.enabled: false` is accepted and changes nothing.
+`autoscaling.enabled: false` is accepted and changes nothing. If you already set
+`autoscaling.reportserver.enabled: true`, it had no effect before; it now creates the HPA, so the
+report server (when `reportserver.enabled`) runs at least `autoscaling.reportserver.minReplicas`
+pods.
 
 **Values moved from the ConfigMap to the chart's Secret.** The values and their keys in
-`values.yaml` are unchanged, and pods get the same environment, so no values change is needed:
+`values.yaml` are unchanged, and OpenObserve pods get the same environment, so no values change is
+needed:
 
 - openobserve: `ZO_INTERNAL_GRPC_TOKEN`, `ZO_USAGE_REPORTING_CREDS`, `O2_SUPER_CLUSTER_GRPC_TOKEN`,
   `ZO_ALERT_CHART_SIGNING_KEY`, `ZO_NATS_PASSWORD` and `O2_DEX_CLIENT_SECRET` (the last only when
   enterprise and Dex are enabled). `ZO_REPORT_USER_PASSWORD` is dropped from the ConfigMap, since
   the Secret already set it and took precedence.
 - openobserve-standalone: `ZO_INTERNAL_GRPC_TOKEN`, `ZO_TRACING_HEADER_VALUE`,
-  `ZO_USAGE_REPORTING_CREDS` and `ZO_ALERT_CHART_SIGNING_KEY`.
+  `ZO_USAGE_REPORTING_CREDS`, `ZO_ALERT_CHART_SIGNING_KEY` and `ZO_RUM_CLIENT_TOKEN`.
 
 If your own tooling or `extraEnv` reads these keys from the ConfigMap (`configMapKeyRef`), read them
 from the Secret instead. With `externalSecret.enabled` (openobserve) they stay in the ConfigMap,
@@ -173,13 +177,22 @@ the `externalSecret` example in `values.yaml`).
 
 **Dex config is a Secret (openobserve).** `<fullname>-dex` is now a Secret instead of a ConfigMap,
 mounted at the same path. Anything that patched or read that ConfigMap must target the Secret.
+`helm upgrade` deletes the old ConfigMap. If you deploy with Argo CD or another tool that doesn't
+prune, delete the ConfigMap `<fullname>-dex` yourself, because it still holds the old config,
+including the client secret and any connector credentials.
 
 **OpenFGA datastore URI (openobserve).** It moves from an inline env value to a new Secret,
-`<fullname>-openfga-datastore`.
+`<fullname>-openfga-datastore`. OpenFGA no longer loads the chart's main Secret through `envFrom`:
+it reads only `OPENFGA_*` variables and that Secret has none, so it was only handing OpenFGA the
+app's credentials. With `externalSecret.enabled`, OpenFGA still loads your Secret, so
+`OPENFGA_DATASTORE_URI` can come from there as before.
 
-**Restarts.** OpenObserve pods, OpenFGA and Dex restart once on upgrade. From now on every pod
-that reads the chart's Secret restarts when any value in it changes (`checksum/secret`), and Dex
-restarts when its config changes.
+**Restarts.** The OpenObserve components, the report server, o2ai, OpenFGA and Dex restart once on
+upgrade. From now on the OpenObserve components, the report server, o2ai and Dex restart when any
+value in the chart's Secret changes (`checksum/secret`), and Dex also restarts when its config
+changes. These checksums hash only the Secrets' values, not their labels, so a chart version bump
+on its own doesn't restart Dex. OpenFGA restarts only when its datastore URI changes: the chart's
+Secret holds no `OPENFGA_*` values.
 
 **Probes (off by default).** With `probes.dex.enabled` or `probes.openfga.enabled`, readiness
 calls `/healthz` on the component's web port and liveness/startup check that the port is open.
