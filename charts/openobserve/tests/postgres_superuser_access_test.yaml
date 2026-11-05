@@ -1,0 +1,18 @@
+suite: CloudNativePG cluster superuser access
+templates:
+  - templates/postgres.yaml
+set:
+  postgres.enabled: true
+tests:
+  - it: enables superuser access by default
+    asserts:
+      - equal:
+          path: spec.enableSuperuserAccess
+          value: true
+  - it: follows postgres.spec.enableSuperuserAccess
+    set:
+      postgres.spec.enableSuperuserAccess: false
+    asserts:
+      - equal:
+          path: spec.enableSuperuserAccess
+          value: false
