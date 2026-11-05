@@ -25,8 +25,8 @@ spec:
         {{- end }}
         checksum/specific-config: {{ include (print $.Template.BasePath "/querier-configmap.yaml") . | sha256sum }}
         checksum/generic-config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        {{- if not .Values.externalSecret.enabled }}
-        checksum/dex-client-secret: {{ printf "%s-%s" $.Release.Name (index .Values.enterprise.dex.config.staticClients 0).secret | sha256sum }}
+        {{- with include "openobserve.secretChecksumAnnotation" . }}
+        {{- . | nindent 8 }}
         {{- end }}
         {{- with .Values.auth.O2_AI_INTERNAL_SECRET }}
         checksum/o2-ai-internal-secret: {{ printf "%s-%s" $.Release.Name . | sha256sum }}

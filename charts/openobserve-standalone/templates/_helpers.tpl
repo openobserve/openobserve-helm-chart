@@ -88,3 +88,11 @@ Effective ZO_REPORT_SERVER_SECRET: the user's value, else the one in the existin
 {{- end -}}
 {{- .Values.auth.ZO_REPORT_SERVER_SECRET -}}
 {{- end }}
+
+{{/*
+Pod annotation that restarts OpenObserve when anything in the chart Secret changes. It hashes the
+rendered secret.yaml, so every key is covered.
+*/}}
+{{- define "openobserve.secretChecksumAnnotation" -}}
+checksum/secret: {{ include (print .Template.BasePath "/secret.yaml") . | sha256sum }}
+{{- end }}

@@ -167,3 +167,14 @@ postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobse
 {{- define "openobserve.openfgaDatastoreSecretName" -}}
 {{- printf "%s-openfga-datastore" (include "openobserve.fullname" . | trunc 45 | trimSuffix "-") }}
 {{- end }}
+
+{{/*
+Pod annotation that restarts a workload when anything in the chart Secret changes. It hashes the
+rendered secret.yaml, so every key is covered. Empty with externalSecret, where pods don't read the
+chart Secret.
+*/}}
+{{- define "openobserve.secretChecksumAnnotation" -}}
+{{- if not .Values.externalSecret.enabled -}}
+checksum/secret: {{ include (print .Template.BasePath "/secret.yaml") . | sha256sum }}
+{{- end -}}
+{{- end }}

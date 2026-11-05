@@ -24,22 +24,29 @@ tests:
       - equal:
           path: spec.metrics[0].resource.target.averageUtilization
           value: 80
-  - it: still honours the legacy top-level autoscaling.enabled key
-    template: templates/reportserver-hpa.yaml
+  - it: ignores a top-level autoscaling.enabled, which no other component reads
+    templates:
+      - templates/reportserver-hpa.yaml
+      - templates/reportserver-delpoyment.yaml
     set:
       autoscaling.enabled: true
+      replicaCount.reportserver: 3
     asserts:
       - hasDocuments:
-          count: 1
+          count: 0
+        template: templates/reportserver-hpa.yaml
       - equal:
-          path: spec.scaleTargetRef.kind
-          value: Deployment
-  - it: sets replicas on the Deployment when autoscaling is off
+          path: spec.replicas
+          value: 3
+        template: templates/reportserver-delpoyment.yaml
+  - it: sets replicas on the Deployment from replicaCount when autoscaling is off
     template: templates/reportserver-delpoyment.yaml
+    set:
+      replicaCount.reportserver: 3
     asserts:
       - equal:
           path: spec.replicas
-          value: 0
+          value: 3
   - it: leaves replicas to the HPA when autoscaling is on
     template: templates/reportserver-delpoyment.yaml
     set:

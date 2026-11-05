@@ -1,5 +1,4 @@
-{{- /* The top-level autoscaling.enabled is a legacy key some installs set; it keeps working. */ -}}
-{{- if and .Values.reportserver.enabled (or .Values.autoscaling.reportserver.enabled .Values.autoscaling.enabled) }}
+{{- if and .Values.reportserver.enabled .Values.autoscaling.reportserver.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

@@ -20,7 +20,10 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
         # Dex reads its config only at start-up; restart it when the config changes.
-        checksum/dex-config: {{ toYaml .Values.enterprise.dex.config | sha256sum }}
+        checksum/dex-config: {{ include (print $.Template.BasePath "/dex-secret.yaml") . | sha256sum }}
+        {{- with include "openobserve.secretChecksumAnnotation" . }}
+        {{- . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         app: dex
@@ -43,10 +46,11 @@ spec:
               name: http
           {{- if .Values.probes.dex.enabled }}
           {{- /* Dex serves /healthz on its web port (5556) under the issuer path, e.g. /dex/healthz. */}}
+          {{- /* /healthz also checks Dex's storage (the Kubernetes API), so only readiness uses it; */}}
+          {{- /* liveness and startup just check that Dex is listening, so an API blip doesn't restart it. */}}
           {{- $healthz := printf "%s/healthz" ((urlParse (.Values.enterprise.dex.config.issuer | default "")).path | trimSuffix "/") }}
           livenessProbe:
-            httpGet:
-              path: {{ $healthz }}
+            tcpSocket:
               port: http
             initialDelaySeconds: {{ .Values.probes.dex.config.livenessProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.dex.config.livenessProbe.periodSeconds | default 10 }}
@@ -64,8 +68,7 @@ spec:
             successThreshold: {{ .Values.probes.dex.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.dex.config.readinessProbe.failureThreshold | default 3 }}
           startupProbe:
-            httpGet:
-              path: {{ $healthz }}
+            tcpSocket:
               port: http
             initialDelaySeconds: {{ .Values.probes.dex.config.startupProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.dex.config.startupProbe.periodSeconds | default 10 }}

@@ -86,9 +86,10 @@ spec:
             - containerPort: 8081
               name: grpc
           {{- if .Values.probes.openfga.enabled }}
+          {{- /* /healthz also checks the datastore (Postgres), so only readiness uses it; liveness and */}}
+          {{- /* startup just check that OpenFGA is listening, so a database blip doesn't restart it. */}}
           livenessProbe:
-            httpGet:
-              path: /healthz
+            tcpSocket:
               port: http
             initialDelaySeconds: {{ .Values.probes.openfga.config.livenessProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.openfga.config.livenessProbe.periodSeconds | default 10 }}
@@ -106,8 +107,7 @@ spec:
             successThreshold: {{ .Values.probes.openfga.config.readinessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.openfga.config.readinessProbe.failureThreshold | default 3 }}
           startupProbe:
-            httpGet:
-              path: /healthz
+            tcpSocket:
               port: http
             initialDelaySeconds: {{ .Values.probes.openfga.config.startupProbe.initialDelaySeconds | default 10 }}
             periodSeconds: {{ .Values.probes.openfga.config.startupProbe.periodSeconds | default 10 }}
