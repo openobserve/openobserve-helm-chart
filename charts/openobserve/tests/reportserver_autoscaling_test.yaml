@@ -1,0 +1,83 @@
+suite: report server autoscaling
+tests:
+  - it: renders no HPA by default
+    template: templates/reportserver-hpa.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: renders the HPA when autoscaling.reportserver.enabled is set
+    template: templates/reportserver-hpa.yaml
+    set:
+      reportserver.enabled: true
+      autoscaling.reportserver.enabled: true
+      autoscaling.reportserver.minReplicas: 2
+      autoscaling.reportserver.maxReplicas: 7
+      autoscaling.reportserver.targetCPUUtilizationPercentage: 55
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.minReplicas
+          value: 2
+      - equal:
+          path: spec.maxReplicas
+          value: 7
+      - equal:
+          path: spec.scaleTargetRef.kind
+          value: Deployment
+      - equal:
+          path: spec.scaleTargetRef.name
+          value: RELEASE-NAME-openobserve-reportserver
+      - equal:
+          path: spec.metrics[0].resource.name
+          value: cpu
+      - equal:
+          path: spec.metrics[0].resource.target.averageUtilization
+          value: 55
+  - it: fails on the old top-level autoscaling.enabled instead of scaling the report server to zero
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      autoscaling.enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: "autoscaling.enabled is no longer read"
+  - it: accepts the old key when it is false, which never changed anything
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      autoscaling.enabled: false
+      replicaCount.reportserver: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+  - it: accepts the old key when the report server is off
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      autoscaling.enabled: true
+      reportserver.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: sets replicas on the Deployment from replicaCount when autoscaling is off
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      replicaCount.reportserver: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+  - it: leaves replicas to the HPA when autoscaling is on
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      autoscaling.reportserver.enabled: true
+    asserts:
+      - notExists:
+          path: spec.replicas
+  - it: sets the release namespace on the Deployment
+    template: templates/reportserver-delpoyment.yaml
+    release:
+      namespace: o2
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: o2

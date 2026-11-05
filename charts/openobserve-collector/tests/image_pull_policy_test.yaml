@@ -1,0 +1,21 @@
+suite: collector image pull policy
+templates:
+  - templates/agent.yaml
+  - templates/gateway.yaml
+  - templates/ebpf.yaml
+set:
+  ebpf.enabled: true
+  ebpf.trace.ports: [8080]
+tests:
+  - it: uses image.pullPolicy by default
+    asserts:
+      - equal:
+          path: spec.imagePullPolicy
+          value: IfNotPresent
+  - it: follows image.pullPolicy when it is overridden
+    set:
+      image.pullPolicy: Always
+    asserts:
+      - equal:
+          path: spec.imagePullPolicy
+          value: Always

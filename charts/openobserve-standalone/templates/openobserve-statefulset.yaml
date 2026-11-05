@@ -23,6 +23,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- include "openobserve.secretChecksumAnnotation" . | nindent 8 }}
         {{- with .Values.auth.O2_AI_INTERNAL_SECRET }}
         checksum/o2-ai-internal-secret: {{ printf "%s-%s" $.Release.Name . | sha256sum }}
         {{- end }}
