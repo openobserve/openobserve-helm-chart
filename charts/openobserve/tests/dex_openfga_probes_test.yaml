@@ -1,0 +1,63 @@
+suite: Dex and OpenFGA probes
+set:
+  enterprise.enabled: true
+  enterprise.dex.enabled: true
+  enterprise.openfga.enabled: true
+tests:
+  - it: points the Dex readiness probe at /healthz on the web port under the issuer path
+    template: templates/dex-deployment.yaml
+    set:
+      probes.dex.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet
+          value: {path: /dex/healthz, port: http}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {containerPort: 5556, name: http}
+  - it: keeps Dex liveness and startup off /healthz, which depends on the Kubernetes API
+    template: templates/dex-deployment.yaml
+    set:
+      probes.dex.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.tcpSocket
+          value: {port: http}
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.tcpSocket
+          value: {port: http}
+      - notExists:
+          path: spec.template.spec.containers[0].startupProbe.httpGet
+  - it: uses /healthz when the Dex issuer has no path
+    template: templates/dex-deployment.yaml
+    set:
+      probes.dex.enabled: true
+      enterprise.dex.config.issuer: https://dex.example.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /healthz
+  - it: renders no Dex probes by default
+    template: templates/dex-deployment.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe
+  - it: points the OpenFGA readiness probe at /healthz and keeps liveness and startup off it
+    template: templates/openfga-deployment.yaml
+    set:
+      probes.openfga.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet
+          value: {path: /healthz, port: http}
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.tcpSocket
+          value: {port: http}
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.tcpSocket
+          value: {port: http}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {containerPort: 8080, name: http}
