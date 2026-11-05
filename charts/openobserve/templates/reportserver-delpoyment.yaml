@@ -1,4 +1,8 @@
 {{- if .Values.reportserver.enabled -}}
+{{- if .Values.autoscaling.enabled }}
+{{- /* Before 1.1.4 this key dropped replicas (one pod); ignoring it silently would scale the report server to replicaCount.reportserver (default 0). */}}
+{{- fail "autoscaling.enabled is no longer read. For the report server, set autoscaling.reportserver.enabled: true to autoscale it, or replicaCount.reportserver to the number of pods you want (it used to run 1), then remove autoscaling.enabled. See UPGRADING.md." }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

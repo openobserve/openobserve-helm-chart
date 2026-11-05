@@ -24,21 +24,30 @@ tests:
       - equal:
           path: spec.metrics[0].resource.target.averageUtilization
           value: 80
-  - it: ignores a top-level autoscaling.enabled, which no other component reads
-    templates:
-      - templates/reportserver-hpa.yaml
-      - templates/reportserver-delpoyment.yaml
+  - it: fails on the old top-level autoscaling.enabled instead of scaling the report server to zero
+    template: templates/reportserver-delpoyment.yaml
     set:
       autoscaling.enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: "autoscaling.enabled is no longer read"
+  - it: accepts the old key when it is false, which never changed anything
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      autoscaling.enabled: false
       replicaCount.reportserver: 3
     asserts:
-      - hasDocuments:
-          count: 0
-        template: templates/reportserver-hpa.yaml
       - equal:
           path: spec.replicas
           value: 3
-        template: templates/reportserver-delpoyment.yaml
+  - it: accepts the old key when the report server is off
+    template: templates/reportserver-delpoyment.yaml
+    set:
+      autoscaling.enabled: true
+      reportserver.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
   - it: sets replicas on the Deployment from replicaCount when autoscaling is off
     template: templates/reportserver-delpoyment.yaml
     set:
