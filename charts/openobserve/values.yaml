@@ -182,6 +182,7 @@ externalSecret:
 #   ZO_USAGE_REPORTING_CREDS: ""
 #   O2_SUPER_CLUSTER_GRPC_TOKEN: ""
 #   ZO_ALERT_CHART_SIGNING_KEY: ""
+#   ZO_NATS_PASSWORD: "" # Only for an external NATS
 
 # Credentials for authentication. Will be stored in a k8s secret
 auth:

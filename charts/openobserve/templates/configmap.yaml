@@ -19,7 +19,10 @@ data:
   ZO_REPORT_SERVER_URL: "{{ .Values.config.ZO_REPORT_SERVER_URL }}"
   {{- end }}
   ZO_REPORT_USER_NAME: "{{ .Values.config.ZO_REPORT_USER_NAME }}"
+  {{- if $.Values.externalSecret.enabled }}
+  {{- /* The chart Secret isn't mounted with externalSecret, so keep the value here for existing installs. */}}
   ZO_REPORT_USER_PASSWORD: "{{ .Values.config.ZO_REPORT_USER_PASSWORD }}"
+  {{- end }}
   ZO_REPORT_SERVER_SKIP_TLS_VERIFY: "{{ .Values.config.ZO_REPORT_SERVER_SKIP_TLS_VERIFY }}"
   ZO_CHROME_SLEEP_SECS: "{{ .Values.config.ZO_CHROME_SLEEP_SECS }}"
   ZO_CHROME_NO_SANDBOX: "{{ .Values.config.ZO_CHROME_NO_SANDBOX }}"
@@ -30,7 +33,10 @@ data:
   {{- end }}
   ZO_NATS_PREFIX: "{{ .Values.config.ZO_NATS_PREFIX }}"
   ZO_NATS_USER: "{{ .Values.config.ZO_NATS_USER }}"
+  {{- if $.Values.externalSecret.enabled }}
+  {{- /* The chart Secret isn't mounted with externalSecret, so keep the value here for existing installs. */}}
   ZO_NATS_PASSWORD: "{{ .Values.config.ZO_NATS_PASSWORD }}"
+  {{- end }}
   ZO_NATS_REPLICAS: "{{ .Values.config.ZO_NATS_REPLICAS }}"
   ZO_NATS_QUEUE_MAX_AGE: "{{ .Values.config.ZO_NATS_QUEUE_MAX_AGE }}"
   ZO_NATS_QUEUE_MAX_SIZE: "{{ .Values.config.ZO_NATS_QUEUE_MAX_SIZE }}"
