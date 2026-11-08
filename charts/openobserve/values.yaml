@@ -75,6 +75,7 @@ replicaCount:
   compactor: 1
   reportserver: 0
   o2ai: 2
+  dex: 1
 
 scheduler:
   extraEnv: []

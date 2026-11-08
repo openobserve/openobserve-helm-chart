@@ -1,0 +1,69 @@
+suite: Dex scheduling and resources
+set:
+  enterprise.enabled: true
+  enterprise.dex.enabled: true
+tests:
+  - it: runs one replica by default
+    template: templates/dex-deployment.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+  - it: honors replicaCount.dex
+    template: templates/dex-deployment.yaml
+    set:
+      replicaCount.dex: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+  - it: applies nodeSelector.dex, affinity.dex and resources.dex
+    template: templates/dex-deployment.yaml
+    set:
+      nodeSelector.dex:
+        kubernetes.io/os: linux
+      affinity.dex:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: pool
+                    operator: In
+                    values: [system]
+      resources.dex:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            kubernetes.io/os: linux
+      - equal:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key
+          value: pool
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests
+          value:
+            cpu: 50m
+            memory: 64Mi
+  - it: still accepts the old enterprise.dex.* keys
+    template: templates/dex-deployment.yaml
+    set:
+      enterprise.dex.nodeSelector:
+        kubernetes.io/os: linux
+      enterprise.dex.affinity:
+        podAntiAffinity: {}
+      enterprise.dex.resources:
+        limits:
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            kubernetes.io/os: linux
+      - exists:
+          path: spec.template.spec.affinity.podAntiAffinity
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 128Mi
