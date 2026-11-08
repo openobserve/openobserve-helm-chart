@@ -1,0 +1,77 @@
+suite: collector extraEnv
+templates:
+  - templates/agent.yaml
+  - templates/gateway.yaml
+  - templates/ebpf.yaml
+set:
+  ebpf.enabled: true
+  ebpf.trace.ports: [8080]
+tests:
+  - it: keeps the node env vars on the agent and gateway by default
+    template: templates/agent.yaml
+    asserts:
+      - lengthEqual:
+          path: spec.env
+          count: 2
+  - it: renders no env on the eBPF collector by default
+    template: templates/ebpf.yaml
+    asserts:
+      - notExists:
+          path: spec.env
+  - it: appends agent.extraEnv after the node env vars
+    template: templates/agent.yaml
+    set:
+      agent.extraEnv:
+        - name: OO_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: oo-auth
+              key: authorization
+        - name: FOO
+          value: bar
+    asserts:
+      - equal:
+          path: spec.env[0].name
+          value: K8S_NODE_NAME
+      - equal:
+          path: spec.env[2]
+          value:
+            name: OO_AUTH
+            valueFrom:
+              secretKeyRef:
+                name: oo-auth
+                key: authorization
+      - equal:
+          path: spec.env[3]
+          value:
+            name: FOO
+            value: bar
+  - it: appends gateway.extraEnv after the node env vars
+    template: templates/gateway.yaml
+    set:
+      gateway.extraEnv:
+        - name: OO_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: oo-auth
+              key: authorization
+    asserts:
+      - equal:
+          path: spec.env[2].valueFrom.secretKeyRef.name
+          value: oo-auth
+  - it: renders ebpf.extraEnv
+    template: templates/ebpf.yaml
+    set:
+      ebpf.extraEnv:
+        - name: OO_AUTH
+          value: x
+        - name: FOO
+          value: bar
+    asserts:
+      - equal:
+          path: spec.env
+          value:
+            - name: OO_AUTH
+              value: x
+            - name: FOO
+              value: bar
