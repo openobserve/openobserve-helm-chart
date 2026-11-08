@@ -77,7 +77,7 @@ spec:
             failureThreshold: {{ .Values.probes.dex.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
           resources:
-            {{- toYaml .Values.enterprise.dex.resources | nindent 12 }}
+            {{- toYaml (.Values.resources.dex | default .Values.enterprise.dex.resources) | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: /etc/dex
@@ -102,11 +102,11 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
 
-      {{- with .Values.enterprise.dex.nodeSelector }}
+      {{- with (.Values.nodeSelector.dex | default .Values.enterprise.dex.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.enterprise.dex.affinity }}
+      {{- with (.Values.affinity.dex | default .Values.enterprise.dex.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
