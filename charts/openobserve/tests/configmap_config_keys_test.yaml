@@ -1,0 +1,30 @@
+suite: config keys passed to the ConfigMap
+templates:
+  - templates/configmap.yaml
+tests:
+  - it: passes the metadata connection pool sizes and tracing extra envs
+    set:
+      config.ZO_META_CONNECTION_POOL_MIN_SIZE: "2"
+      config.ZO_META_CONNECTION_POOL_MAX_SIZE: "20"
+      config.ZO_TRACING_EXTRA_ENVS: "POD_NAME,NODE_NAME"
+    asserts:
+      - equal:
+          path: data.ZO_META_CONNECTION_POOL_MIN_SIZE
+          value: "2"
+      - equal:
+          path: data.ZO_META_CONNECTION_POOL_MAX_SIZE
+          value: "20"
+      - equal:
+          path: data.ZO_TRACING_EXTRA_ENVS
+          value: "POD_NAME,NODE_NAME"
+  - it: keeps the server defaults
+    asserts:
+      - equal:
+          path: data.ZO_META_CONNECTION_POOL_MIN_SIZE
+          value: "0"
+      - equal:
+          path: data.ZO_META_CONNECTION_POOL_MAX_SIZE
+          value: "0"
+      - equal:
+          path: data.ZO_TRACING_EXTRA_ENVS
+          value: ""
