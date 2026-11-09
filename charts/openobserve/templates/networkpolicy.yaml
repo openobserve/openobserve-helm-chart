@@ -1,0 +1,115 @@
+{{- if .Values.networkPolicy.enabled }}
+{{- $appLabels := include "openobserve.selectorLabels" . | fromYaml }}
+{{- $http := int .Values.config.ZO_HTTP_PORT }}
+{{- $grpc := int .Values.config.ZO_GRPC_PORT }}
+{{- $components := list }}
+{{- range $role := list "router" "ingester" "querier" "compactor" "alertquerier" }}
+{{- $components = append $components (dict "name" $role "selector" (merge (dict "role" $role) $appLabels) "ports" (list $http $grpc)) }}
+{{- end }}
+{{- $components = append $components (dict "name" "scheduler" "selector" (merge (dict "role" "scheduler") $appLabels) "ports" (list $http $grpc (int .Values.config.ZO_REPORT_SERVER_HTTP_PORT))) }}
+{{- if .Values.reportserver.enabled }}
+{{- $components = append $components (dict "name" "reportserver" "selector" (merge (dict "role" "reportserver") $appLabels) "ports" (list $http)) }}
+{{- end }}
+{{- if .Values.enterprise.enabled }}
+{{- if .Values.enterprise.o2ai.enabled }}
+{{- $components = append $components (dict "name" "o2ai" "selector" (merge (dict "role" "o2ai") $appLabels) "ports" (list 8000)) }}
+{{- end }}
+{{- if .Values.enterprise.dex.enabled }}
+{{- $components = append $components (dict "name" "dex" "selector" (merge (dict "app" "dex") $appLabels) "ports" (list 5556)) }}
+{{- end }}
+{{- if .Values.enterprise.openfga.enabled }}
+{{- $components = append $components (dict "name" "openfga" "selector" (dict "app" "openfga") "ports" (list 8080 8081)) }}
+{{- end }}
+{{- end }}
+{{- range $components }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "openobserve.fullname" $ }}-{{ .name }}
+  namespace: {{ $.Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" $ | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- toYaml .selector | nindent 6 }}
+  policyTypes:
+    - Ingress
+    {{- if $.Values.networkPolicy.restrictEgress }}
+    - Egress
+    {{- end }}
+  ingress:
+    - ports:
+        {{- range .ports }}
+        - port: {{ . }}
+          protocol: TCP
+        {{- end }}
+      {{- if not $.Values.networkPolicy.allowExternal }}
+      from:
+        {{- include "openobserve.networkPolicy.ingressFrom" $ | nindent 8 }}
+      {{- end }}
+  {{- if $.Values.networkPolicy.restrictEgress }}
+  egress:
+    {{- include "openobserve.networkPolicy.egress" $ | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- if .Values.nats.enabled }}
+{{- $natsLabels := dict "app.kubernetes.io/component" "nats" "app.kubernetes.io/instance" .Release.Name }}
+{{- $clusterPort := int .Values.nats.config.cluster.port }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "openobserve.fullname" . }}-nats
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- toYaml $natsLabels | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ .Release.Name }}
+      ports:
+        - port: {{ int .Values.nats.config.nats.port }}
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- toYaml $natsLabels | nindent 14 }}
+      ports:
+        - port: {{ $clusterPort }}
+          protocol: TCP
+    {{- with .Values.networkPolicy.ingressNSMatchLabels }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              {{- toYaml . | nindent 14 }}
+      ports:
+        - port: {{ int $.Values.nats.config.monitor.port }}
+          protocol: TCP
+        - port: {{ int $.Values.nats.promExporter.port }}
+          protocol: TCP
+    {{- end }}
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              {{- toYaml $natsLabels | nindent 14 }}
+      ports:
+        - port: {{ $clusterPort }}
+          protocol: TCP
+{{- end }}
+{{- end }}

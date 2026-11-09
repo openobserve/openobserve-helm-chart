@@ -178,3 +178,64 @@ bump alone doesn't restart pods. Empty with externalSecret, where pods don't rea
 checksum/secret: {{ (include (print .Template.BasePath "/secret.yaml") . | fromYaml).stringData | toJson | sha256sum }}
 {{- end -}}
 {{- end }}
+
+{{/*
+Sources allowed to reach a component when networkPolicy.allowExternal is false.
+*/}}
+{{- define "openobserve.networkPolicy.ingressFrom" -}}
+- podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- with .Values.networkPolicy.ingressNSMatchLabels }}
+- namespaceSelector:
+    matchLabels:
+      {{- toYaml . | nindent 6 }}
+{{- end }}
+{{- end }}
+
+{{/*
+Egress of the components when networkPolicy.restrictEgress is true: DNS, the pods of this
+release, the stores this chart deploys and networkPolicy.egressRules.
+*/}}
+{{- define "openobserve.networkPolicy.egress" -}}
+- ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+- to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if and .Values.enterprise.enabled .Values.enterprise.openfga.enabled }}
+- to:
+    - podSelector:
+        matchLabels:
+          app: openfga
+  ports:
+    - port: 8080
+      protocol: TCP
+{{- end }}
+{{- if .Values.postgres.enabled }}
+- to:
+    - podSelector:
+        matchLabels:
+          cnpg.io/cluster: {{ include "openobserve.fullname" . }}-postgres
+  ports:
+    - port: 5432
+      protocol: TCP
+{{- end }}
+{{- if .Values.minio.enabled }}
+- to:
+    - podSelector:
+        matchLabels:
+          app: minio
+          release: {{ .Release.Name }}
+  ports:
+    - port: 9000
+      protocol: TCP
+{{- end }}
+{{- with .Values.networkPolicy.egressRules }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}

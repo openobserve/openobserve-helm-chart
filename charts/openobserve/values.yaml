@@ -528,6 +528,25 @@ serviceMonitor:
   relabelings: []
   metricRelabelings: []
 
+# NetworkPolicies for the OpenObserve components and the NATS subchart. Off by default.
+# Your CNI must enforce NetworkPolicy. MinIO has its own minio.networkPolicy values, and the
+# CloudNativePG pods are not covered here.
+networkPolicy:
+  enabled: false
+  # Allow any source on the component service ports. Otherwise only pods of this release and
+  # the namespaces in ingressNSMatchLabels can connect, so anything that reaches the router
+  # from outside, such as an ingress controller, needs one of the two.
+  allowExternal: false
+  # Labels of a namespace allowed to reach the component service ports and the NATS monitoring
+  # ports, e.g. { kubernetes.io/metadata.name: monitoring }
+  ingressNSMatchLabels: {}
+  # Also restrict component egress to DNS, the pods of this release, the OpenFGA, Postgres and
+  # MinIO deployed by this chart, and egressRules. Needed under a default-deny egress baseline.
+  # External stores such as S3 or an external Postgres must be listed in egressRules.
+  restrictEgress: false
+  # Extra egress rules for the components, used when restrictEgress is true.
+  egressRules: []
+
 service:
   type: ClusterIP
   # type: LoadBalancer

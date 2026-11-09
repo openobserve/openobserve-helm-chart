@@ -1,0 +1,279 @@
+suite: network policies
+templates:
+  - templates/networkpolicy.yaml
+release:
+  name: rel
+  namespace: obs
+tests:
+  - it: renders nothing by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: limits component ingress to its service ports and to pods of the release
+    set:
+      networkPolicy.enabled: true
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-router
+    asserts:
+      - isKind:
+          of: NetworkPolicy
+      - equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/name: openobserve
+            app.kubernetes.io/instance: rel
+            role: router
+      - equal:
+          path: spec.policyTypes
+          value:
+            - Ingress
+      - equal:
+          path: spec.ingress
+          value:
+            - ports:
+                - port: 5080
+                  protocol: TCP
+                - port: 5081
+                  protocol: TCP
+              from:
+                - podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: rel
+
+  - it: opens the report server port on the scheduler
+    set:
+      networkPolicy.enabled: true
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-scheduler
+    asserts:
+      - contains:
+          path: spec.ingress[0].ports
+          content:
+            port: 5082
+            protocol: TCP
+
+  - it: selects the OpenFGA pods by their app label
+    set:
+      networkPolicy.enabled: true
+      enterprise.enabled: true
+      enterprise.openfga.enabled: true
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-openfga
+    asserts:
+      - equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app: openfga
+      - equal:
+          path: spec.ingress[0].ports
+          value:
+            - port: 8080
+              protocol: TCP
+            - port: 8081
+              protocol: TCP
+
+  - it: skips components that are not deployed
+    set:
+      networkPolicy.enabled: true
+      reportserver.enabled: false
+      enterprise.enabled: false
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-reportserver
+      skipEmptyTemplates: true
+      matchMany: true
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: allows any source on the service ports with allowExternal
+    set:
+      networkPolicy.enabled: true
+      networkPolicy.allowExternal: true
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-router
+    asserts:
+      - isNull:
+          path: spec.ingress[0].from
+
+  - it: adds the configured namespaces as sources
+    set:
+      networkPolicy.enabled: true
+      networkPolicy.ingressNSMatchLabels:
+        kubernetes.io/metadata.name: monitoring
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-router
+    asserts:
+      - contains:
+          path: spec.ingress[0].from
+          content:
+            namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: monitoring
+
+  - it: does not restrict component egress unless asked
+    set:
+      networkPolicy.enabled: true
+      networkPolicy.egressRules:
+        - to:
+            - ipBlock:
+                cidr: 10.0.0.0/8
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-router
+    asserts:
+      - isNull:
+          path: spec.egress
+      - notContains:
+          path: spec.policyTypes
+          content: Egress
+
+  - it: restricts component egress to DNS, the release, its stores and egressRules
+    set:
+      networkPolicy.enabled: true
+      networkPolicy.restrictEgress: true
+      postgres.enabled: true
+      minio.enabled: true
+      enterprise.enabled: true
+      enterprise.openfga.enabled: true
+      networkPolicy.egressRules:
+        - to:
+            - ipBlock:
+                cidr: 10.0.0.0/8
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-querier
+    asserts:
+      - contains:
+          path: spec.policyTypes
+          content: Egress
+      - equal:
+          path: spec.egress
+          value:
+            - ports:
+                - port: 53
+                  protocol: UDP
+                - port: 53
+                  protocol: TCP
+            - to:
+                - podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: rel
+            - to:
+                - podSelector:
+                    matchLabels:
+                      app: openfga
+              ports:
+                - port: 8080
+                  protocol: TCP
+            - to:
+                - podSelector:
+                    matchLabels:
+                      cnpg.io/cluster: rel-openobserve-postgres
+              ports:
+                - port: 5432
+                  protocol: TCP
+            - to:
+                - podSelector:
+                    matchLabels:
+                      app: minio
+                      release: rel
+              ports:
+                - port: 9000
+                  protocol: TCP
+            - to:
+                - ipBlock:
+                    cidr: 10.0.0.0/8
+
+  - it: lets NATS peers form a cluster and app pods connect
+    set:
+      networkPolicy.enabled: true
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-nats
+    asserts:
+      - equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/component: nats
+            app.kubernetes.io/instance: rel
+      - equal:
+          path: spec.policyTypes
+          value:
+            - Ingress
+            - Egress
+      - equal:
+          path: spec.ingress
+          value:
+            - from:
+                - podSelector:
+                    matchLabels:
+                      app.kubernetes.io/instance: rel
+              ports:
+                - port: 4222
+                  protocol: TCP
+            - from:
+                - podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: nats
+                      app.kubernetes.io/instance: rel
+              ports:
+                - port: 6222
+                  protocol: TCP
+      - equal:
+          path: spec.egress
+          value:
+            - ports:
+                - port: 53
+                  protocol: UDP
+                - port: 53
+                  protocol: TCP
+            - to:
+                - podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: nats
+                      app.kubernetes.io/instance: rel
+              ports:
+                - port: 6222
+                  protocol: TCP
+
+  - it: opens the NATS monitoring ports to the configured namespaces
+    set:
+      networkPolicy.enabled: true
+      networkPolicy.ingressNSMatchLabels:
+        kubernetes.io/metadata.name: monitoring
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-nats
+    asserts:
+      - contains:
+          path: spec.ingress
+          content:
+            from:
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: monitoring
+            ports:
+              - port: 8222
+                protocol: TCP
+              - port: 7777
+                protocol: TCP
+
+  - it: renders no NATS policy when NATS is external
+    set:
+      networkPolicy.enabled: true
+      nats.enabled: false
+    documentSelector:
+      path: metadata.name
+      value: rel-openobserve-nats
+      skipEmptyTemplates: true
+      matchMany: true
+    asserts:
+      - hasDocuments:
+          count: 0
