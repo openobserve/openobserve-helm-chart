@@ -40,3 +40,7 @@ t_*.*
 
 # Chart tests
 tests/
+
+# Examples and helper scripts (the LDAP examples contain sample passwords)
+examples/
+basic_check.sh

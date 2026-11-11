@@ -1,0 +1,25 @@
+suite: LoadBalancer source ranges
+templates:
+  - templates/openobserve-service.yaml
+tests:
+  - it: restricts the LoadBalancer to the given CIDRs
+    set:
+      service.type: LoadBalancer
+      service.loadBalancerSourceRanges: ["10.0.0.0/8"]
+    asserts:
+      - equal:
+          path: spec.loadBalancerSourceRanges
+          value: ["10.0.0.0/8"]
+  - it: sets nothing by default
+    set:
+      service.type: LoadBalancer
+    asserts:
+      - notExists:
+          path: spec.loadBalancerSourceRanges
+  - it: ignores the ranges for other service types
+    set:
+      service.type: ClusterIP
+      service.loadBalancerSourceRanges: ["10.0.0.0/8"]
+    asserts:
+      - notExists:
+          path: spec.loadBalancerSourceRanges

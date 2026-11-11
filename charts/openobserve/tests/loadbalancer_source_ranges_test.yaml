@@ -1,0 +1,35 @@
+suite: LoadBalancer source ranges
+tests:
+  - it: restricts the router LoadBalancer to the given CIDRs
+    template: templates/router-service.yaml
+    set:
+      service.type: LoadBalancer
+      service.loadBalancerSourceRanges: ["10.0.0.0/8"]
+    asserts:
+      - equal:
+          path: spec.loadBalancerSourceRanges
+          value: ["10.0.0.0/8"]
+  - it: restricts the ingester LoadBalancer to the given CIDRs
+    template: templates/ingester-service.yaml
+    set:
+      serviceIngester.type: LoadBalancer
+      serviceIngester.loadBalancerSourceRanges: ["10.0.0.0/8", "192.168.0.0/16"]
+    asserts:
+      - equal:
+          path: spec.loadBalancerSourceRanges
+          value: ["10.0.0.0/8", "192.168.0.0/16"]
+  - it: sets nothing by default
+    template: templates/router-service.yaml
+    set:
+      service.type: LoadBalancer
+    asserts:
+      - notExists:
+          path: spec.loadBalancerSourceRanges
+  - it: ignores the ranges for other service types
+    template: templates/router-service.yaml
+    set:
+      service.type: ClusterIP
+      service.loadBalancerSourceRanges: ["10.0.0.0/8"]
+    asserts:
+      - notExists:
+          path: spec.loadBalancerSourceRanges
