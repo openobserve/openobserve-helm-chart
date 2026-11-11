@@ -8,7 +8,6 @@ metadata:
 data:
   {{- /* Credentials live in the chart Secret. The keys below wrapped in "if .Values.externalSecret.enabled" */}}
   {{- /* stay here only in that mode, because the chart Secret isn't mounted then; the external Secret overrides them. */}}
-  ZO_APP_NAME: "{{ .Values.config.ZO_APP_NAME }}"
   ZO_CLUSTER_NAME: "{{ .Values.config.ZO_CLUSTER_NAME }}"
   ZO_INSTANCE_NAME: "{{ .Values.config.ZO_INSTANCE_NAME }}"
   ZO_NODE_ROLE: "{{ .Values.config.ZO_NODE_ROLE }}"
@@ -298,26 +297,22 @@ data:
   {{- if .Values.externalSecret.enabled }}
   O2_SUPER_CLUSTER_GRPC_TOKEN: "{{ .Values.enterprise.parameters.O2_SUPER_CLUSTER_GRPC_TOKEN }}"
   {{- end }}
-  O2_SEARCH_GROUP_CPU_LIMIT_ENABLED: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_CPU_LIMIT_ENABLED }}"
-  O2_SEARCH_GROUP_DYNAMIC_RESOURCE: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_DYNAMIC_RESOURCE }}"
-  O2_SEARCH_GROUP_LONG_MAX_CPU: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_LONG_MAX_CPU }}"
-  O2_SEARCH_GROUP_LONG_MAX_MEMORY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_LONG_MAX_MEMORY }}"
-  O2_SEARCH_GROUP_LONG_MAX_CONCURRENCY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_LONG_MAX_CONCURRENCY }}"
-  O2_SEARCH_GROUP_SHORT_MAX_CPU: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_SHORT_MAX_CPU }}"
-  O2_SEARCH_GROUP_SHORT_MAX_MEMORY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_SHORT_MAX_MEMORY }}"
-  O2_SEARCH_GROUP_SHORT_MAX_CONCURRENCY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_SHORT_MAX_CONCURRENCY }}"
-  O2_SEARCH_GROUP_USER_LONG_MAX_CONCURRENCY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_USER_LONG_MAX_CONCURRENCY }}"
-  O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY }}"
-  O2_SEARCH_GROUP_BASE_SPEED: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SPEED }}"
-  O2_SEARCH_GROUP_BASE_SECS: "{{ .Values.enterprise.parameters.O2_SEARCH_GROUP_BASE_SECS }}"
   O2_COMPACT_DOWNSAMPLING_INTERVAL: "{{ .Values.enterprise.parameters.O2_COMPACT_DOWNSAMPLING_INTERVAL }}"
   O2_METRICS_DOWNSAMPLING_RULES: "{{ .Values.enterprise.parameters.O2_METRICS_DOWNSAMPLING_RULES }}"
   O2_RATE_LIMIT_ENABLED: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_ENABLED }}"
   O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "{{ .Values.enterprise.parameters.O2_RATE_LIMIT_RULE_REFRESH_INTERVAL }}"
-  {{- if and (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (not .Values.enterprise.o2ai.enabled) }}
-    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.o2ai.enabled is not true. SRE Agent is required for AI features!" }}
+  {{- $aiParam := .Values.enterprise.parameters.O2_AI_ENABLED }}
+  {{- $aiEnabled := "false" }}
+  {{- if and .Values.enterprise.enabled .Values.enterprise.o2ai.enabled }}
+  {{- $aiEnabled = "true" }}
   {{- end }}
-  O2_AI_ENABLED: "{{ .Values.enterprise.parameters.O2_AI_ENABLED }}"
+  {{- if and (not (kindIs "invalid" $aiParam)) (ne (toString $aiParam) "") }}
+  {{- $aiEnabled = toString $aiParam }}
+  {{- end }}
+  {{- if and (eq $aiEnabled "true") (not .Values.enterprise.o2ai.enabled) }}
+    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.o2ai.enabled is not true. SRE Agent is required for AI features! Set enterprise.o2ai.enabled=true, or clear enterprise.parameters.O2_AI_ENABLED / set it to \"false\"." }}
+  {{- end }}
+  O2_AI_ENABLED: "{{ $aiEnabled }}"
   {{- if .Values.enterprise.parameters.O2_AI_MODEL }}
   O2_AI_MODEL: "{{ .Values.enterprise.parameters.O2_AI_MODEL }}"
   {{- end }}

@@ -53,10 +53,8 @@ To enable O2 AI, set the following values in your `values.yaml`:
 ```yaml
 enterprise:
   enabled: true
-  parameters:
-    O2_AI_ENABLED: "true"  # Enable AI features
   o2ai:
-    enabled: true  # Deploy O2 AI (required when O2_AI_ENABLED is true)
+    enabled: true  # Deploy O2 AI (AI turns on automatically when this is true)
     config:
       O2_AI_MODEL: "claude-sonnet-4-6"  # Or your preferred model
       O2_AI_PROVIDER: "anthropic"  # Options: openai, anthropic, gemini, etc.
@@ -178,6 +176,7 @@ With `externalSecret.enabled: true`, add an `O2_AI_INTERNAL_SECRET` key to your 
 
 #### Important Notes
 
+- **AI switch**: `enterprise.parameters.O2_AI_ENABLED` is empty by default, so AI follows `enterprise.o2ai.enabled` (and needs `enterprise.enabled`). Set it to `"false"` to keep AI off while o2ai is deployed
 - **Validation**: The deployment will fail if `O2_AI_ENABLED` is set to `"true"` but `enterprise.o2ai.enabled` is not `true`
 - **Resource Requirements**: O2 AI requires additional resources. Default requests are 256Mi memory and 250m CPU
 - **Scaling**: O2 AI supports horizontal pod autoscaling when needed

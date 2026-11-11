@@ -215,7 +215,6 @@ auth:
   O2_AI_INTERNAL_SECRET: ""
 
 config:
-  ZO_APP_NAME: "openobserve"
   ZO_CLUSTER_NAME: "o2"
   ZO_INSTANCE_NAME: ""
   ZO_NODE_ROLE: "all"
@@ -892,18 +891,6 @@ enterprise:
     O2_SUPER_CLUSTER_PUBLIC_ADDR: ""
     O2_SUPER_CLUSTER_PUBLIC_PORT: ""
     O2_SUPER_CLUSTER_GRPC_TOKEN: ""
-    O2_SEARCH_GROUP_CPU_LIMIT_ENABLED: "false"
-    O2_SEARCH_GROUP_DYNAMIC_RESOURCE: "true"
-    O2_SEARCH_GROUP_LONG_MAX_CPU: "50%"
-    O2_SEARCH_GROUP_LONG_MAX_MEMORY: "50%"
-    O2_SEARCH_GROUP_LONG_MAX_CONCURRENCY: "4"
-    O2_SEARCH_GROUP_SHORT_MAX_CPU: "50%"
-    O2_SEARCH_GROUP_SHORT_MAX_MEMORY: "50%"
-    O2_SEARCH_GROUP_SHORT_MAX_CONCURRENCY: "10"
-    O2_SEARCH_GROUP_USER_LONG_MAX_CONCURRENCY: "1"
-    O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY: "2"
-    O2_SEARCH_GROUP_BASE_SPEED: "1024" # in MB
-    O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
     O2_COMPACT_DOWNSAMPLING_INTERVAL: "3600" # in seconds
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
@@ -911,7 +898,7 @@ enterprise:
     # AI features - requires o2ai to be enabled
     # O2_AGENT_URL is auto-generated when o2ai.enabled=true (defaults to http://<release>-o2ai:8000), override below if needed
     # O2_TOOL_API_URL is auto-generated (defaults to http://<release>-router:5080), override below if needed
-    O2_AI_ENABLED: "false"
+    O2_AI_ENABLED: "" # Empty follows enterprise.o2ai.enabled; "true" requires it, "false" forces AI off
     O2_AGENT_URL: ""  # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: ""  # Leave empty to use default auto-generated URL
     ZO_MASTER_ENCRYPTION_ALGORITHM: ""
