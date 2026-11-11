@@ -48,10 +48,8 @@ To enable O2 AI in standalone mode, set the following values in your `values.yam
 ```yaml
 enterprise:
   enabled: true
-  parameters:
-    O2_AI_ENABLED: "true"  # Enable AI features
   o2ai:
-    enabled: true  # Deploy O2 AI (required when O2_AI_ENABLED is true)
+    enabled: true  # Deploy O2 AI (AI turns on automatically when this is true)
     config:
       O2_AI_MODEL: "claude-3-5-sonnet-20241022"  # Or your preferred model
       O2_AI_PROVIDER: "anthropic"  # Options: openai, anthropic, gemini, etc.
@@ -171,6 +169,7 @@ Setting or changing the value through `auth.O2_AI_INTERNAL_SECRET` restarts O2 A
 
 #### Important Notes
 
+- **AI switch**: `enterprise.parameters.O2_AI_ENABLED` is empty by default, so AI follows `enterprise.o2ai.enabled` (and needs `enterprise.enabled`). Set it to `"false"` to keep AI off while o2ai is deployed
 - **Validation**: The deployment will fail if `O2_AI_ENABLED` is set to `"true"` but `enterprise.o2ai.enabled` is not `true`
 - **Single Replica**: Unlike the distributed chart, the standalone O2 AI always runs with 1 replica (no autoscaling)
 - **Resource Requirements**: Default requests are 256Mi memory and 250m CPU

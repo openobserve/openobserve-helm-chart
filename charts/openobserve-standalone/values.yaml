@@ -125,7 +125,6 @@ auth:
 
 # https://openobserve.ai/docs/environment-variables/
 config:
-  ZO_APP_NAME: "openobserve"
   ZO_CLUSTER_NAME: "o2"
   ZO_INSTANCE_NAME: ""
   ZO_NODE_ROLE: "all"
@@ -584,25 +583,12 @@ enterprise:
     O2_SUPER_CLUSTER_PUBLIC_ADDR: ""
     O2_SUPER_CLUSTER_PUBLIC_PORT: ""
     O2_SUPER_CLUSTER_GRPC_TOKEN: ""
-    O2_SEARCH_GROUP_CPU_LIMIT_ENABLED: "false"
-    O2_SEARCH_GROUP_DYNAMIC_RESOURCE: "true"
-    O2_SEARCH_GROUP_LONG_MAX_CPU: "50%"
-    O2_SEARCH_GROUP_LONG_MAX_MEMORY: "50%"
-    O2_SEARCH_GROUP_LONG_MAX_CONCURRENCY: "4"
-    O2_SEARCH_GROUP_SHORT_MAX_CPU: "50%"
-    O2_SEARCH_GROUP_SHORT_MAX_MEMORY: "50%"
-    O2_SEARCH_GROUP_SHORT_MAX_CONCURRENCY: "10"
-    O2_SEARCH_GROUP_USER_LONG_MAX_CONCURRENCY: "1"
-    O2_SEARCH_GROUP_USER_SHORT_MAX_CONCURRENCY: "2"
-    O2_SEARCH_GROUP_BASE_SPEED: "1024" # in MB
-    O2_SEARCH_GROUP_BASE_SECS: "10" # in seconds
     O2_COMPACT_DOWNSAMPLING_INTERVAL: "3600" # in seconds
     O2_METRICS_DOWNSAMPLING_RULES: ""
     O2_RATE_LIMIT_ENABLED: "false"
     O2_RATE_LIMIT_RULE_REFRESH_INTERVAL: "10" # in seconds"
     # AI features - requires o2ai to be enabled
-    # IMPORTANT: If O2_AI_ENABLED is "true", you MUST also set enterprise.o2ai.enabled to true
-    O2_AI_ENABLED: "false"
+    O2_AI_ENABLED: "" # Empty follows enterprise.o2ai.enabled; "true" requires it, "false" forces AI off
     O2_AGENT_URL: "" # Leave empty to use default auto-generated URL
     O2_TOOL_API_URL: "" # Leave empty to use default auto-generated URL
     ZO_MASTER_ENCRYPTION_ALGORITHM: ""
@@ -635,7 +621,7 @@ enterprise:
     O2_LLM_PLAYGROUND_SNAPSHOT_TTL_DAYS: "180"
     O2_LLM_REVIEW_RECONCILE_INTERVAL_SECS: "600"
   o2ai:
-    # IMPORTANT: Must be set to true if O2_AI_ENABLED is "true" above
+    # AI follows this flag unless enterprise.parameters.O2_AI_ENABLED is set; "true" there requires this to be true
     enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
     config:
       O2_AI_HOST: "0.0.0.0"

@@ -1,0 +1,67 @@
+suite: AI enabled follows o2ai
+templates:
+  - templates/configmap.yaml
+tests:
+  - it: is off by default
+    set:
+      enterprise.enabled: true
+    asserts:
+      - equal:
+          path: data.O2_AI_ENABLED
+          value: "false"
+  - it: turns on when o2ai is deployed
+    set:
+      enterprise.enabled: true
+      enterprise.o2ai.enabled: true
+    asserts:
+      - equal:
+          path: data.O2_AI_ENABLED
+          value: "true"
+  - it: treats a string o2ai flag by truthiness instead of failing
+    set:
+      enterprise.enabled: true
+      enterprise.o2ai.enabled: "true"
+    asserts:
+      - equal:
+          path: data.O2_AI_ENABLED
+          value: "true"
+  - it: accepts a bool true parameter with o2ai deployed
+    set:
+      enterprise.enabled: true
+      enterprise.o2ai.enabled: true
+      enterprise.parameters.O2_AI_ENABLED: true
+    asserts:
+      - equal:
+          path: data.O2_AI_ENABLED
+          value: "true"
+  - it: stays off when explicitly false even with o2ai deployed
+    set:
+      enterprise.enabled: true
+      enterprise.o2ai.enabled: true
+      enterprise.parameters.O2_AI_ENABLED: false
+    asserts:
+      - equal:
+          path: data.O2_AI_ENABLED
+          value: "false"
+  - it: stays on when explicitly true with o2ai deployed
+    set:
+      enterprise.enabled: true
+      enterprise.o2ai.enabled: true
+      enterprise.parameters.O2_AI_ENABLED: "true"
+    asserts:
+      - equal:
+          path: data.O2_AI_ENABLED
+          value: "true"
+  - it: fails when explicitly true without o2ai
+    set:
+      enterprise.enabled: true
+      enterprise.parameters.O2_AI_ENABLED: "true"
+    asserts:
+      - failedTemplate:
+          errorPattern: O2_AI_ENABLED is set to 'true'
+  - it: no longer renders settings OpenObserve does not read
+    set:
+      enterprise.enabled: true
+    asserts:
+      - notExists:
+          path: data.ZO_APP_NAME

@@ -6,7 +6,6 @@ metadata:
   labels:
     {{- include "openobserve.labels" . | nindent 4 }}
 data:
-  ZO_APP_NAME: "{{ .Values.config.ZO_APP_NAME }}"
   ZO_CLUSTER_NAME: "{{ .Values.config.ZO_CLUSTER_NAME }}"
   ZO_INSTANCE_NAME: "{{ .Values.config.ZO_INSTANCE_NAME }}"
   ZO_NODE_ROLE: "{{ .Values.config.ZO_NODE_ROLE }}"
@@ -280,11 +279,19 @@ data:
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   {{- if .Values.enterprise.enabled }}
-  {{- if and (eq (.Values.enterprise.parameters.O2_AI_ENABLED | toString) "true") (not .Values.enterprise.o2ai.enabled) }}
-    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.o2ai.enabled is not true. SRE Agent is required for AI features!" }}
+  {{- $aiParam := .Values.enterprise.parameters.O2_AI_ENABLED }}
+  {{- $aiEnabled := "false" }}
+  {{- if .Values.enterprise.o2ai.enabled }}
+  {{- $aiEnabled = "true" }}
+  {{- end }}
+  {{- if and (not (kindIs "invalid" $aiParam)) (ne (toString $aiParam) "") }}
+  {{- $aiEnabled = toString $aiParam }}
+  {{- end }}
+  {{- if and (eq $aiEnabled "true") (not .Values.enterprise.o2ai.enabled) }}
+    {{- fail "ERROR: O2_AI_ENABLED is set to 'true' but enterprise.o2ai.enabled is not true. SRE Agent is required for AI features! Set enterprise.o2ai.enabled=true, or clear enterprise.parameters.O2_AI_ENABLED / set it to \"false\"." }}
   {{- end }}
   # Enterprise parameters
-  O2_AI_ENABLED: "{{ .Values.enterprise.parameters.O2_AI_ENABLED }}"
+  O2_AI_ENABLED: "{{ $aiEnabled }}"
   {{- if .Values.enterprise.parameters.O2_TOOL_API_URL }}
   O2_TOOL_API_URL: "{{ .Values.enterprise.parameters.O2_TOOL_API_URL }}"
   {{- else }}

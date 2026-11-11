@@ -198,6 +198,27 @@ Secret holds no `OPENFGA_*` values.
 calls `/healthz` on the component's web port and liveness/startup check that the port is open.
 Previously these probes pointed at the wrong port and crash-looped the pods.
 
+### openobserve 1.1.5 / openobserve-standalone 1.1.6 — AI follows o2ai, dead settings removed
+
+`enterprise.parameters.O2_AI_ENABLED` now defaults to empty, which follows `enterprise.o2ai.enabled`
+(AI on when o2ai is deployed, off otherwise). It used to be hard-coded to `"false"`, so deploying o2ai
+did not turn AI on. Set it to `"false"` to keep AI off with o2ai deployed; `"true"` without o2ai still
+fails the render.
+
+If you deploy o2ai and did not set `O2_AI_ENABLED`, AI features are now on after upgrading. To keep them
+off, add `--set-string enterprise.parameters.O2_AI_ENABLED=false`.
+
+An existing `"false"` still wins, so AI stays off until you clear it. That applies in two cases:
+
+- `helm upgrade --reuse-values` keeps the value stored by the old chart. Clear it with
+  `--set enterprise.parameters.O2_AI_ENABLED=null`, or use `--reset-then-reuse-values` (Helm 3.14+).
+- A values file copied in full from the old chart carries `O2_AI_ENABLED: "false"`. Set it to `""` or
+  remove the line.
+
+`config.ZO_APP_NAME` (both charts) and the `enterprise.parameters.O2_SEARCH_GROUP_*` settings
+(`openobserve`) are no longer rendered, and are gone from the default values of both charts.
+OpenObserve does not read them. Remove them from your values; leaving them is harmless.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the
