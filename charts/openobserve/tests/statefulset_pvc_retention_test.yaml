@@ -1,0 +1,76 @@
+suite: StatefulSet PVC retention and ingester termination grace period
+tests:
+  - it: renders no persistentVolumeClaimRetentionPolicy by default
+    templates:
+      - templates/ingester-statefulset.yaml
+      - templates/querier-statefulset.yaml
+      - templates/alertquerier-statefulset.yaml
+      - templates/scheduler-statefulset.yaml
+    asserts:
+      - notExists:
+          path: spec.persistentVolumeClaimRetentionPolicy
+
+  - it: renders the querier retention policy when set
+    template: templates/querier-statefulset.yaml
+    set:
+      querier.persistentVolumeClaimRetentionPolicy.whenScaled: Delete
+      querier.persistentVolumeClaimRetentionPolicy.whenDeleted: Retain
+    asserts:
+      - equal:
+          path: spec.persistentVolumeClaimRetentionPolicy.whenScaled
+          value: Delete
+      - equal:
+          path: spec.persistentVolumeClaimRetentionPolicy.whenDeleted
+          value: Retain
+
+  - it: renders the alertquerier retention policy when set
+    template: templates/alertquerier-statefulset.yaml
+    set:
+      alertquerier.persistentVolumeClaimRetentionPolicy.whenScaled: Delete
+    asserts:
+      - equal:
+          path: spec.persistentVolumeClaimRetentionPolicy.whenScaled
+          value: Delete
+
+  - it: renders the scheduler retention policy when set
+    template: templates/scheduler-statefulset.yaml
+    set:
+      scheduler.persistentVolumeClaimRetentionPolicy.whenScaled: Delete
+    asserts:
+      - equal:
+          path: spec.persistentVolumeClaimRetentionPolicy.whenScaled
+          value: Delete
+
+  - it: renders the ingester retention policy when set
+    template: templates/ingester-statefulset.yaml
+    set:
+      ingester.persistentVolumeClaimRetentionPolicy.whenScaled: Delete
+    asserts:
+      - equal:
+          path: spec.persistentVolumeClaimRetentionPolicy.whenScaled
+          value: Delete
+
+  - it: leaves the ingester grace period to the Kubernetes default without autoscaling
+    template: templates/ingester-statefulset.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.terminationGracePeriodSeconds
+
+  - it: gives the ingester 1200s to drain when autoscaling is enabled
+    template: templates/ingester-statefulset.yaml
+    set:
+      autoscaling.ingester.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 1200
+
+  - it: honours an explicit ingester grace period
+    template: templates/ingester-statefulset.yaml
+    set:
+      autoscaling.ingester.enabled: true
+      ingester.terminationGracePeriodSeconds: 600
+    asserts:
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 600
