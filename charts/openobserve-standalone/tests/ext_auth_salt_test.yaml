@@ -1,0 +1,21 @@
+suite: ZO_EXT_AUTH_SALT in the Secret
+templates:
+  - templates/secret.yaml
+tests:
+  - it: generates a salt of 16-48 bytes on a fresh install
+    asserts:
+      - matchRegex:
+          path: stringData.ZO_EXT_AUTH_SALT
+          pattern: ^[A-Za-z0-9]{16,48}$
+  - it: does not use the server default that a new install rejects
+    asserts:
+      - notEqual:
+          path: stringData.ZO_EXT_AUTH_SALT
+          value: openobserve
+  - it: uses the value from auth.ZO_EXT_AUTH_SALT when set
+    set:
+      auth.ZO_EXT_AUTH_SALT: 0123456789abcdef0123456789abcdef
+    asserts:
+      - equal:
+          path: stringData.ZO_EXT_AUTH_SALT
+          value: 0123456789abcdef0123456789abcdef
