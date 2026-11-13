@@ -198,6 +198,23 @@ Secret holds no `OPENFGA_*` values.
 calls `/healthz` on the component's web port and liveness/startup check that the port is open.
 Previously these probes pointed at the wrong port and crash-looped the pods.
 
+### openobserve 1.1.6 / openobserve-standalone 1.1.7
+
+**Dex gets only its client secret from the chart's Secret (openobserve).** Dex used to load the
+whole Secret through `envFrom`, including the root, S3, database and SMTP credentials. It now gets
+`O2_DEX_CLIENT_SECRET` only. If your Dex config references other variables from that Secret (a
+connector value like `$ZO_SMTP_PASSWORD`), pass them with `enterprise.dex.extraEnv`. With
+`externalSecret.enabled` nothing changes: Dex still loads your Secret. Dex's pod spec changes, so it
+restarts on upgrade (as all pods do on a chart version change).
+
+**`loadBalancerSourceRanges` for LoadBalancer Services.** `service.loadBalancerSourceRanges`
+(router, and the standalone Service) and `serviceIngester.loadBalancerSourceRanges` restrict which
+client CIDRs can reach a `LoadBalancer`. They are empty by default, so nothing changes unless you
+set them. A LoadBalancer publishes the internal gRPC port (5081) as well as HTTP.
+
+**The packaged chart no longer contains `examples/` or `basic_check.sh` (openobserve).** They
+were never installed; they remain in the Git repository.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the

@@ -85,12 +85,23 @@ spec:
             {{- with .Values.enterprise.dex.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+          {{- /* Dex needs only O2_DEX_CLIENT_SECRET from the chart Secret, not the root, S3 and DB credentials it also holds. */}}
+          {{- /* With externalSecret it still loads that Secret, which may hold variables the Dex config references. */}}
           envFrom:
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
+            {{- if .Values.externalSecret.enabled }}
             - secretRef:
-                name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
+                name: {{ .Values.externalSecret.name }}
+            {{- end }}
           env:
+            {{- if not .Values.externalSecret.enabled }}
+            - name: O2_DEX_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.fullname" . }}
+                  key: O2_DEX_CLIENT_SECRET
+            {{- end }}
             {{- with .Values.enterprise.dex.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}

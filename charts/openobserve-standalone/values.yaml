@@ -393,6 +393,9 @@ serviceMonitor:
 service:
   type: ClusterIP
   # type: LoadBalancer
+  # With type LoadBalancer both HTTP and internal gRPC (5081) are published. Limit the allowed
+  # client CIDRs here, or use an internal load balancer. Only applied with type LoadBalancer.
+  loadBalancerSourceRanges: []
   http_port: 5080
   # http_nodePort: 30580
   grpc_port: 5081

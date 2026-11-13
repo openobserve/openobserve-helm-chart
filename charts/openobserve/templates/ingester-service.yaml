@@ -13,6 +13,10 @@ metadata:
   {{- end }}
 spec:
   type: {{ .Values.serviceIngester.type }}
+  {{- if and (eq .Values.serviceIngester.type "LoadBalancer") .Values.serviceIngester.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml .Values.serviceIngester.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
   ports:
     - port: {{ .Values.serviceIngester.http_port }}
       targetPort: http

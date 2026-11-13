@@ -1,0 +1,51 @@
+suite: Dex gets only its client secret from the chart Secret
+set:
+  enterprise.enabled: true
+  enterprise.dex.enabled: true
+tests:
+  - it: does not load the chart Secret, which also holds root, S3 and DB credentials
+    template: templates/dex-deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom
+          value:
+            - configMapRef:
+                name: RELEASE-NAME-openobserve
+  - it: reads O2_DEX_CLIENT_SECRET from the chart Secret
+    template: templates/dex-deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: O2_DEX_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: RELEASE-NAME-openobserve
+                key: O2_DEX_CLIENT_SECRET
+  - it: keeps extraEnv
+    template: templates/dex-deployment.yaml
+    set:
+      enterprise.dex.extraEnv:
+        - name: FOO
+          value: bar
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: FOO
+            value: bar
+  - it: still loads the external Secret with externalSecret
+    template: templates/dex-deployment.yaml
+    set:
+      externalSecret.enabled: true
+      externalSecret.name: mysec
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom
+          value:
+            - configMapRef:
+                name: RELEASE-NAME-openobserve
+            - secretRef:
+                name: mysec
+      - isNullOrEmpty:
+          path: spec.template.spec.containers[0].env
