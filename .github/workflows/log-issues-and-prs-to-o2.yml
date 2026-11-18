@@ -3,7 +3,8 @@ name: GitHub Activity → OpenObserve
 on:
   issues:
     types: [opened, edited, deleted, closed, reopened, assigned, unassigned, labeled, unlabeled]
-  issue_comment:
+  # Only forwards the event JSON: nothing is checked out or run, and the job token is read-only.
+  issue_comment: # zizmor: ignore[dangerous-triggers]
     types: [created, edited, deleted]
   pull_request:
     types: [opened, edited, closed, reopened, assigned, unassigned, labeled, unlabeled, synchronize, ready_for_review, review_requested]
@@ -12,9 +13,12 @@ on:
   pull_request_review_comment:
     types: [created, edited, deleted]
 
+permissions: {}
+
 jobs:
   capture:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
       pull-requests: read
@@ -23,8 +27,24 @@ jobs:
       - name: Send GitHub event to OpenObserve
         env:
           GITHUB_EVENT_JSON: ${{ toJson(github.event) }}
+          # Passed as env, not expanded into the script, so they stay out of the generated script.
+          OO_CLOUD_INGEST_URL: ${{ secrets.OO_CLOUD_INGEST_URL }}
+          OO_CLOUD_AUTH: ${{ secrets.OO_CLOUD_AUTH }}
+          # "true" for a PR whose head is in another repository (a fork, or a fork that was deleted).
+          FROM_FORK: ${{ github.event.pull_request && github.event.pull_request.head.repo.full_name != github.repository }}
+          ACTOR: ${{ github.actor }}
         run: |
-          curl -X POST "${{ secrets.OO_CLOUD_INGEST_URL }}" \
-            -H "Authorization: Basic ${{ secrets.OO_CLOUD_AUTH }}" \
+          if [ -z "$OO_CLOUD_INGEST_URL" ] || [ -z "$OO_CLOUD_AUTH" ]; then
+            # GitHub gives no secrets to fork PR and Dependabot runs: skip them. Anywhere else a
+            # missing secret is a real problem, so fail.
+            if [ "$FROM_FORK" = "true" ] || [ "$ACTOR" = "dependabot[bot]" ]; then
+              echo "::notice::Ingest secrets are not available to fork or Dependabot runs; skipping."
+              exit 0
+            fi
+            echo "::error::OO_CLOUD_INGEST_URL or OO_CLOUD_AUTH is not set."
+            exit 1
+          fi
+          curl -sS --fail-with-body --retry 3 -X POST "$OO_CLOUD_INGEST_URL" \
+            -H "Authorization: Basic $OO_CLOUD_AUTH" \
             -H "Content-Type: application/json" \
             -d "$GITHUB_EVENT_JSON"
