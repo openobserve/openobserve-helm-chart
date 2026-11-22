@@ -1,0 +1,112 @@
+rule_files:
+  - openfga-authz.yaml
+
+evaluation_interval: 1m
+
+tests:
+  # 1 failure/s, above 0.1/s: pending before 10m, firing after.
+  - interval: 1m
+    input_series:
+      - series: 'zo_authz_unavailable_total{site="middleware",reason="timeout"}'
+        values: '0+60x40'
+    alert_rule_test:
+      - eval_time: 8m
+        alertname: OpenObserveAuthzUnavailable
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: OpenObserveAuthzUnavailable
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: OpenObserve cannot reach or get answers from OpenFGA
+              description: Permission checks are failing at 1/s; affected requests return 503.
+
+  # 0.05 failures/s stays below 0.1/s.
+  - interval: 1m
+    input_series:
+      - series: 'zo_authz_unavailable_total{site="middleware",reason="timeout"}'
+        values: '0+3x40'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: OpenObserveAuthzUnavailable
+        exp_alerts: []
+
+  # Every request lands in the (16, 32] bucket: p95 = 31.2 calls, above 20.
+  - interval: 1m
+    input_series:
+      - series: 'zo_authz_openfga_calls_per_request_bucket{route="/api/{org_id}/service_streams",le="8"}'
+        values: '0x60'
+      - series: 'zo_authz_openfga_calls_per_request_bucket{route="/api/{org_id}/service_streams",le="16"}'
+        values: '0x60'
+      - series: 'zo_authz_openfga_calls_per_request_bucket{route="/api/{org_id}/service_streams",le="32"}'
+        values: '0+10x60'
+      - series: 'zo_authz_openfga_calls_per_request_bucket{route="/api/{org_id}/service_streams",le="+Inf"}'
+        values: '0+10x60'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: OpenObserveAuthzFanOut
+        exp_alerts: []
+      - eval_time: 45m
+        alertname: OpenObserveAuthzFanOut
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              route: /api/{org_id}/service_streams
+            exp_annotations:
+              summary: Route /api/{org_id}/service_streams sends too many OpenFGA calls per request
+              description: p95 is 31.2 OpenFGA calls per request on /api/{org_id}/service_streams.
+
+  # Every request lands in the (2, 4] bucket: p95 = 3.9 calls, below 20.
+  - interval: 1m
+    input_series:
+      - series: 'zo_authz_openfga_calls_per_request_bucket{route="/api/{org_id}/service_streams",le="2"}'
+        values: '0x60'
+      - series: 'zo_authz_openfga_calls_per_request_bucket{route="/api/{org_id}/service_streams",le="4"}'
+        values: '0+10x60'
+      - series: 'zo_authz_openfga_calls_per_request_bucket{route="/api/{org_id}/service_streams",le="+Inf"}'
+        values: '0+10x60'
+    alert_rule_test:
+      - eval_time: 45m
+        alertname: OpenObserveAuthzFanOut
+        exp_alerts: []
+
+  # Every Check lands in the (0.5, 1] bucket: p95 = 0.975 s, above 0.5 s.
+  - interval: 1m
+    input_series:
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="check",le="0.25"}'
+        values: '0x40'
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="check",le="0.5"}'
+        values: '0x40'
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="check",le="1"}'
+        values: '0+10x40'
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="check",le="+Inf"}'
+        values: '0+10x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: OpenObserveAuthzCheckSlow
+        exp_alerts: []
+      - eval_time: 25m
+        alertname: OpenObserveAuthzCheckSlow
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: OpenFGA Check p95 is above 0.5 s
+              description: Check p95 is 975ms; OpenFGA is likely CPU-throttled, raise resources.openfga.
+
+  # Checks land in (0, 0.25]: p95 = 0.2375 s, below 0.5 s; slow lists must not trip the Check rule.
+  - interval: 1m
+    input_series:
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="check",le="0.25"}'
+        values: '0+10x40'
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="check",le="+Inf"}'
+        values: '0+10x40'
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="list",le="0.5"}'
+        values: '0x40'
+      - series: 'zo_authz_openfga_request_duration_seconds_bucket{op="list",le="+Inf"}'
+        values: '0+10x40'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: OpenObserveAuthzCheckSlow
+        exp_alerts: []

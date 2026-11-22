@@ -1,11 +1,18 @@
 {{- if and .Values.enterprise.enabled .Values.enterprise.openfga.enabled }}
+{{- include "openobserve.openfgaValidateTimeouts" . }}
+{{- $fga := .Values.enterprise.openfga }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "openobserve.fullname" . }}-openfga
   namespace: {{ .Release.Namespace | quote }}
 spec:
-  replicas: 1
+  replicas: {{ int $fga.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: openfga
@@ -18,6 +25,7 @@ spec:
       {{- end }}
       labels:
         app: openfga
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       initContainers:
         - name: openfga-migrate
@@ -41,17 +49,10 @@ spec:
             - secretRef:
                 name: {{ .Values.externalSecret.name }}
           {{- end }}
+          {{- with .Values.resources.openfga }}
           resources:
-            {{- if .Values.resources.openfga }}
-            {{- toYaml .Values.resources.openfga | nindent 12 }}
-            {{- else }}
-            limits:
-              cpu: 200m
-              memory: 200Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            {{- end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with .Values.nodeSelector.openfga }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -64,6 +65,14 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: openfga
+              app.kubernetes.io/instance: {{ .Release.Name }}
       containers:
         - name: openfga
           image: {{ .Values.enterprise.openfga.image.repository }}:{{ .Values.enterprise.openfga.image.tag }}
@@ -81,6 +90,20 @@ spec:
             {{- end }}
             - name: OPENFGA_LOG_FORMAT
               value: json
+            - name: OPENFGA_REQUEST_TIMEOUT
+              value: "{{ int $fga.requestTimeoutMs }}ms"
+            - name: OPENFGA_LIST_OBJECTS_DEADLINE
+              value: "{{ int $fga.listObjectsDeadlineMs }}ms"
+            - name: OPENFGA_DATASTORE_MAX_OPEN_CONNS
+              value: "{{ int $fga.datastore.maxOpenConns }}"
+            - name: OPENFGA_DATASTORE_MAX_IDLE_CONNS
+              value: "{{ int $fga.datastore.maxIdleConns }}"
+            - name: OPENFGA_CHECK_QUERY_CACHE_ENABLED
+              value: "{{ $fga.caches.checkQuery }}"
+            - name: OPENFGA_CHECK_ITERATOR_CACHE_ENABLED
+              value: "{{ $fga.caches.checkIterator }}"
+            - name: OPENFGA_CACHE_CONTROLLER_ENABLED
+              value: "{{ $fga.caches.cacheController }}"
           {{- /* OpenFGA reads only OPENFGA_* variables. The external Secret may set OPENFGA_DATASTORE_URI; */}}
           {{- /* the chart's own Secret has none, so OpenFGA doesn't load it and never sees the app's credentials. */}}
           {{- if .Values.externalSecret.enabled }}
@@ -123,15 +146,8 @@ spec:
             successThreshold: {{ .Values.probes.openfga.config.startupProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.openfga.config.startupProbe.failureThreshold | default 3 }}
           {{- end }}
+          {{- with .Values.resources.openfga }}
           resources:
-            {{- if .Values.resources.openfga }}
-            {{- toYaml .Values.resources.openfga | nindent 12 }}
-            {{- else }}
-            limits:
-              cpu: 200m
-              memory: 200Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            {{- end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}

@@ -1,0 +1,6 @@
+resources:
+  openfga:
+    requests: null
+    limits:
+      cpu: 200m
+      memory: 200Mi

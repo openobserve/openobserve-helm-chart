@@ -1,0 +1,15 @@
+{{- if and .Values.enterprise.enabled .Values.enterprise.openfga.enabled (gt (int .Values.enterprise.openfga.replicas) 1) }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "openobserve.fullname" . }}-openfga
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: openfga
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

@@ -733,7 +733,13 @@ resources:
   scheduler: {}
   dex: {}
   reportserver: {}
-  openfga: {}
+  openfga:
+    requests:
+      cpu: 500m
+      memory: 256Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
   o2ai:
     requests:
       memory: "256Mi"
@@ -987,8 +993,24 @@ enterprise:
       O2_OPENFGA_PAGE_SIZE: "100"
     image:
       repository: openfga/openfga
-      tag: latest
+      tag: v1.22.1
       pullPolicy: IfNotPresent
+    # O2 is told the server list deadline only for these tags; any other tag keeps per-object checks.
+    listTestedTags: [v1.22.1]
+    replicas: 2
+    # OPENFGA_REQUEST_TIMEOUT in ms; the chart refuses values below 3000 (0 included).
+    requestTimeoutMs: 5000
+    # OPENFGA_LIST_OBJECTS_DEADLINE in ms; must be 3000 to requestTimeoutMs + 3000 or OpenFGA refuses to start.
+    listObjectsDeadlineMs: 5000
+    datastore:
+      # Per pod: (replicas + 1 surge pod) x maxOpenConns plus the OpenObserve pool must stay below Postgres max_connections.
+      maxOpenConns: 30
+      maxIdleConns: 10
+    # Server caches serve stale answers for seconds after a revoke, so they stay off.
+    caches:
+      checkQuery: false
+      checkIterator: false
+      cacheController: false
   dex:
     enabled: false
     parameters:
