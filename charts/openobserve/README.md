@@ -219,6 +219,58 @@ enterprise:
     O2_SERVICE_STREAMS_SAMPLE_EVERY_NTH_STREAM: "5"
 ```
 
+### OpenFGA (permission checks)
+
+With `enterprise.openfga.enabled: true` the chart deploys OpenFGA, pinned to `openfga/openfga:v1.22.1`, with two replicas, a `PodDisruptionBudget` (`minAvailable: 1`), a surge-only rollout (`maxSurge: 1`, `maxUnavailable: 0`) and a preferred spread across nodes. OpenFGA is CPU-bound, so each pod requests 500m CPU and may burst to 2.
+
+```yaml
+enterprise:
+  openfga:
+    image:
+      tag: v1.22.1
+    listTestedTags: [v1.22.1]
+    replicas: 2
+    requestTimeoutMs: 5000        # OPENFGA_REQUEST_TIMEOUT=5000ms
+    listObjectsDeadlineMs: 5000   # OPENFGA_LIST_OBJECTS_DEADLINE=5000ms
+    datastore:
+      maxOpenConns: 30            # per replica
+      maxIdleConns: 10
+    caches:
+      checkQuery: false
+      checkIterator: false
+      cacheController: false
+resources:
+  openfga:
+    requests: { cpu: 500m, memory: 256Mi }
+    limits: { cpu: "2", memory: 1Gi }
+```
+
+| Value | Meaning |
+|---|---|
+| `requestTimeoutMs` | OpenFGA request timeout in milliseconds. Rendering fails below 3000, including 0. OpenObserve gets `O2_OPENFGA_REQUEST_TIMEOUT_MS` = this + 1000. |
+| `listObjectsDeadlineMs` | OpenFGA list deadline in milliseconds. Rendering fails below 3000 and above `requestTimeoutMs + 3000`, because OpenFGA refuses to start with such a value. |
+| `listTestedTags` | Image tags whose list behaviour was tested. Only for these does the chart declare `O2_OPENFGA_LIST_SERVER_DEADLINE_MS` = `min(requestTimeoutMs, listObjectsDeadlineMs)` to OpenObserve. The match is exact on the whole `image.tag` string: a digest-pinned tag such as `v1.22.1@sha256:...` must be listed with its digest. With any other tag OpenObserve keeps checking objects one by one. |
+| `datastore.maxOpenConns` | Postgres connections per replica. A rollout briefly adds one pod, so (`replicas` + 1) x `maxOpenConns` plus the OpenObserve pool must stay below Postgres `max_connections`. |
+| `resources.openfga` | Helm merges a partial override over the default requests and limits. Set both, or remove one with `null`, so requests never exceed limits. |
+| `caches.*` | OpenFGA server caches. They stay off: a cached answer can outlive a revoked permission by several seconds. |
+
+The declared list deadline must never be above the deadline the OpenFGA server really applies. A declaration above the real server deadline lets truncated lists through, so users can miss objects they are allowed to see. Change the two timeouts through these values, never by setting `OPENFGA_*` variables on the OpenFGA pod directly.
+
+**An OpenFGA the chart does not deploy.** The chart always points OpenObserve at its own OpenFGA service. To use another OpenFGA server, keep `enterprise.openfga.enabled: true` and override the config map keys through `extraEnv`; an `env` entry on the container wins over the config map:
+
+```yaml
+extraEnv:
+  - name: O2_OPENFGA_BASE_URL
+    value: http://openfga.example.internal:8080
+  # The server's effective list deadline: min(its request timeout, its list deadline), in ms.
+  - name: O2_OPENFGA_LIST_SERVER_DEADLINE_MS
+    value: "5000"
+```
+
+If you do not know that server's deadline, do not add `O2_OPENFGA_LIST_SERVER_DEADLINE_MS`; set `enterprise.openfga.listTestedTags: []` instead, so the config map declares none and OpenObserve checks objects one by one. Otherwise the config map still declares the deadline of the chart's own OpenFGA. The chart still deploys its own OpenFGA in this setup, unused.
+
+**Alerts.** `examples/alerts/openfga-authz.yaml` holds example Prometheus rules for permission-check failures, calls per request and Check latency. The chart does not install them. Test them with `promtool test rules examples/alerts/openfga-authz.test.yaml`.
+
 ## Envoy Gateway Integration
 
 OpenObserve provides deep integration with Envoy Gateway for enterprise-grade traffic management, security, and observability.

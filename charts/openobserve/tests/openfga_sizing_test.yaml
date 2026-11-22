@@ -1,0 +1,233 @@
+suite: OpenFGA sizing, timeouts and list deadline declaration
+set:
+  enterprise.enabled: true
+  enterprise.openfga.enabled: true
+tests:
+  - it: renders the default OpenFGA timeouts as Go durations
+    template: templates/openfga-deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_REQUEST_TIMEOUT, value: "5000ms"}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_LIST_OBJECTS_DEADLINE, value: "5000ms"}
+  - it: renders the default datastore pool and keeps the server caches off
+    template: templates/openfga-deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_DATASTORE_MAX_OPEN_CONNS, value: "30"}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_DATASTORE_MAX_IDLE_CONNS, value: "10"}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_CHECK_QUERY_CACHE_ENABLED, value: "false"}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_CHECK_ITERATOR_CACHE_ENABLED, value: "false"}
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_CACHE_CONTROLLER_ENABLED, value: "false"}
+  - it: pins the benchmarked image, two replicas, a surge-only rollout and the default resources
+    template: templates/openfga-deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: openfga/openfga:v1.22.1
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: openfga/openfga:v1.22.1
+      - equal:
+          path: spec.replicas
+          value: 2
+      - equal:
+          path: spec.strategy.rollingUpdate
+          value: {maxSurge: 1, maxUnavailable: 0}
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            requests: {cpu: 500m, memory: 256Mi}
+            limits: {cpu: "2", memory: 1Gi}
+  - it: declares the O2 request timeout and list deadline with default values
+    template: templates/configmap.yaml
+    asserts:
+      - equal:
+          path: data.O2_OPENFGA_ENABLED
+          value: "true"
+      - equal:
+          path: data.O2_OPENFGA_REQUEST_TIMEOUT_MS
+          value: "6000"
+      - equal:
+          path: data.O2_OPENFGA_LIST_SERVER_DEADLINE_MS
+          value: "5000"
+  - it: declares the smaller of the two server bounds as the list deadline
+    template: templates/configmap.yaml
+    set:
+      enterprise.openfga.requestTimeoutMs: 4000
+      enterprise.openfga.listObjectsDeadlineMs: 6000
+    asserts:
+      - equal:
+          path: data.O2_OPENFGA_LIST_SERVER_DEADLINE_MS
+          value: "4000"
+      - equal:
+          path: data.O2_OPENFGA_REQUEST_TIMEOUT_MS
+          value: "5000"
+  - it: renders 3000 / 6000, the largest list deadline OpenFGA accepts for that timeout
+    template: templates/openfga-deployment.yaml
+    set:
+      enterprise.openfga.requestTimeoutMs: 3000
+      enterprise.openfga.listObjectsDeadlineMs: 6000
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: {name: OPENFGA_LIST_OBJECTS_DEADLINE, value: "6000ms"}
+  - it: fails on a request timeout below 3000
+    template: templates/openfga-deployment.yaml
+    set:
+      enterprise.openfga.requestTimeoutMs: 1000
+    asserts:
+      - failedTemplate:
+          errorPattern: "requestTimeoutMs must be at least 3000 \\(got 1000\\)"
+  - it: fails on a request timeout of 0
+    template: templates/openfga-deployment.yaml
+    set:
+      enterprise.openfga.requestTimeoutMs: 0
+    asserts:
+      - failedTemplate:
+          errorPattern: "requestTimeoutMs must be at least 3000 \\(got 0\\)"
+  - it: fails on a list deadline below 3000
+    template: templates/openfga-deployment.yaml
+    set:
+      enterprise.openfga.listObjectsDeadlineMs: 2000
+    asserts:
+      - failedTemplate:
+          errorPattern: "listObjectsDeadlineMs must be at least 3000 \\(got 2000\\)"
+  - it: fails on a list deadline above requestTimeoutMs + 3000, which OpenFGA refuses at start
+    template: templates/openfga-deployment.yaml
+    set:
+      enterprise.openfga.requestTimeoutMs: 3000
+      enterprise.openfga.listObjectsDeadlineMs: 7000
+    asserts:
+      - failedTemplate:
+          errorPattern: "listObjectsDeadlineMs \\(7000\\) must not exceed requestTimeoutMs \\+ 3000 \\(6000\\)"
+  - it: declares no list deadline for an image tag outside listTestedTags
+    template: templates/configmap.yaml
+    set:
+      enterprise.openfga.image.tag: v1.21.0
+    asserts:
+      - notExists:
+          path: data.O2_OPENFGA_LIST_SERVER_DEADLINE_MS
+      - equal:
+          path: data.O2_OPENFGA_REQUEST_TIMEOUT_MS
+          value: "6000"
+  - it: declares no list deadline when listTestedTags is empty
+    template: templates/configmap.yaml
+    set:
+      enterprise.openfga.listTestedTags: []
+    asserts:
+      - notExists:
+          path: data.O2_OPENFGA_LIST_SERVER_DEADLINE_MS
+  - it: renders the PDB with two replicas
+    template: templates/openfga-pdb.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: PodDisruptionBudget
+      - equal:
+          path: spec.minAvailable
+          value: 1
+      - equal:
+          path: spec.selector.matchLabels
+          value: {app: openfga, app.kubernetes.io/instance: RELEASE-NAME}
+  - it: spreads two replicas across nodes without blocking scheduling
+    template: templates/openfga-deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints
+          value:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchLabels: {app: openfga, app.kubernetes.io/instance: RELEASE-NAME}
+  - it: labels OpenFGA pods with the release so the PDB and spread match only this release
+    template: templates/openfga-deployment.yaml
+    release:
+      name: o2-a
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels
+          value: {app: openfga, app.kubernetes.io/instance: o2-a}
+      - equal:
+          path: spec.selector.matchLabels
+          value: {app: openfga}
+  - it: scopes the PDB selector to its own release
+    template: templates/openfga-pdb.yaml
+    release:
+      name: o2-b
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels
+          value: {app: openfga, app.kubernetes.io/instance: o2-b}
+  - it: declares no list deadline for a digest-pinned tag when only the bare tag is listed
+    template: templates/configmap.yaml
+    set:
+      enterprise.openfga.image.tag: v1.22.1@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    asserts:
+      - notExists:
+          path: data.O2_OPENFGA_LIST_SERVER_DEADLINE_MS
+  - it: declares the list deadline for a digest-pinned tag listed with its digest
+    template: templates/configmap.yaml
+    set:
+      enterprise.openfga.image.tag: v1.22.1@sha256:0000000000000000000000000000000000000000000000000000000000000000
+      enterprise.openfga.listTestedTags:
+        - v1.22.1@sha256:0000000000000000000000000000000000000000000000000000000000000000
+    asserts:
+      - equal:
+          path: data.O2_OPENFGA_LIST_SERVER_DEADLINE_MS
+          value: "5000"
+  - it: renders only limits when a partial override removes the default requests
+    template: templates/openfga-deployment.yaml
+    values:
+      - ./values/openfga_limits_only.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            limits: {cpu: 200m, memory: 200Mi}
+      - equal:
+          path: spec.template.spec.initContainers[0].resources
+          value:
+            limits: {cpu: 200m, memory: 200Mi}
+  - it: keeps the default resources when resources.openfga is set to an empty map
+    template: templates/openfga-deployment.yaml
+    set:
+      resources.openfga: {}
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].resources
+          value:
+            requests: {cpu: 500m, memory: 256Mi}
+            limits: {cpu: "2", memory: 1Gi}
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            requests: {cpu: 500m, memory: 256Mi}
+            limits: {cpu: "2", memory: 1Gi}
+  - it: renders no PDB with one replica
+    template: templates/openfga-pdb.yaml
+    set:
+      enterprise.openfga.replicas: 1
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: renders no PDB when OpenFGA is disabled
+    template: templates/openfga-pdb.yaml
+    set:
+      enterprise.openfga.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0

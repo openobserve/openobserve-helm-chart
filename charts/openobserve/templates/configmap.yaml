@@ -285,6 +285,14 @@ data:
   O2_DEX_LDAP_ROLE_ATTRIBUTE: "{{ .Values.enterprise.dex.parameters.O2_DEX_LDAP_ROLE_ATTRIBUTE }}"
   O2_OPENFGA_PAGE_SIZE: "{{ .Values.enterprise.openfga.parameters.O2_OPENFGA_PAGE_SIZE }}"
   O2_OPENFGA_LIST_ONLY_PERMITTED: "{{ .Values.enterprise.openfga.parameters.O2_OPENFGA_LIST_ONLY_PERMITTED }}"
+  {{- if and .Values.enterprise.enabled .Values.enterprise.openfga.enabled }}
+  {{- $fga := .Values.enterprise.openfga }}
+  O2_OPENFGA_REQUEST_TIMEOUT_MS: "{{ add (int $fga.requestTimeoutMs) 1000 }}"
+  {{- /* Only tags whose list deadline behaviour was tested get a declaration; other tags keep O2 on per-object checks. */}}
+  {{- if has (toString $fga.image.tag) $fga.listTestedTags }}
+  O2_OPENFGA_LIST_SERVER_DEADLINE_MS: "{{ min (int $fga.requestTimeoutMs) (int $fga.listObjectsDeadlineMs) }}"
+  {{- end }}
+  {{- end }}
   O2_AUDIT_ENABLED: "{{ .Values.enterprise.parameters.O2_AUDIT_ENABLED }}"
   O2_AUDIT_BATCH_SIZE: "{{ .Values.enterprise.parameters.O2_AUDIT_BATCH_SIZE }}"
   O2_CUSTOM_LOGO_TEXT: "{{ .Values.enterprise.parameters.O2_CUSTOM_LOGO_TEXT }}"

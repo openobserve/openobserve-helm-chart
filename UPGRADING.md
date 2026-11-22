@@ -21,6 +21,24 @@ steps. Chart versions follow [Semantic Versioning](https://semver.org/); a bump 
 
 ## Chart changes
 
+### openobserve 1.1.8 — OpenFGA pinned and sized
+
+With `enterprise.openfga.enabled: true`, OpenFGA now runs `openfga/openfga:v1.22.1` instead of `latest`, with
+2 replicas, a PodDisruptionBudget and `resources.openfga` defaulting to requests 500m / 256Mi and limits 2 / 1Gi.
+- The cluster must fit 2 × 500m CPU of requests for OpenFGA. A rollout briefly runs `replicas + 1` pods
+  (`maxSurge: 1`), so Postgres must accept (`replicas` + 1) × `datastore.maxOpenConns` (default 30) OpenFGA
+  connections, up from 2 × 30 during a rollout of the old single replica. Set `enterprise.openfga.replicas: 1` to
+  keep the old pod count.
+- `resources.openfga` is no longer empty by default, and Helm merges your value over the new default. A partial
+  override such as `resources.openfga: {limits: {cpu: 200m, memory: 200Mi}}` now also gets requests 500m / 256Mi,
+  so requests exceed limits and the upgrade is rejected. Set both `requests` and `limits`, or remove the one you
+  do not want with `null` (for example `requests: null`).
+- An explicit `resources.openfga: {}` no longer gives the old 100m-200m CPU: Helm merges it with the new defaults.
+- If your nodes already pulled a `latest` newer than v1.22.1, set `enterprise.openfga.image.tag` to that version
+  before upgrading, and add it to `listTestedTags` only after testing it.
+- Rendering fails when `requestTimeoutMs` or `listObjectsDeadlineMs` is below 3000, or when
+  `listObjectsDeadlineMs` is above `requestTimeoutMs + 3000`.
+
 ### openobserve-standalone — Postgres DSN moved to the Secret
 
 `ZO_META_POSTGRES_DSN` is now rendered into the **Secret** instead of the plaintext ConfigMap,

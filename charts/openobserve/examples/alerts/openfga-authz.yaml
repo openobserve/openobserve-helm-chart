@@ -1,0 +1,29 @@
+# Example Prometheus alerting rules for OpenObserve permission checks against OpenFGA.
+# Not installed by the chart. Test with: promtool test rules openfga-authz.test.yaml
+groups:
+  - name: openobserve-authz
+    rules:
+      - alert: OpenObserveAuthzUnavailable
+        expr: sum(rate(zo_authz_unavailable_total[5m])) > 0.1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: OpenObserve cannot reach or get answers from OpenFGA
+          description: Permission checks are failing at {{ $value | humanize }}/s; affected requests return 503.
+      - alert: OpenObserveAuthzFanOut
+        expr: histogram_quantile(0.95, sum by (route, le) (rate(zo_authz_openfga_calls_per_request_bucket[5m]))) > 20
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: Route {{ $labels.route }} sends too many OpenFGA calls per request
+          description: p95 is {{ $value | humanize }} OpenFGA calls per request on {{ $labels.route }}.
+      - alert: OpenObserveAuthzCheckSlow
+        expr: histogram_quantile(0.95, sum by (le) (rate(zo_authz_openfga_request_duration_seconds_bucket{op="check"}[5m]))) > 0.5
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: OpenFGA Check p95 is above 0.5 s
+          description: Check p95 is {{ $value | humanizeDuration }}; OpenFGA is likely CPU-throttled, raise resources.openfga.

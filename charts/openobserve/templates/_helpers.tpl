@@ -169,6 +169,23 @@ postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobse
 {{- end }}
 
 {{/*
+OpenFGA refuses to start when the list deadline exceeds the request timeout + 3 s, so fail at render instead.
+*/}}
+{{- define "openobserve.openfgaValidateTimeouts" -}}
+{{- $request := int .Values.enterprise.openfga.requestTimeoutMs -}}
+{{- $list := int .Values.enterprise.openfga.listObjectsDeadlineMs -}}
+{{- if lt $request 3000 -}}
+{{- fail (printf "enterprise.openfga.requestTimeoutMs must be at least 3000 (got %d); 0 is not allowed" $request) -}}
+{{- end -}}
+{{- if lt $list 3000 -}}
+{{- fail (printf "enterprise.openfga.listObjectsDeadlineMs must be at least 3000 (got %d)" $list) -}}
+{{- end -}}
+{{- if gt $list (add $request 3000) -}}
+{{- fail (printf "enterprise.openfga.listObjectsDeadlineMs (%d) must not exceed requestTimeoutMs + 3000 (%d)" $list (add $request 3000)) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
 Pod annotation that restarts a workload when anything in the chart Secret changes. It hashes the
 data of the rendered secret.yaml, so every key is covered, but not its labels, so a chart version
 bump alone doesn't restart pods. Empty with externalSecret, where pods don't read the chart Secret.
