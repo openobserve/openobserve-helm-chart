@@ -399,6 +399,103 @@ service:
   # grpc_nodePort: 30581
   annotations: {}
 
+# Status page custom domains with built-in TLS (Enterprise: needs enterprise.enabled). OpenObserve
+# terminates TLS for the hostnames customers point at `target` and gets the certificates itself
+# (ACME, TLS-ALPN-01). It needs a load balancer address of its own: the chart adds a LoadBalancer
+# Service for 443 and 80. One address shared with an ingress controller on 443 is not supported.
+# This block is for built-in TLS only: OpenObserve orders certificates and customers prove their
+# domains with CNAMEs. For proxy mode, use top-level `extraEnv`, not `router.extraEnv` or any
+# component's `extraEnv`: set ZO_STATUS_PAGE_DOMAIN_TLS=proxy there, along with ZO_HTTP_REAL_IP_SOURCE,
+# ZO_STATUS_PAGE_DOMAIN_APP_HOSTS, ZO_STATUS_PAGE_DOMAIN_OPERATIONAL_HOSTS and, if needed,
+# ZO_STATUS_PAGE_DOMAIN_ALLOW_ORGS and ZO_STATUS_PAGE_DOMAIN_DENY_ORGS. This block's allowOrgs and
+# denyOrgs have no effect in proxy mode. TXT verification needs public DNS and outbound DNS from
+# the pod, even on a private network or with a private CA. See the README.
+#
+# The domain key (it encrypts certificate keys and the CA account key) is not a chart value. The
+# app reads ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY (64 random bytes, base64, for example from
+# `openssl rand -base64 64 | tr -d '\n'`) or derives the key from the master key. Use one of:
+#   1. reuse a master key the installation already has, `enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY`
+#      (this chart has no `externalSecret`; it writes the value into its own Secret); or
+#   2. put ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY in the top-level `extraEnv` with
+#      `valueFrom.secretKeyRef` to a Secret you create:
+#        extraEnv:
+#          - name: ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY
+#            valueFrom:
+#              secretKeyRef: {name: o2-domain-key, key: ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY}
+# Do not set a master key only for this feature: it turns on encryption at rest for the whole
+# installation (an invalid value stops the OpenObserve pod at boot, and losing it makes stored
+# secrets unreadable; see UPGRADING.md, the 1.1.3 master-key entry). Prefer option 2 then.
+# With neither key set the feature reports `no_key` and the rest of OpenObserve keeps running.
+statusPageDomains:
+  enabled: false
+  # The installation's base hostname (ZO_STATUS_PAGE_DOMAIN_TARGET). Required. Customers do not
+  # point their domain at `target` itself: each claim has its own CNAME destination,
+  # `<label>.<target>`, which the domains dialog shows, and a customer must copy that exact name.
+  # Two DNS records must resolve to the load balancer of the Service below (or to your TCP proxy
+  # in the reverse-proxy layout): `target` itself and the wildcard `*.<target>`. Without the
+  # wildcard no certificate is issued. With built-in TLS an apex domain, or a domain behind a CDN
+  # that hides the CNAME, cannot be connected; proxy mode takes those.
+  target: ""
+  ports:
+    https: 5443 # TLS for custom domains
+    http: 5088 # redirects to HTTPS, nothing else
+    health: 5089 # readiness of the listener; target of the load balancer health check
+  proxyProtocol:
+    enabled: false # require a PROXY protocol header, version 1 or 2, on the https and http ports
+    # Sources allowed to send it, for example ["10.0.0.0/16"]. With enabled: true an empty list
+    # trusts nothing and every connection is closed: list the load balancer's or proxy's source
+    # range, and the pod network as well when probe is `listener`.
+    trustedCidrs: []
+  # How OpenObserve checks that a domain is served. `listener` connects to the pod directly and
+  # works with PROXY protocol on when the pod network is in `trustedCidrs`. `load_balancer`
+  # connects through `target`.
+  probe: listener
+  acmeDirectory: "" # empty = OpenObserve's default (Let's Encrypt production)
+  allowOrgs: [] # when set, only these organizations get certificates
+  denyOrgs: [] # organizations that get no certificate and no serving
+  epoch: 1 # raise it after a database restore
+  service:
+    # The visitor's address must reach the listener, so the recipe depends on the cloud:
+    #
+    # 1. AWS with the AWS Load Balancer Controller: internet-facing NLB, IP targets, PROXY
+    #    protocol v2, HTTP health check on the health port, Elastic IPs. Also set
+    #    proxyProtocol.enabled: true, proxyProtocol.trustedCidrs to the VPC range and
+    #    probe: load_balancer.
+    #      service.beta.kubernetes.io/aws-load-balancer-type: external
+    #      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    #      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    #      service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+    #      service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aaa,eipalloc-0bbb
+    #      service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: HTTP
+    #      service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "5089"
+    #      service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /healthz
+    #
+    # 2. AWS with the in-tree controller: NLB with instance targets, no PROXY protocol, IPv4
+    #    only. Keep externalTrafficPolicy: Local and probe: listener.
+    #      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    #      service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0aaa,eipalloc-0bbb
+    #
+    # 3. Azure: Standard Load Balancer with a pre-created static public IP, no PROXY protocol.
+    #    Keep externalTrafficPolicy: Local and probe: listener.
+    #      service.beta.kubernetes.io/azure-load-balancer-resource-group: <resource group of the IP>
+    #      service.beta.kubernetes.io/azure-pip-name: <name of the public IP>
+    #
+    # Health checks. Only recipe 1 checks the listener itself: its IP target lets the load
+    # balancer call the health port of the pod directly, and the Service does not publish that
+    # port. Recipes 2 and 3 can only check the node, which passes while the pod is Ready, and the
+    # pod's readiness is the main /healthz, so a pod whose listener is not ready still receives
+    # traffic. On those clouds the outside check of the installation is what catches it. The
+    # bare Service (no annotations) has no application health check either.
+    annotations: {}
+    externalTrafficPolicy: Local
+    loadBalancerIP: ""
+    httpsPort: 443
+    httpPort: 80
+  # Seconds the terminating pod keeps serving before it is told to stop. Must be longer than the
+  # load balancer takes to remove a target. The pod's terminationGracePeriodSeconds is set to
+  # this plus 30.
+  preStopSeconds: 30
+
 certIssuer:
   enabled: false
 

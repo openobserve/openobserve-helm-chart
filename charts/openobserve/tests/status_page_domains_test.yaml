@@ -1,0 +1,517 @@
+suite: status page custom domains
+tests:
+  # --- off: nothing changes ---
+  - it: renders no domain settings or Service by default
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: templates/domain-listener-service.yaml
+      - notExists:
+          path: data.ZO_STATUS_PAGE_DOMAIN_TARGET
+        template: templates/configmap.yaml
+      - notExists:
+          path: stringData.ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY
+        template: templates/secret.yaml
+  - it: leaves the router pod as it was by default
+    template: templates/router-deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports
+          value:
+            - name: http
+              containerPort: 5080
+            - name: grpc
+              containerPort: 5081
+      - notExists:
+          path: spec.template.spec.containers[0].lifecycle
+      - notExists:
+          path: spec.template.spec.terminationGracePeriodSeconds
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: ZO_NODE_ROLE
+              value: router
+  - it: ignores the other settings while the feature is off
+    set:
+      statusPageDomains.target: ignored.example.com
+    asserts:
+      - notExists:
+          path: data.ZO_STATUS_PAGE_DOMAIN_TARGET
+        template: templates/configmap.yaml
+
+  # --- on, shared ---
+  - it: renders the settings in the ConfigMap
+    template: templates/configmap.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_TARGET
+          value: domains.example.com
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_HTTPS_PORT
+          value: "5443"
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_HTTP_PORT
+          value: "5088"
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_HEALTH_PORT
+          value: "5089"
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_PROXY_PROTOCOL
+          value: "false"
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_PROXY_TRUSTED_CIDRS
+          value: ""
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_PROBE
+          value: listener
+      - notExists:
+          path: data.ZO_STATUS_PAGE_DOMAIN_ACME_DIRECTORY
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_ALLOW_ORGS
+          value: ""
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_DENY_ORGS
+          value: ""
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_EPOCH
+          value: "1"
+      - notExists:
+          path: data.ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY
+  - it: renders no domain key, Secret reference or Secret entry on any workload
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - notExists:
+          path: stringData.ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY
+        template: templates/secret.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].env[?(@.name == "ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY")]
+        template: templates/router-deployment.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].env[?(@.name == "ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY")]
+        template: templates/scheduler-statefulset.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].env[?(@.name == "ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY")]
+        template: templates/ingester-statefulset.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].env[?(@.name == "ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY")]
+        template: templates/querier-statefulset.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].env[?(@.name == "ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY")]
+        template: templates/alertquerier-statefulset.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].env[?(@.name == "ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY")]
+        template: templates/compactor-deployment.yaml
+  - it: adds the three container ports, the preStop sleep and a longer grace period to the router
+    template: templates/router-deployment.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {name: domain-https, containerPort: 5443}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {name: domain-http, containerPort: 5088}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {name: domain-health, containerPort: 5089}
+      - equal:
+          path: spec.template.spec.containers[0].lifecycle.preStop.exec.command
+          value: ["/bin/sh", "-c", "sleep 30"]
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 60
+  - it: takes ports and the preStop delay from values
+    template: templates/router-deployment.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.ports.https: 6443
+      statusPageDomains.ports.http: 6088
+      statusPageDomains.ports.health: 6089
+      statusPageDomains.preStopSeconds: 90
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {name: domain-https, containerPort: 6443}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {name: domain-http, containerPort: 6088}
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content: {name: domain-health, containerPort: 6089}
+      - equal:
+          path: spec.template.spec.containers[0].lifecycle.preStop.exec.command
+          value: ["/bin/sh", "-c", "sleep 90"]
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 120
+  - it: keeps the router probes on /healthz of the main port
+    template: templates/router-deployment.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+          value: {path: /healthz, port: 5080}
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet
+          value: {path: /healthz, port: 5080}
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet
+          value: {path: /healthz, port: 5080}
+  - it: points the domain Service at the router pods and leaves the router Service alone
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        template: templates/domain-listener-service.yaml
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/name: openobserve
+            app.kubernetes.io/instance: RELEASE-NAME
+            role: router
+        template: templates/domain-listener-service.yaml
+      - equal:
+          path: spec.ports
+          value:
+            - name: https
+              port: 443
+              targetPort: domain-https
+              protocol: TCP
+            - name: http
+              port: 80
+              targetPort: domain-http
+              protocol: TCP
+        template: templates/domain-listener-service.yaml
+      - equal:
+          path: spec.externalTrafficPolicy
+          value: Local
+        template: templates/domain-listener-service.yaml
+      - notExists:
+          path: spec.loadBalancerIP
+        template: templates/domain-listener-service.yaml
+      - equal:
+          path: spec.selector
+          value:
+            app.kubernetes.io/name: openobserve
+            app.kubernetes.io/instance: RELEASE-NAME
+            role: router
+        template: templates/router-service.yaml
+      - equal:
+          path: spec.type
+          value: ClusterIP
+        template: templates/router-service.yaml
+  - it: takes the Service annotations, address, policy and ports from values
+    template: templates/domain-listener-service.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.service.annotations:
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+      statusPageDomains.service.externalTrafficPolicy: Cluster
+      statusPageDomains.service.loadBalancerIP: 203.0.113.7
+      statusPageDomains.service.httpsPort: 8443
+      statusPageDomains.service.httpPort: 8080
+    asserts:
+      - equal:
+          path: metadata.annotations["service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"]
+          value: ip
+      - equal:
+          path: spec.externalTrafficPolicy
+          value: Cluster
+      - equal:
+          path: spec.loadBalancerIP
+          value: 203.0.113.7
+      - equal:
+          path: spec.ports[0].port
+          value: 8443
+      - equal:
+          path: spec.ports[1].port
+          value: 8080
+
+  # --- settings ---
+  - it: joins the lists with commas and renders proxy protocol
+    template: templates/configmap.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.proxyProtocol.enabled: true
+      statusPageDomains.proxyProtocol.trustedCidrs: ["10.0.0.0/16", "192.168.0.0/24"]
+      statusPageDomains.probe: load_balancer
+      statusPageDomains.acmeDirectory: https://acme-staging-v02.api.letsencrypt.org/directory
+      statusPageDomains.allowOrgs: ["org1", "org2"]
+      statusPageDomains.denyOrgs: ["org3"]
+      statusPageDomains.epoch: 4
+    asserts:
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_PROXY_PROTOCOL
+          value: "true"
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_PROXY_TRUSTED_CIDRS
+          value: 10.0.0.0/16,192.168.0.0/24
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_PROBE
+          value: load_balancer
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_ACME_DIRECTORY
+          value: https://acme-staging-v02.api.letsencrypt.org/directory
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_ALLOW_ORGS
+          value: org1,org2
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_DENY_ORGS
+          value: org3
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_EPOCH
+          value: "4"
+
+  # --- failures ---
+  - it: fails without a target
+    template: templates/scheduler-statefulset.yaml
+    set:
+      statusPageDomains.enabled: true
+    asserts:
+      - failedTemplate:
+          errorPattern: "statusPageDomains.target is required"
+  - it: fails on an unknown probe mode
+    template: templates/scheduler-statefulset.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.probe: both
+    asserts:
+      - failedTemplate:
+          errorPattern: 'statusPageDomains.probe must be "listener" or "load_balancer"'
+  - it: works with externalSecret
+    set:
+      externalSecret.enabled: true
+      externalSecret.name: ext
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_TARGET
+          value: domains.example.com
+        template: templates/configmap.yaml
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[2].secretRef.name
+          value: ext
+        template: templates/router-deployment.yaml
+
+  # --- an upgrade from 1.1.7 with --reuse-values has no statusPageDomains block ---
+  - it: renders with the block absent, as the stored values of an older release have it
+    set:
+      statusPageDomains: null
+    asserts:
+      - notExists:
+          path: data.ZO_STATUS_PAGE_DOMAIN_TARGET
+        template: templates/configmap.yaml
+      - notExists:
+          path: stringData.ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY
+        template: templates/secret.yaml
+      - equal:
+          path: spec.template.spec.containers[0].ports
+          value:
+            - name: http
+              containerPort: 5080
+            - name: grpc
+              containerPort: 5081
+        template: templates/router-deployment.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].lifecycle
+        template: templates/router-deployment.yaml
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.terminationGracePeriodSeconds
+          value: 30
+        template: templates/router-deployment.yaml
+      - hasDocuments:
+          count: 0
+        template: templates/domain-listener-service.yaml
+
+  # --- the liveness probe's own grace period replaces the pod's on a restart ---
+  - it: lets the router liveness probe cover the preStop sleep
+    template: templates/router-deployment.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.terminationGracePeriodSeconds
+          value: 60
+  - it: follows a longer preStop delay in the router liveness probe
+    template: templates/router-deployment.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.preStopSeconds: 90
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.terminationGracePeriodSeconds
+          value: 120
+  - it: keeps a longer liveness grace period that the operator set
+    template: templates/router-deployment.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      probes.router.config.livenessProbe.terminationGracePeriodSeconds: 300
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.terminationGracePeriodSeconds
+          value: 300
+  - it: leaves the router liveness probe as it was when the feature is off
+    template: templates/router-deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.terminationGracePeriodSeconds
+          value: 30
+
+  # --- names stay within 63 characters ---
+  - it: bounds the Service name for a long release name
+    set:
+      fullnameOverride: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-75220b47-domain-listener
+        template: templates/domain-listener-service.yaml
+  - it: names the Service after the release when the name is short
+    template: templates/domain-listener-service.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-openobserve-domain-listener
+  - it: gives two long releases that differ only after the cut different names (east)
+    template: templates/domain-listener-service.yaml
+    set:
+      fullnameOverride: prod-observability-openobserve-logging-platform-east
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: prod-observability-openobserve-logging-36a3c111-domain-listener
+  - it: gives two long releases that differ only after the cut different names (west)
+    template: templates/domain-listener-service.yaml
+    set:
+      fullnameOverride: prod-observability-openobserve-logging-platform-west
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: prod-observability-openobserve-logging-234dc209-domain-listener
+  - it: keeps a 46 character fullname as it is
+    template: templates/domain-listener-service.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-domain-listener
+  - it: shortens a 47 character fullname with a hash
+    template: templates/domain-listener-service.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-11eaed93-domain-listener
+  - it: gives a short release whose name looks like a shortened one a different name (east takes 36a3c111 above)
+    template: templates/domain-listener-service.yaml
+    set:
+      fullnameOverride: prod-observability-openobserve-logging-36a3c111
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: prod-observability-openobserve-logging-833762da-domain-listener
+  - it: shortens a 48 character fullname with a hash
+    template: templates/domain-listener-service.yaml
+    set:
+      fullnameOverride: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+    asserts:
+      - equal:
+          path: metadata.name
+          value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-97daac0e-domain-listener
+
+  # --- numbers: a malformed number must fail, an exact one must stay exact ---
+  - it: fails on a fractional preStop delay
+    template: templates/scheduler-statefulset.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.preStopSeconds: 1.5
+    asserts:
+      - failedTemplate:
+          errorPattern: "statusPageDomains.preStopSeconds must be a non-negative whole number"
+  - it: fails on a negative epoch
+    template: templates/scheduler-statefulset.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.epoch: -1
+    asserts:
+      - failedTemplate:
+          errorPattern: "statusPageDomains.epoch must be a non-negative whole number"
+  - it: renders the largest signed 64-bit epoch exactly
+    template: templates/configmap.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.epoch: "9223372036854775807"
+    asserts:
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_EPOCH
+          value: "9223372036854775807"
+  - it: fails on an epoch one above the signed 64-bit maximum
+    template: templates/scheduler-statefulset.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.epoch: "9223372036854775808"
+    asserts:
+      - failedTemplate:
+          errorPattern: "statusPageDomains.epoch must not exceed 9223372036854775807"
+  - it: fails on a twenty digit epoch
+    template: templates/scheduler-statefulset.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.epoch: "10000000000000000000"
+    asserts:
+      - failedTemplate:
+          errorPattern: "statusPageDomains.epoch must not exceed 9223372036854775807"
+  - it: accepts an epoch with leading zeros that is within range
+    template: templates/configmap.yaml
+    set:
+      statusPageDomains.enabled: true
+      statusPageDomains.target: domains.example.com
+      statusPageDomains.epoch: "000000000000000000000012"
+    asserts:
+      - equal:
+          path: data.ZO_STATUS_PAGE_DOMAIN_EPOCH
+          value: "000000000000000000000012"
