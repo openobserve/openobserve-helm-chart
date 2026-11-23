@@ -198,6 +198,14 @@ Secret holds no `OPENFGA_*` values.
 calls `/healthz` on the component's web port and liveness/startup check that the port is open.
 Previously these probes pointed at the wrong port and crash-looped the pods.
 
+### openobserve 1.1.8 — Gateway API metrics block needs Envoy Gateway v1.2+
+
+With `gateway.enabled`, `/metrics` and `/api/metrics` are now answered with 403 by an Envoy Gateway
+`HTTPRouteFilter`. They used to get a 500: the `EnvoyPatchPolicy` meant to answer them targeted the
+HTTPRoute, which Envoy Gateway does not support, so it never applied. That policy is no longer
+rendered. `HTTPRouteFilter` exists from **Envoy Gateway v1.2**; on an older version, `helm install`
+and `helm upgrade` with `gateway.enabled` fail with `no matches for kind "HTTPRouteFilter"`.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the

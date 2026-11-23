@@ -1,0 +1,17 @@
+{{- if and .Values.gateway.enabled .Values.gateway.httpRoutes.routes -}}
+# Answers 403 for the /metrics and /api/metrics rules in httproute.yaml. Needs Envoy Gateway v1.2 or later.
+# No contentType: with it, Envoy Gateway v1.2.0 stops updating the gateway's config; Envoy sends text/plain anyway.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: HTTPRouteFilter
+metadata:
+  name: {{ include "openobserve.fullname" . }}-block-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "openobserve.labels" . | nindent 4 }}
+spec:
+  directResponse:
+    statusCode: 403
+    body:
+      type: Inline
+      inline: "Access to metrics endpoint is forbidden"
+{{- end }}

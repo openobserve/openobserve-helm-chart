@@ -632,7 +632,7 @@ ingress:
         - openobserve.example.com
 
 # Gateway API configuration (Envoy Gateway)
-# Uses Envoy Gateway EnvoyPatchPolicy to block /metrics and /api/metrics endpoints with direct 403 response
+# /metrics and /api/metrics are answered with 403 by an Envoy Gateway HTTPRouteFilter (Envoy Gateway v1.2 or later)
 gateway:
   enabled: false
   # TLS Certificate configuration (requires cert-manager)
@@ -659,7 +659,7 @@ gateway:
     # Labels to add to all HTTPRoute resources
     labels: {}
     # List of HTTPRoute configurations
-    # Note: /metrics and /api/metrics are automatically blocked by EnvoyPatchPolicy
+    # Note: /metrics and /api/metrics are automatically answered with 403 by the chart's HTTPRouteFilter
     routes:
       # UI Route - for web interface (external traffic)
       - name: openobserve-api
