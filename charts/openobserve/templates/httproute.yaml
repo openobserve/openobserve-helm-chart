@@ -43,16 +43,28 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    # Block /metrics endpoint - returns 403 via EnvoyPatchPolicy (always added)
+    # Block /metrics endpoint - answered with 403 by gateway-block-metrics-filter.yaml (always added)
     - matches:
         - path:
             type: Exact
             value: /metrics
-    # Block /api/metrics endpoint - returns 403 via EnvoyPatchPolicy (always added)
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: gateway.envoyproxy.io
+            kind: HTTPRouteFilter
+            name: {{ $fullName }}-block-metrics
+    # Block /api/metrics endpoint - answered with 403 by gateway-block-metrics-filter.yaml (always added)
     - matches:
         - path:
             type: Exact
             value: /api/metrics
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: gateway.envoyproxy.io
+            kind: HTTPRouteFilter
+            name: {{ $fullName }}-block-metrics
     # User-defined rules
     {{- range $ruleIndex, $rule := .rules }}
     - {{- if $rule.matches }}
