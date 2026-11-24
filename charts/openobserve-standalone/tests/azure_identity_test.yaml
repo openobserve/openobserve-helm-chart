@@ -1,0 +1,56 @@
+suite: Azure Blob credentials and workload identity
+tests:
+  - it: writes the account key and name when they are set
+    template: templates/secret.yaml
+    set:
+      config.ZO_S3_PROVIDER: azure
+      auth.AZURE_STORAGE_ACCOUNT_KEY: account-key
+      auth.AZURE_STORAGE_ACCOUNT_NAME: account-name
+    asserts:
+      - equal:
+          path: stringData.AZURE_STORAGE_ACCOUNT_KEY
+          value: account-key
+      - equal:
+          path: stringData.AZURE_STORAGE_ACCOUNT_NAME
+          value: account-name
+  - it: leaves a blank account key and name out of the Secret
+    template: templates/secret.yaml
+    set:
+      config.ZO_S3_PROVIDER: azure
+    asserts:
+      - notExists:
+          path: stringData.AZURE_STORAGE_ACCOUNT_KEY
+      - notExists:
+          path: stringData.AZURE_STORAGE_ACCOUNT_NAME
+  - it: prefers auth.* over config.*
+    template: templates/secret.yaml
+    set:
+      config.ZO_S3_PROVIDER: azure
+      config.AZURE_STORAGE_ACCOUNT_KEY: config-key
+      config.AZURE_STORAGE_ACCOUNT_NAME: config-name
+      auth.AZURE_STORAGE_ACCOUNT_KEY: auth-key
+    asserts:
+      - equal:
+          path: stringData.AZURE_STORAGE_ACCOUNT_KEY
+          value: auth-key
+      - equal:
+          path: stringData.AZURE_STORAGE_ACCOUNT_NAME
+          value: config-name
+  - it: adds podLabels to the OpenObserve pod
+    template: templates/openobserve-statefulset.yaml
+    set:
+      podLabels:
+        azure.workload.identity/use: "true"
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["azure.workload.identity/use"]
+          value: "true"
+  - it: annotates the service account
+    template: templates/serviceaccount.yaml
+    set:
+      serviceAccount.annotations:
+        azure.workload.identity/client-id: 00000000-0000-0000-0000-000000000000
+    asserts:
+      - equal:
+          path: metadata.annotations["azure.workload.identity/client-id"]
+          value: 00000000-0000-0000-0000-000000000000

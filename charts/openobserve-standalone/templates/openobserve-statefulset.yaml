@@ -34,6 +34,9 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: openobserve
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
