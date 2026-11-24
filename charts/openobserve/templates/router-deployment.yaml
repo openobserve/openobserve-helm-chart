@@ -1,3 +1,4 @@
+{{- $spd := include "openobserve.statusPageDomainsCfg" . | fromJson -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,6 +35,9 @@ spec:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: router
     spec:
+      {{- if $spd.enabled }}
+      terminationGracePeriodSeconds: {{ include "openobserve.statusPageDomainsGracePeriod" . }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -71,6 +75,9 @@ spec:
               containerPort: {{ .Values.config.ZO_HTTP_PORT }}
             - name: grpc
               containerPort: {{ .Values.config.ZO_GRPC_PORT }}
+            {{- if $spd.enabled }}
+            {{- include "openobserve.statusPageDomainsPorts" . | nindent 12 }}
+            {{- end }}
           {{- if .Values.probes.router.enabled }}
           livenessProbe:
             httpGet:
@@ -81,7 +88,12 @@ spec:
             timeoutSeconds: {{ .Values.probes.router.config.livenessProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.router.config.livenessProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.router.config.livenessProbe.failureThreshold | default 3 }}
+            {{- if $spd.enabled }}
+            {{- /* The probe's own grace period replaces the pod's on a liveness restart, so it must cover the preStop sleep. */}}
+            terminationGracePeriodSeconds: {{ max (.Values.probes.router.config.livenessProbe.terminationGracePeriodSeconds | default 30 | int) (include "openobserve.statusPageDomainsGracePeriod" . | int) }}
+            {{- else }}
             terminationGracePeriodSeconds: {{ .Values.probes.router.config.livenessProbe.terminationGracePeriodSeconds | default 30 }}
+            {{- end }}
           readinessProbe:
             httpGet:
               path: {{ .Values.config.ZO_BASE_URI | default "" }}/healthz
@@ -100,6 +112,9 @@ spec:
             timeoutSeconds: {{ .Values.probes.router.config.startupProbe.timeoutSeconds | default 10 }}
             successThreshold: {{ .Values.probes.router.config.startupProbe.successThreshold | default 1 }}
             failureThreshold: {{ .Values.probes.router.config.startupProbe.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if $spd.enabled }}
+          {{- include "openobserve.statusPageDomainsLifecycle" . | nindent 10 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources.router | nindent 12 }}

@@ -198,6 +198,34 @@ Secret holds no `OPENFGA_*` values.
 calls `/healthz` on the component's web port and liveness/startup check that the port is open.
 Previously these probes pointed at the wrong port and crash-looped the pods.
 
+### openobserve 1.1.8 / openobserve-standalone 1.1.7 — `statusPageDomains` (off by default)
+
+Both charts gain a `statusPageDomains` block for built-in TLS on status page custom domains (see the
+chart READMEs). With `statusPageDomains.enabled: false`, the default, the chart adds no domain
+resources, ports or settings. The version bump changes the `helm.sh/chart` label. That label is part
+of the ConfigMap that feeds the `checksum/*config` pod annotations, so the OpenObserve pods restart
+once on upgrade, as they do on any chart version bump. `helm upgrade --reuse-values` from openobserve
+1.1.7 or openobserve-standalone 1.1.6 works: the block is absent from the stored values and the
+feature stays off.
+
+Turning it on adds container ports, a `preStop` delay and a `LoadBalancer` Service. The chart holds no
+domain key and renders none: the app reads `ZO_STATUS_PAGE_DOMAIN_ENCRYPTION_KEY` or derives the key
+from the master key. Put the variable in the top-level `extraEnv` (see the chart READMEs), or reuse a
+master key you already have. With `externalSecret.enabled` (openobserve only) the chart ignores
+`enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY`, so the master key must be `O2_MASTER_ENCRYPTION_KEY`
+in your own Secret, or you use the `extraEnv` variable. Do not set a new master key only for this
+feature: it turns on encryption at rest for the whole installation, an invalid value stops every pod
+at boot, and losing it makes stored secrets unreadable (see the "master encryption key reaches
+OpenObserve" entry above). With neither key set the feature reports `no_key` and the rest of
+OpenObserve keeps running.
+
+Proxy mode, the other way to run custom domains, needs no chart value: it is one variable set through
+the top-level `extraEnv` (see the "Proxy mode" section of the chart READMEs). If this installation already serves
+custom domains behind your proxy: after the upgrade to the minimum version, custom domains are off
+until you set the mode. Existing domains keep being served meanwhile, and none can be added or
+verified. Once the mode is on, every domain is checked for its TXT record; a domain whose record was
+removed has 72 hours to get it again, so tell the owners first.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the

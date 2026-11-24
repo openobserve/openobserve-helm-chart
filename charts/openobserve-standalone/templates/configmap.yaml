@@ -277,6 +277,26 @@ data:
   # Other (introduced in v1.0.1)
   ZO_AI_SESSION_OWNER_TTL: "{{ .Values.config.ZO_AI_SESSION_OWNER_TTL }}"
   ZO_TRACE_TIME_INDEX_ENABLED: "{{ .Values.config.ZO_TRACE_TIME_INDEX_ENABLED }}"
+  {{- $spd := include "openobserve.statusPageDomainsCfg" . | fromJson }}
+  {{- if $spd.enabled }}
+  {{- include "openobserve.statusPageDomainsValidate" . }}
+  {{- with $spd }}
+  # Status page custom domains (built-in TLS)
+  ZO_STATUS_PAGE_DOMAIN_TARGET: {{ .target | quote }}
+  ZO_STATUS_PAGE_DOMAIN_HTTPS_PORT: {{ int .ports.https | quote }}
+  ZO_STATUS_PAGE_DOMAIN_HTTP_PORT: {{ int .ports.http | quote }}
+  ZO_STATUS_PAGE_DOMAIN_HEALTH_PORT: {{ int .ports.health | quote }}
+  ZO_STATUS_PAGE_DOMAIN_PROXY_PROTOCOL: {{ .proxyProtocol.enabled | quote }}
+  ZO_STATUS_PAGE_DOMAIN_PROXY_TRUSTED_CIDRS: {{ join "," .proxyProtocol.trustedCidrs | quote }}
+  ZO_STATUS_PAGE_DOMAIN_PROBE: {{ .probe | quote }}
+  {{- with .acmeDirectory }}
+  ZO_STATUS_PAGE_DOMAIN_ACME_DIRECTORY: {{ . | quote }}
+  {{- end }}
+  ZO_STATUS_PAGE_DOMAIN_ALLOW_ORGS: {{ join "," .allowOrgs | quote }}
+  ZO_STATUS_PAGE_DOMAIN_DENY_ORGS: {{ join "," .denyOrgs | quote }}
+  ZO_STATUS_PAGE_DOMAIN_EPOCH: {{ .epoch | quote }}
+  {{- end }}
+  {{- end }}
   RUST_LOG: "{{ .Values.config.RUST_LOG }}"
   RUST_BACKTRACE: "{{ .Values.config.RUST_BACKTRACE }}"
   {{- if .Values.enterprise.enabled }}

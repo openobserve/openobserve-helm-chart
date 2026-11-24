@@ -1,3 +1,4 @@
+{{- $spd := include "openobserve.statusPageDomainsCfg" . | fromJson -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -35,6 +36,9 @@ spec:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: openobserve
     spec:
+      {{- if $spd.enabled }}
+      terminationGracePeriodSeconds: {{ include "openobserve.statusPageDomainsGracePeriod" . }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -75,6 +79,9 @@ spec:
               containerPort: {{ .Values.config.ZO_HTTP_PORT }}
             - name: grpc
               containerPort: {{ .Values.config.ZO_GRPC_PORT }}
+            {{- if $spd.enabled }}
+            {{- include "openobserve.statusPageDomainsPorts" . | nindent 12 }}
+            {{- end }}
           {{- if .Values.probes.enabled }}
           livenessProbe:
            httpGet:
@@ -90,6 +97,9 @@ spec:
            initialDelaySeconds: {{ .Values.probes.initialDelaySeconds | default 10 }}
            periodSeconds: {{ .Values.probes.periodSeconds | default 10 }}
            failureThreshold: {{ .Values.probes.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if $spd.enabled }}
+          {{- include "openobserve.statusPageDomainsLifecycle" . | nindent 10 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
