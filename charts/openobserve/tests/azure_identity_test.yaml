@@ -1,4 +1,4 @@
-suite: Azure Blob credentials and workload identity
+suite: Azure Blob credentials
 tests:
   - it: writes the account key and name when they are set
     template: templates/secret.yaml
@@ -52,37 +52,3 @@ tests:
     asserts:
       - notExists:
           path: stringData.AZURE_STORAGE_ACCOUNT_KEY
-  - it: adds podLabels to each component pod
-    templates:
-      - templates/ingester-statefulset.yaml
-      - templates/querier-statefulset.yaml
-      - templates/compactor-deployment.yaml
-      - templates/router-deployment.yaml
-      - templates/scheduler-statefulset.yaml
-      - templates/alertquerier-statefulset.yaml
-    set:
-      podLabels:
-        ingester: &wi
-          azure.workload.identity/use: "true"
-        querier: *wi
-        compactor: *wi
-        router: *wi
-        scheduler: *wi
-        alertquerier: *wi
-    asserts:
-      - equal:
-          path: spec.template.metadata.labels["azure.workload.identity/use"]
-          value: "true"
-      - isSubset:
-          path: spec.selector.matchLabels
-          content:
-            app.kubernetes.io/name: openobserve
-  - it: annotates the service account
-    template: templates/serviceaccount.yaml
-    set:
-      serviceAccount.annotations:
-        azure.workload.identity/client-id: 00000000-0000-0000-0000-000000000000
-    asserts:
-      - equal:
-          path: metadata.annotations["azure.workload.identity/client-id"]
-          value: 00000000-0000-0000-0000-000000000000

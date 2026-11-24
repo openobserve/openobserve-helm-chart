@@ -1,4 +1,4 @@
-suite: Azure Blob credentials and workload identity
+suite: Azure Blob credentials
 tests:
   - it: writes the account key and name when they are set
     template: templates/secret.yaml
@@ -36,21 +36,3 @@ tests:
       - equal:
           path: stringData.AZURE_STORAGE_ACCOUNT_NAME
           value: config-name
-  - it: adds podLabels to the OpenObserve pod
-    template: templates/openobserve-statefulset.yaml
-    set:
-      podLabels:
-        azure.workload.identity/use: "true"
-    asserts:
-      - equal:
-          path: spec.template.metadata.labels["azure.workload.identity/use"]
-          value: "true"
-  - it: annotates the service account
-    template: templates/serviceaccount.yaml
-    set:
-      serviceAccount.annotations:
-        azure.workload.identity/client-id: 00000000-0000-0000-0000-000000000000
-    asserts:
-      - equal:
-          path: metadata.annotations["azure.workload.identity/client-id"]
-          value: 00000000-0000-0000-0000-000000000000

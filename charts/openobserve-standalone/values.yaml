@@ -36,9 +36,6 @@ serviceAccount:
 
 podAnnotations: {}
 
-# Extra labels for the OpenObserve pod, e.g. azure.workload.identity/use: "true" for Azure workload identity.
-podLabels: {}
-
 labels: {}
 
 podSecurityContext:
@@ -119,10 +116,7 @@ auth:
 
   # Azure Blob (config.ZO_S3_PROVIDER: "azure"). Leave AZURE_STORAGE_ACCOUNT_KEY empty to use workload identity or
   # managed identity; it is then left out of the Secret, because any key (even "") takes precedence over them.
-  # Workload identity: set serviceAccount.annotations."azure.workload.identity/client-id" to the identity's client ID
-  # and podLabels."azure.workload.identity/use": "true". The AKS webhook then injects AZURE_CLIENT_ID,
-  # AZURE_TENANT_ID and AZURE_FEDERATED_TOKEN_FILE. Managed identity (IMDS) needs neither; for a user-assigned
-  # identity set AZURE_CLIENT_ID through extraEnv.
+  # For a user-assigned managed identity, set AZURE_CLIENT_ID through extraEnv.
   AZURE_STORAGE_ACCOUNT_KEY: ""
   AZURE_STORAGE_ACCOUNT_NAME: ""
 
