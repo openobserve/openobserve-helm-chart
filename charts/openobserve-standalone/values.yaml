@@ -36,6 +36,9 @@ serviceAccount:
 
 podAnnotations: {}
 
+# Extra labels added to every pod the chart creates. A component's own podLabels win on the same key.
+podLabels: {}
+
 labels: {}
 
 podSecurityContext:
@@ -637,6 +640,7 @@ enterprise:
   o2ai:
     # IMPORTANT: Must be set to true if O2_AI_ENABLED is "true" above
     enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
+    podLabels: {}
     config:
       O2_AI_HOST: "0.0.0.0"
       O2_AI_PORT: "8000"

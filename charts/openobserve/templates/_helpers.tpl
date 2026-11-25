@@ -43,7 +43,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 {{- $custom := .Values.labels | default dict -}}
 {{- range $key, $value := $custom }}
-{{ $key }}: {{ $value | quote }}
+{{ $key | quote }}: {{ $value | quote }}
 {{- end }}
 {{- end }}
 
@@ -177,4 +177,19 @@ bump alone doesn't restart pods. Empty with externalSecret, where pods don't rea
 {{- if not .Values.externalSecret.enabled -}}
 checksum/secret: {{ (include (print .Template.BasePath "/secret.yaml") . | fromYaml).stringData | toJson | sha256sum }}
 {{- end -}}
+{{- end }}
+
+{{/*
+Merge pod label maps, with each later map taking precedence over earlier ones. Keys and values are
+quoted, so YAML 1.1 words such as on, yes or null stay strings.
+Usage: include "openobserve.podLabels" (list .Values.podLabels .Values.someComponent.podLabels)
+*/}}
+{{- define "openobserve.podLabels" -}}
+{{- $merged := dict -}}
+{{- range . -}}
+{{- $merged = mergeOverwrite $merged (deepCopy (. | default dict)) -}}
+{{- end -}}
+{{- range $key, $value := $merged }}
+{{ $key | quote }}: {{ $value | quote }}
+{{- end }}
 {{- end }}
