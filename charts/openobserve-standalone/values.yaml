@@ -36,9 +36,7 @@ serviceAccount:
 
 podAnnotations: {}
 
-# Extra labels for the OpenObserve pod. For Azure workload identity set
-# azure.workload.identity/use: "true", and put the
-# azure.workload.identity/client-id annotation in serviceAccount.annotations.
+# Extra labels added to the OpenObserve pod.
 podLabels: {}
 
 labels: {}

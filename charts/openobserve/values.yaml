@@ -50,9 +50,7 @@ podAnnotations:
   alertquerier: {}
   o2ai: {}
 
-# Extra labels for the OpenObserve component pods. For Azure workload identity set
-# azure.workload.identity/use: "true" on each component, and put the
-# azure.workload.identity/client-id annotation in serviceAccount.annotations.
+# Extra labels added to each component's pods.
 podLabels:
   ingester: {}
   querier: {}
