@@ -49,7 +49,7 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: ingester
-        {{- with include "openobserve.podLabels" (list . "ingester") }}
+        {{- with include "openobserve.podLabels" (list .Values.podLabels .Values.ingester.podLabels) }}
         {{- . | trim | nindent 8 }}
         {{- end }}
     spec:

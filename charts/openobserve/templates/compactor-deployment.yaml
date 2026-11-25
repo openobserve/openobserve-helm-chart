@@ -33,7 +33,7 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: compactor
-        {{- with include "openobserve.podLabels" (list . "compactor") }}
+        {{- with include "openobserve.podLabels" (list .Values.podLabels .Values.compactor.podLabels) }}
         {{- . | trim | nindent 8 }}
         {{- end }}
     spec:

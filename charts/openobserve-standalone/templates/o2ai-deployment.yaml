@@ -24,7 +24,7 @@ spec:
         name: openobserve
         app: openobserve
         role: o2ai
-        {{- with include "openobserve.podLabels" (list . "o2ai") }}
+        {{- with include "openobserve.podLabels" (list .Values.podLabels .Values.enterprise.o2ai.podLabels) }}
         {{- . | trim | nindent 8 }}
         {{- end }}
       annotations:

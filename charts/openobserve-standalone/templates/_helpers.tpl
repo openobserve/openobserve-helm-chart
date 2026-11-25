@@ -99,14 +99,15 @@ checksum/secret: {{ (include (print .Template.BasePath "/secret.yaml") . | fromY
 {{- end }}
 
 {{/*
-Extra pod labels: podLabels.global merged with podLabels.<component>; the component wins on the same key.
-Values are quoted so --set ...=true stays a string. Usage: include "openobserve.podLabels" (list . "ingester")
+Merge pod label maps, with each later map taking precedence over earlier ones. Values are quoted.
+Usage: include "openobserve.podLabels" (list .Values.podLabels .Values.someComponent.podLabels)
 */}}
 {{- define "openobserve.podLabels" -}}
-{{- $podLabels := (index . 0).Values.podLabels | default dict -}}
-{{- $component := index $podLabels (index . 1) | default dict -}}
-{{- $labels := merge (deepCopy $component) (deepCopy ($podLabels.global | default dict)) -}}
-{{- range $key, $value := $labels }}
+{{- $merged := dict -}}
+{{- range . -}}
+{{- $merged = mergeOverwrite $merged (deepCopy (. | default dict)) -}}
+{{- end -}}
+{{- range $key, $value := $merged }}
 {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- end }}

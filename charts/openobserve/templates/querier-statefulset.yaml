@@ -41,7 +41,7 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: querier
-        {{- with include "openobserve.podLabels" (list . "querier") }}
+        {{- with include "openobserve.podLabels" (list .Values.podLabels .Values.querier.podLabels) }}
         {{- . | trim | nindent 8 }}
         {{- end }}
     spec:

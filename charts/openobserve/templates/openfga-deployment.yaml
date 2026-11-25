@@ -18,7 +18,7 @@ spec:
       {{- end }}
       labels:
         app: openfga
-        {{- with include "openobserve.podLabels" (list . "openfga") }}
+        {{- with include "openobserve.podLabels" (list .Values.podLabels .Values.enterprise.openfga.podLabels) }}
         {{- . | trim | nindent 8 }}
         {{- end }}
     spec:

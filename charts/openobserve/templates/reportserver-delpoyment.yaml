@@ -37,7 +37,7 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: reportserver
-        {{- with include "openobserve.podLabels" (list . "reportserver") }}
+        {{- with include "openobserve.podLabels" (list .Values.podLabels .Values.reportserver.podLabels) }}
         {{- . | trim | nindent 8 }}
         {{- end }}
     spec:

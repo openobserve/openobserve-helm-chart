@@ -50,19 +50,8 @@ podAnnotations:
   alertquerier: {}
   o2ai: {}
 
-# Extra pod labels. global goes on every pod the chart creates; a component's labels win on the same key.
-podLabels:
-  global: {}
-  ingester: {}
-  querier: {}
-  compactor: {}
-  router: {}
-  scheduler: {}
-  alertquerier: {}
-  dex: {}
-  reportserver: {}
-  o2ai: {}
-  openfga: {}
+# Extra labels added to every pod the chart creates. A component's own podLabels win on the same key.
+podLabels: {}
 
 labels: {}
 
@@ -92,6 +81,7 @@ replicaCount:
 
 scheduler:
   extraEnv: []
+  podLabels: {}
   # -- What happens to this component's PVCs when the StatefulSet is scaled down or deleted.
   # Requires Kubernetes >= 1.27. Empty keeps the Kubernetes default (Retain for both).
   # The volume only holds disk cache, so `whenScaled: Delete` is safe here.
@@ -109,6 +99,7 @@ scheduler:
 
 compactor:
   extraEnv: []
+  podLabels: {}
   persistence:
     enabled: false
     size: 10Gi
@@ -120,9 +111,11 @@ compactor:
 
 router:
   extraEnv: []
+  podLabels: {}
 
 ingester:
   extraEnv: []
+  podLabels: {}
   # -- Seconds Kubernetes waits for the ingester pod to stop before killing it.
   # When autoscaling.ingester.enabled is true the preStop hook drains the node and uploads
   # pending files (up to ~16 minutes), so this defaults to 1200 in that case.
@@ -148,6 +141,7 @@ ingester:
 
 querier:
   extraEnv: []
+  podLabels: {}
   # -- What happens to this component's PVCs when the StatefulSet is scaled down or deleted.
   # Requires Kubernetes >= 1.27. Empty keeps the Kubernetes default (Retain for both).
   # The volume only holds disk cache, so `whenScaled: Delete` is safe here.
@@ -165,6 +159,7 @@ querier:
 
 alertquerier:
   extraEnv: []
+  podLabels: {}
   # -- What happens to this component's PVCs when the StatefulSet is scaled down or deleted.
   # Requires Kubernetes >= 1.27. Empty keeps the Kubernetes default (Retain for both).
   # The volume only holds disk cache, so `whenScaled: Delete` is safe here.
@@ -182,6 +177,7 @@ alertquerier:
 
 reportserver:
   enabled: true # if true then reportserver will be deployed as part of openobserve
+  podLabels: {}
   extraEnv: # Below env variable are required due to https://github.com/puppeteer/puppeteer/issues/11023#issuecomment-1776247197
     - name: XDG_CONFIG_HOME
       value: /tmp/.chromium
@@ -994,6 +990,7 @@ enterprise:
     O2_LLM_REVIEW_RECONCILE_INTERVAL_SECS: "600"
   openfga:
     enabled: true
+    podLabels: {}
     parameters:
       O2_OPENFGA_LIST_ONLY_PERMITTED: "false"
       O2_MAP_GROUP_TO_ROLE: "true"
@@ -1005,6 +1002,7 @@ enterprise:
       pullPolicy: IfNotPresent
   dex:
     enabled: false
+    podLabels: {}
     parameters:
       O2_CALLBACK_URL: https://openobserve.example.com/web/cb
       O2_DEX_SCOPES: openid profile email groups offline_access
@@ -1132,6 +1130,7 @@ enterprise:
             - dex.example.com
   o2ai:
     enabled: false # if true then o2ai will be deployed as part of openobserve (enterprise only)
+    podLabels: {}
     config:
       O2_AI_HOST: "0.0.0.0"
       O2_AI_PORT: "8000"
