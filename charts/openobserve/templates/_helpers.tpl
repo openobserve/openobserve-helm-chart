@@ -43,7 +43,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 {{- $custom := .Values.labels | default dict -}}
 {{- range $key, $value := $custom }}
-{{ $key }}: {{ $value | quote }}
+{{ $key | quote }}: {{ $value | quote }}
 {{- end }}
 {{- end }}
 
