@@ -180,7 +180,8 @@ checksum/secret: {{ (include (print .Template.BasePath "/secret.yaml") . | fromY
 {{- end }}
 
 {{/*
-Merge pod label maps, with each later map taking precedence over earlier ones. Values are quoted.
+Merge pod label maps, with each later map taking precedence over earlier ones. Keys and values are
+quoted, so YAML 1.1 words such as on, yes or null stay strings.
 Usage: include "openobserve.podLabels" (list .Values.podLabels .Values.someComponent.podLabels)
 */}}
 {{- define "openobserve.podLabels" -}}
@@ -189,6 +190,6 @@ Usage: include "openobserve.podLabels" (list .Values.podLabels .Values.someCompo
 {{- $merged = mergeOverwrite $merged (deepCopy (. | default dict)) -}}
 {{- end -}}
 {{- range $key, $value := $merged }}
-{{ $key }}: {{ $value | quote }}
+{{ $key | quote }}: {{ $value | quote }}
 {{- end }}
 {{- end }}
