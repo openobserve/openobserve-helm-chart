@@ -178,3 +178,16 @@ bump alone doesn't restart pods. Empty with externalSecret, where pods don't rea
 checksum/secret: {{ (include (print .Template.BasePath "/secret.yaml") . | fromYaml).stringData | toJson | sha256sum }}
 {{- end -}}
 {{- end }}
+
+{{/*
+Extra pod labels: podLabels.global merged with podLabels.<component>; the component wins on the same key.
+Values are quoted so --set ...=true stays a string. Usage: include "openobserve.podLabels" (list . "ingester")
+*/}}
+{{- define "openobserve.podLabels" -}}
+{{- $podLabels := (index . 0).Values.podLabels | default dict -}}
+{{- $component := index $podLabels (index . 1) | default dict -}}
+{{- $labels := merge (deepCopy $component) (deepCopy ($podLabels.global | default dict)) -}}
+{{- range $key, $value := $labels }}
+{{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}

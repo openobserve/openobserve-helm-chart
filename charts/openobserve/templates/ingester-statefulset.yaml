@@ -49,8 +49,8 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: ingester
-        {{- range $key, $value := .Values.podLabels.ingester }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with include "openobserve.podLabels" (list . "ingester") }}
+        {{- . | trim | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}

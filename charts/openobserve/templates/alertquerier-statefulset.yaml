@@ -41,8 +41,8 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: alertquerier
-        {{- range $key, $value := .Values.podLabels.alertquerier }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with include "openobserve.podLabels" (list . "alertquerier") }}
+        {{- . | trim | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}

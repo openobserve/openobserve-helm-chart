@@ -36,8 +36,11 @@ serviceAccount:
 
 podAnnotations: {}
 
-# Extra labels added to the OpenObserve pod.
-podLabels: {}
+# Extra pod labels. global goes on every pod the chart creates; a component's labels win on the same key.
+podLabels:
+  global: {}
+  openobserve: {}
+  o2ai: {}
 
 labels: {}
 

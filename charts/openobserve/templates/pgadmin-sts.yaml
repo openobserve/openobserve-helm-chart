@@ -18,6 +18,9 @@ spec:
       labels:
         name: pgadmin
         app: pgadmin
+        {{- with include "openobserve.podLabels" (list . "pgadmin") }}
+        {{- . | trim | nindent 8 }}
+        {{- end }}
     spec:
       securityContext:
         fsGroup: 2000

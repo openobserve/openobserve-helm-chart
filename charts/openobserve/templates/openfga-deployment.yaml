@@ -18,6 +18,9 @@ spec:
       {{- end }}
       labels:
         app: openfga
+        {{- with include "openobserve.podLabels" (list . "openfga") }}
+        {{- . | trim | nindent 8 }}
+        {{- end }}
     spec:
       initContainers:
         - name: openfga-migrate

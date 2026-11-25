@@ -34,8 +34,8 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: openobserve
-        {{- range $key, $value := .Values.podLabels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with include "openobserve.podLabels" (list . "openobserve") }}
+        {{- . | trim | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}

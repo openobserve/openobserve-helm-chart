@@ -33,8 +33,8 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         role: compactor
-        {{- range $key, $value := .Values.podLabels.compactor }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with include "openobserve.podLabels" (list . "compactor") }}
+        {{- . | trim | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}

@@ -18,6 +18,9 @@ spec:
       labels:
         {{- include "openobserve.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: blocked-metrics
+        {{- with include "openobserve.podLabels" (list . "blockedMetrics") }}
+        {{- . | trim | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
