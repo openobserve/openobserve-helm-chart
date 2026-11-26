@@ -42,7 +42,7 @@ Enable per pod or namespace by adding the appropriate annotation:
 
 > **Python logs** auto-instrumentation is disabled by default (`autoinstrumentation.pythonLogsEnabled: false`).
 
-> **Java logs** are not sent over OTLP by default (`autoinstrumentation.javaLogsEnabled: false`), because the agent already collects container stdout/stderr. Set it to `true` to send them through the gateway instead.
+> **Java logs** are not sent over OTLP by default (`autoinstrumentation.javaLogsEnabled: false`), because the collector's agent DaemonSet already collects container stdout/stderr. Setting it to `true` sends them through the gateway as well, so each line the app also writes to stdout is stored twice.
 
 ### What auto-instrumentation captures
 

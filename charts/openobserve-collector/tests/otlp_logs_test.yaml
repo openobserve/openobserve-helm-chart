@@ -14,8 +14,6 @@ tests:
           value: [otlphttp/openobserve]
   - it: disables Java OTLP logs by default
     template: templates/instrumentation-java.yaml
-    set:
-      gateway.enabled: false
     asserts:
       - contains:
           path: spec.java.env
@@ -25,7 +23,6 @@ tests:
   - it: enables Java OTLP logs with javaLogsEnabled
     template: templates/instrumentation-java.yaml
     set:
-      gateway.enabled: false
       autoinstrumentation.javaLogsEnabled: true
     asserts:
       - contains:

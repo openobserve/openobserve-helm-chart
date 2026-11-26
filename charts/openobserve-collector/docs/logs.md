@@ -1,6 +1,6 @@
 # Logs Collection
 
-Two log sources are collected: container stdout/stderr and Kubernetes Events. The gateway also accepts logs that applications send over OTLP.
+Three log sources are collected: container stdout/stderr, Kubernetes Events, and logs that applications send to the gateway over OTLP.
 
 ---
 

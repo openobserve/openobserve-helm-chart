@@ -114,8 +114,9 @@ autoinstrumentation:
     python: ""
   # Enable Python logs auto-instrumentation
   pythonLogsEnabled: false
-  # Send Java application logs over OTLP. Off by default because the agent
-  # already collects container stdout/stderr, so enabling it can duplicate logs.
+  # Send Java application logs over OTLP. Off by default because the collector's
+  # agent DaemonSet already collects container stdout/stderr, so enabling it can
+  # duplicate logs.
   javaLogsEnabled: false
 
 # eBPF tracing: a separate privileged DaemonSet running the obi receiver. Traces the
