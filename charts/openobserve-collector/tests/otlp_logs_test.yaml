@@ -12,6 +12,8 @@ tests:
       - equal:
           path: spec.config.service.pipelines.logs.exporters
           value: [otlphttp/openobserve]
+      - exists:
+          path: spec.config.receivers.otlp.protocols.http
   - it: disables Java OTLP logs by default
     template: templates/instrumentation-java.yaml
     asserts:
@@ -30,3 +32,8 @@ tests:
           content:
             name: OTEL_LOGS_EXPORTER
             value: otlp
+      - contains:
+          path: spec.java.env
+          content:
+            name: OTEL_EXPORTER_OTLP_LOGS_PROTOCOL
+            value: http/protobuf
