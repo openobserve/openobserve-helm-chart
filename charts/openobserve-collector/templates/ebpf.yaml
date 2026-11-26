@@ -177,14 +177,16 @@ spec:
           - key: k8s_cluster
             action: insert
             value: {{ .Values.k8sCluster | quote }}
-      batch:
-        send_batch_size: 2000
-        send_batch_max_size: 5000
-        timeout: 5s
     exporters:
       {{- if .Values.gateway.enabled }}
       otlphttp/gateway:
         endpoint: http://{{ include "openobserve-collector.fullname" . }}-gateway-collector.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:4318
+        sending_queue:
+          batch:
+            flush_timeout: 5s
+            min_size: 2000
+            max_size: 5000
+            sizer: items
       {{- else }}
       otlphttp/openobserve:
         {{- toYaml (index .Values.exporters "otlphttp/openobserve") | nindent 8 }}
@@ -205,13 +207,13 @@ spec:
         {{- if $tracing }}
         traces:
           receivers: [obi]
-          processors: [memory_limiter, filter/node_processes, attributes, batch]
+          processors: [memory_limiter, filter/node_processes, attributes]
           exporters: [{{ if .Values.gateway.enabled }}otlphttp/gateway{{ else }}otlphttp/openobserve{{ end }}]
         {{- end }}
         {{- if $network }}
         metrics:
           receivers: [obi]
-          processors: [memory_limiter, attributes, batch]
+          processors: [memory_limiter, attributes]
           exporters: [{{ if .Values.gateway.enabled }}otlphttp/gateway{{ else }}otlphttp/openobserve{{ end }}]
         {{- end }}
 {{- end }}

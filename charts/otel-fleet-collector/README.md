@@ -159,17 +159,18 @@ processors:
   resource/cluster:
     attributes:
       - { key: k8s.cluster.name, value: "${env:K8S_CLUSTER_NAME}", action: upsert }
-  batch: {}
 exporters:
   otlphttp/openobserve:
     endpoint: "${env:O2_ENDPOINT}"
     headers:
       Authorization: "${env:O2_TOKEN}"
+    sending_queue:
+      batch: {}
 service:
   pipelines:
     logs:
       receivers: [filelog]
-      processors: [k8sattributes, resource/cluster, batch]
+      processors: [k8sattributes, resource/cluster]
       exporters: [otlphttp/openobserve]
 ```
 

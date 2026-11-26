@@ -7,11 +7,25 @@ exporters:
     endpoint: https://api.openobserve.ai/api/default/
     headers:
       Authorization: Basic YOUR_BASE64_ENCODED_AUTH
+    sending_queue:
+      # Exporter-level batching replaces the deprecated batch processor.
+      # Same sizes as the old processor: send at 2000 items or after 5s, split above 5000.
+      batch:
+        flush_timeout: 5s
+        min_size: 2000
+        max_size: 5000
+        sizer: items
   otlphttp/openobserve_k8s_events:
     endpoint: https://api.openobserve.ai/api/default/
     headers:
       Authorization: Basic CHANGEME_BASE64_ENCODED_AUTH
       stream-name: k8s_events
+    sending_queue:
+      batch:
+        flush_timeout: 5s
+        min_size: 2000
+        max_size: 5000
+        sizer: items
 
 k8sCluster: "cluster1"
 
@@ -424,10 +438,6 @@ agent:
               name: k8s.namespace.name
         - sources:
             - from: connection
-    batch:
-      send_batch_size: 2000
-      send_batch_max_size: 5000
-      timeout: 5s
   extensions:
     health_check:
       endpoint: 0.0.0.0:13133
@@ -442,12 +452,12 @@ agent:
       logs:
         receivers: [filelog/std]
         processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+          [memory_limiter, resourcedetection, attributes, k8sattributes]
         exporters: [otlphttp/openobserve]
       metrics:
         receivers: [kubeletstats, hostmetrics]
         processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+          [memory_limiter, resourcedetection, attributes, k8sattributes]
         exporters: [otlphttp/openobserve]
 
 gateway:
@@ -943,10 +953,6 @@ gateway:
               name: k8s.namespace.name
         - sources:
             - from: connection
-    batch:
-      send_batch_size: 2000
-      send_batch_max_size: 5000
-      timeout: 5s
   extensions:
     health_check:
       endpoint: 0.0.0.0:13133
@@ -987,20 +993,20 @@ gateway:
       logs/k8s_events:
         receivers: [k8sobjects/events, k8sobjects/pods, k8sobjects/nodes, k8sobjects/deployments, k8sobjects/services, k8sobjects/namespaces, k8sobjects/pvcs, k8sobjects/daemonsets, k8sobjects/statefulsets, k8sobjects/ingresses, k8sobjects/jobs, k8sobjects/cronjobs, k8sobjects/persistentvolumes, k8sobjects/serviceaccounts, k8sobjects/roles, k8sobjects/clusterroles, k8sobjects/rolebindings, k8sobjects/clusterrolebindings, k8sobjects/hpa, k8sobjects/crds, k8sobjects/storageclasses, k8sobjects/configmaps, k8sobjects/networkpolicies, k8sobjects/endpoints, k8sobjects/replicasets, k8sobjects/limitranges, k8sobjects/resourcequotas]
         processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, transform/strip_crd_spec, batch]
+          [memory_limiter, resourcedetection, attributes, k8sattributes, transform/strip_crd_spec]
         exporters: [otlphttp/openobserve_k8s_events]
       logs:
         receivers: [otlp]
         processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+          [memory_limiter, resourcedetection, attributes, k8sattributes]
         exporters: [otlphttp/openobserve]
       metrics:
         receivers: [otlp, prometheus]
         processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+          [memory_limiter, resourcedetection, attributes, k8sattributes]
         exporters: [otlphttp/openobserve]
       traces:
         receivers: [otlp]
         processors:
-          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+          [memory_limiter, resourcedetection, attributes, k8sattributes]
         exporters: [otlphttp/openobserve] 

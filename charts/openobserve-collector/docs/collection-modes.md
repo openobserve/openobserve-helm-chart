@@ -120,14 +120,17 @@ The 5-minute delay serves two purposes:
 
 **Do not do this** unless you have a specific requirement and have addressed the schema size problem first. If you must:
 
-1. Ensure `transform/strip_crd_spec` is in the processor chain **before** `batch` — it strips `spec` and `status` to make documents small enough
+1. Ensure `transform/strip_crd_spec` is in the `logs/k8s_events` processor chain — it strips `spec` and `status` to make documents small enough before the exporter batches them
 2. Be aware the initial LIST will still fire immediately on startup and send all CRDs at once — monitor the gateway logs for HTTP 400 errors
-3. Increase the batch `timeout` and reduce `send_batch_size` to spread the load:
+3. Increase the exporter's batch `flush_timeout` and reduce `min_size` and `max_size` to spread the load:
    ```yaml
-   batch:
-     send_batch_size: 100      # reduce from 2000
-     send_batch_max_size: 200  # reduce from 5000
-     timeout: 10s
+   exporters:
+     otlphttp/openobserve_k8s_events:
+       sending_queue:
+         batch:
+           min_size: 100      # reduce from 2000
+           max_size: 200      # reduce from 5000
+           flush_timeout: 10s
    ```
 4. If the stream schema gets corrupted: delete the `k8s_objects` stream in OpenObserve UI and redeploy the gateway
 

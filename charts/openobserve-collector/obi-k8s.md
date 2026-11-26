@@ -289,19 +289,26 @@ processors:
 exporters:
   otlphttp/gateway:
     endpoint: http://<fullname>-gateway-collector.<namespace>.svc.<clusterDomain>:4318
+    sending_queue:
+      batch:
+        flush_timeout: 5s
+        min_size: 2000
+        max_size: 5000
+        sizer: items
 service:
   pipelines:
     traces:
       receivers: [obi]
-      processors: [memory_limiter, filter/node_processes, attributes, batch]
+      processors: [memory_limiter, filter/node_processes, attributes]
       exporters: [otlphttp/gateway]   # otlphttp/openobserve when gateway.enabled is false
 ```
 
 The template defines these processors itself: `filter/node_processes` drops spans
 from processes outside any pod (see [Where spans go](#where-spans-go)), `attributes`
-is the same `k8s_cluster` insert the agent template injects, and `batch` uses the
-agent's settings. `otlphttp/gateway` uses the same gateway address as the
-`Instrumentation` resources.
+is the same `k8s_cluster` insert the agent template injects. There is no `batch`
+processor: `otlphttp/gateway` batches in its `sending_queue` with the same sizes as the
+chart's other exporters, and uses the same gateway address as the `Instrumentation`
+resources.
 `memory_limiter` is set from `ebpf.memoryLimiter`, which defaults to the agent's
 values (`check_interval: 1s`, `limit_mib: 512`, `spike_limit_mib: 128`). It takes
 fixed sizes rather than percentages because the host's `/sys/fs/cgroup` is mounted
@@ -527,7 +534,7 @@ and a metrics pipeline:
 ```yaml
 metrics:
   receivers: [obi]
-  processors: [memory_limiter, attributes, batch]
+  processors: [memory_limiter, attributes]
   exporters: [otlphttp/gateway]   # otlphttp/openobserve when gateway.enabled is false
 ```
 
