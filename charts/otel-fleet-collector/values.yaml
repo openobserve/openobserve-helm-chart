@@ -11,7 +11,7 @@
 image:
   repository: o2cr.ai/openobserve/otel-fleet-collector
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.163.1"
+  tag: "0.165.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

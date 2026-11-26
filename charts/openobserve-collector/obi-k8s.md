@@ -43,7 +43,7 @@ where Kubernetes needs something else. The departures are:
 
 | Component | Version | Notes |
 |---|---|---|
-| Collector image | contrib 0.163.1 | already the chart's `appVersion` |
+| Collector image | contrib 0.166.0 | already the chart's `appVersion` |
 | `obi` receiver | OBI v0.15.2 | bundled in that image |
 | OpenTelemetry Operator | v0.142.0 or later, when eBPF is enabled | v0.142.0 added `spec.hostPID`; tested with v0.161.0 |
 | Chart | 0.5.1 → 0.6.0 | new feature |
