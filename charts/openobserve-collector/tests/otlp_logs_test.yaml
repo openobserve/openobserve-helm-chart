@@ -1,0 +1,53 @@
+suite: OTLP logs
+templates:
+  - templates/gateway.yaml
+  - templates/instrumentation-java.yaml
+  - templates/instrumentation-python.yaml
+tests:
+  - it: gateway accepts OTLP logs
+    template: templates/gateway.yaml
+    asserts:
+      - equal:
+          path: spec.config.service.pipelines.logs.receivers
+          value: [otlp]
+      - equal:
+          path: spec.config.service.pipelines.logs.exporters
+          value: [otlphttp/openobserve]
+      - exists:
+          path: spec.config.receivers.otlp.protocols.http
+  - it: disables Java OTLP logs by default
+    template: templates/instrumentation-java.yaml
+    asserts:
+      - contains:
+          path: spec.java.env
+          content:
+            name: OTEL_LOGS_EXPORTER
+            value: none
+  - it: enables Java OTLP logs with javaLogsEnabled
+    template: templates/instrumentation-java.yaml
+    set:
+      autoinstrumentation.javaLogsEnabled: true
+    asserts:
+      - contains:
+          path: spec.java.env
+          content:
+            name: OTEL_LOGS_EXPORTER
+            value: otlp
+      - contains:
+          path: spec.java.env
+          content:
+            name: OTEL_EXPORTER_OTLP_LOGS_PROTOCOL
+            value: http/protobuf
+  - it: disables Python log capture by default, on old and new SDKs
+    template: templates/instrumentation-python.yaml
+    asserts:
+      - contains:
+          path: spec.python.env
+          content:
+            name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+            value: "false"
+      - contains:
+          path: spec.python.env
+          content:
+            name: OTEL_PYTHON_LOG_AUTO_INSTRUMENTATION
+            value: "false"

@@ -22,5 +22,9 @@ spec:
         value: http/protobuf
       - name: OTEL_EXPORTER_OTLP_METRICS_PROTOCOL
         value: http/protobuf
+      - name: OTEL_EXPORTER_OTLP_LOGS_PROTOCOL
+        value: http/protobuf
+      - name: OTEL_LOGS_EXPORTER
+        value: {{ ternary "otlp" "none" .Values.autoinstrumentation.javaLogsEnabled | quote }}
 
 {{- end }}

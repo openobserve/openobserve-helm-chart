@@ -42,6 +42,8 @@ Enable per pod or namespace by adding the appropriate annotation:
 
 > **Python logs** auto-instrumentation is disabled by default (`autoinstrumentation.pythonLogsEnabled: false`).
 
+> **Java logs** are not sent over OTLP by default (`autoinstrumentation.javaLogsEnabled: false`), because the collector's agent DaemonSet already collects container stdout/stderr. Setting it to `true` sends them through the gateway as well, so each line the app also writes to stdout is stored twice. Before chart 0.9.2 the Java agent's default (`otlp`) applied; if you relied on it, for example with your own gateway logs pipeline, set `javaLogsEnabled: true` when upgrading.
+
 ### What auto-instrumentation captures
 
 Depending on the language and framework, auto-instrumentation typically produces spans for:

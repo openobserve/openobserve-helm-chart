@@ -38,7 +38,7 @@ This chart deploys an OpenTelemetry Collector stack (agent DaemonSet + gateway S
 
 | Stream | Signal | Source |
 |--------|--------|--------|
-| `default` (logs) | Logs | Pod/container stdout/stderr |
+| `default` (logs) | Logs | Pod/container stdout/stderr, and OTLP logs sent to the gateway |
 | `k8s_events` | Logs | Kubernetes Events API |
 | `k8s_objects` | Logs | Kubernetes object state (nodes, deployments, etc.) |
 | `default` (metrics) | Metrics | kubeletstats, hostmetrics, prometheus, k8s_cluster |
@@ -48,7 +48,7 @@ This chart deploys an OpenTelemetry Collector stack (agent DaemonSet + gateway S
 
 | File | What it covers |
 |------|----------------|
-| [logs.md](logs.md) | Container logs and Kubernetes events |
+| [logs.md](logs.md) | Container logs, Kubernetes events and OTLP logs |
 | [metrics.md](metrics.md) | All metrics sources and metric names |
 | [k8s-objects.md](k8s-objects.md) | Kubernetes object state collection |
 | [traces.md](traces.md) | Distributed tracing and auto-instrumentation |

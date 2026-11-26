@@ -26,5 +26,8 @@ spec:
         value: otlp_proto_http
       - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
         value: {{ .Values.autoinstrumentation.pythonLogsEnabled | quote }}
+      # OpenTelemetry Python 1.40+ captures logs by default and reads this instead.
+      - name: OTEL_PYTHON_LOG_AUTO_INSTRUMENTATION
+        value: {{ .Values.autoinstrumentation.pythonLogsEnabled | quote }}
   
 {{- end }}
