@@ -53,7 +53,7 @@ helm repo add openobserve https://charts.openobserve.ai && helm repo update
 helm upgrade --install otel-fleet-collector openobserve/otel-fleet-collector \
   --namespace openobserve-collector --create-namespace \
   --set image.repository=o2cr.ai/openobserve/otel-fleet-collector \
-  --set image.tag='0.163.1' \
+  --set image.tag='0.165.0' \
   --set opamp.endpoint='ws://openobserve.example.com:5080/api/default/v1/opamp' \
   --set opamp.token='<fleet enrollment token>'
 ```
@@ -65,7 +65,7 @@ helm upgrade --install otel-fleet-collector-gateway openobserve/otel-fleet-colle
   --namespace openobserve-collector --create-namespace \
   --set agent.enabled=false --set gateway.enabled=true \
   --set image.repository=o2cr.ai/openobserve/otel-fleet-collector \
-  --set image.tag='0.163.1' \
+  --set image.tag='0.165.0' \
   --set opamp.endpoint='ws://openobserve.example.com:5080/api/default/v1/opamp' \
   --set opamp.token='<gateway fleet enrollment token>'
 ```
@@ -279,7 +279,7 @@ fails to render with a message naming the new key, rather than silently dropping
 | Key | Default | Description |
 |-----|---------|-------------|
 | `image.repository` | `o2cr.ai/openobserve/otel-fleet-collector` | Supervisor + collector image |
-| `image.tag` | `0.163.1` | Image tag (chart `appVersion` when empty) |
+| `image.tag` | `0.165.0` | Image tag (chart `appVersion` when empty) |
 | `image.pullPolicy` | `IfNotPresent` | |
 | `imagePullSecrets` | `[]` | |
 | `opamp.endpoint` | `""` | **Required.** OpAMP websocket URL `ws(s)://<host>/api/<org>/v1/opamp` |
