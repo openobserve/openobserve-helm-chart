@@ -100,3 +100,5 @@ All Kubernetes events cluster-wide — every `kubectl describe` event, scheduler
 Logs that applications send with an OpenTelemetry SDK or agent, to the gateway service on `/v1/logs`. They carry `trace_id` and `span_id` when they are written inside a span.
 
 Auto-instrumented Java and Python apps do not send logs this way by default, because their stdout is already collected as container logs. Enable it with `autoinstrumentation.javaLogsEnabled` or `autoinstrumentation.pythonLogsEnabled`.
+
+If you already added your own gateway logs pipeline on the `otlp` receiver under another name (for example `logs/app`), each record now goes through both pipelines. Remove yours, or override `gateway.service.pipelines.logs` with it.

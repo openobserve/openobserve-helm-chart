@@ -2,6 +2,7 @@ suite: OTLP logs
 templates:
   - templates/gateway.yaml
   - templates/instrumentation-java.yaml
+  - templates/instrumentation-python.yaml
 tests:
   - it: gateway accepts OTLP logs
     template: templates/gateway.yaml
@@ -37,3 +38,16 @@ tests:
           content:
             name: OTEL_EXPORTER_OTLP_LOGS_PROTOCOL
             value: http/protobuf
+  - it: disables Python log capture by default, on old and new SDKs
+    template: templates/instrumentation-python.yaml
+    asserts:
+      - contains:
+          path: spec.python.env
+          content:
+            name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+            value: "false"
+      - contains:
+          path: spec.python.env
+          content:
+            name: OTEL_PYTHON_LOG_AUTO_INSTRUMENTATION
+            value: "false"
