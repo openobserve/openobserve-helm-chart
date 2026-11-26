@@ -114,6 +114,9 @@ autoinstrumentation:
     python: ""
   # Enable Python logs auto-instrumentation
   pythonLogsEnabled: false
+  # Send Java application logs over OTLP. Off by default because the agent
+  # already collects container stdout/stderr, so enabling it can duplicate logs.
+  javaLogsEnabled: false
 
 # eBPF tracing: a separate privileged DaemonSet running the obi receiver. Traces the
 # selected processes without code changes and sends spans through the gateway (or
@@ -985,6 +988,11 @@ gateway:
         processors:
           [memory_limiter, resourcedetection, attributes, k8sattributes, transform/strip_crd_spec, batch]
         exporters: [otlphttp/openobserve_k8s_events]
+      logs:
+        receivers: [otlp]
+        processors:
+          [memory_limiter, resourcedetection, attributes, k8sattributes, batch]
+        exporters: [otlphttp/openobserve]
       metrics:
         receivers: [otlp, prometheus]
         processors:

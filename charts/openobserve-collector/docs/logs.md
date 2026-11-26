@@ -1,6 +1,6 @@
 # Logs Collection
 
-Two log sources are collected: container stdout/stderr and Kubernetes Events.
+Two log sources are collected: container stdout/stderr and Kubernetes Events. The gateway also accepts logs that applications send over OTLP.
 
 ---
 
@@ -88,3 +88,15 @@ All Kubernetes events cluster-wide — every `kubectl describe` event, scheduler
 | `body.lastTimestamp` | Most recent occurrence |
 | `body.source.component` | Component that generated the event (e.g. `kubelet`, `scheduler`) |
 | `body.source.host` | Node where the event originated |
+
+---
+
+## 3. OTLP Logs
+
+**Collector:** Gateway StatefulSet
+**Receiver:** `otlp` (gRPC `4317`, HTTP `4318`)
+**OpenObserve stream:** `default` (logs)
+
+Logs that applications send with an OpenTelemetry SDK or agent, to the gateway service on `/v1/logs`. They carry `trace_id` and `span_id` when they are written inside a span.
+
+Auto-instrumented Java and Python apps do not send logs this way by default, because their stdout is already collected as container logs. Enable it with `autoinstrumentation.javaLogsEnabled` or `autoinstrumentation.pythonLogsEnabled`.

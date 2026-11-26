@@ -42,6 +42,8 @@ Enable per pod or namespace by adding the appropriate annotation:
 
 > **Python logs** auto-instrumentation is disabled by default (`autoinstrumentation.pythonLogsEnabled: false`).
 
+> **Java logs** are not sent over OTLP by default (`autoinstrumentation.javaLogsEnabled: false`), because the agent already collects container stdout/stderr. Set it to `true` to send them through the gateway instead.
+
 ### What auto-instrumentation captures
 
 Depending on the language and framework, auto-instrumentation typically produces spans for:

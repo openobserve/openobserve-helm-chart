@@ -1,0 +1,35 @@
+suite: OTLP logs
+templates:
+  - templates/gateway.yaml
+  - templates/instrumentation-java.yaml
+tests:
+  - it: gateway accepts OTLP logs
+    template: templates/gateway.yaml
+    asserts:
+      - equal:
+          path: spec.config.service.pipelines.logs.receivers
+          value: [otlp]
+      - equal:
+          path: spec.config.service.pipelines.logs.exporters
+          value: [otlphttp/openobserve]
+  - it: disables Java OTLP logs by default
+    template: templates/instrumentation-java.yaml
+    set:
+      gateway.enabled: false
+    asserts:
+      - contains:
+          path: spec.java.env
+          content:
+            name: OTEL_LOGS_EXPORTER
+            value: none
+  - it: enables Java OTLP logs with javaLogsEnabled
+    template: templates/instrumentation-java.yaml
+    set:
+      gateway.enabled: false
+      autoinstrumentation.javaLogsEnabled: true
+    asserts:
+      - contains:
+          path: spec.java.env
+          content:
+            name: OTEL_LOGS_EXPORTER
+            value: otlp
