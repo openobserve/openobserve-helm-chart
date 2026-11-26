@@ -21,6 +21,22 @@ steps. Chart versions follow [Semantic Versioning](https://semver.org/); a bump 
 
 ## Chart changes
 
+### openobserve-collector 0.10.0 — batch processor replaced by exporter batching
+
+The deprecated OpenTelemetry Collector `batch` processor is gone. Batching now happens in each
+exporter's `sending_queue.batch`, with the same sizes as before (`min_size: 2000`,
+`max_size: 5000`, `flush_timeout: 5s`, `sizer: items`). See the
+[OpenTelemetry announcement](https://opentelemetry.io/blog/2026/collector-batching-migration/).
+
+- Default values need no change.
+- If you override `agent.service`, `gateway.service`, or a pipeline's `processors` list and it
+  still names `batch`, remove `batch` from the list, or the collector fails to start because
+  `batch` is no longer configured. Move any custom `batch` settings to
+  `exporters.<name>.sending_queue.batch` (`send_batch_size` → `min_size`,
+  `send_batch_max_size` → `max_size`, `timeout` → `flush_timeout`).
+- If you replace `exporters` with your own exporters, add `sending_queue: {batch: {}}` (or your
+  own sizes) to keep batching.
+
 ### openobserve-standalone — Postgres DSN moved to the Secret
 
 `ZO_META_POSTGRES_DSN` is now rendered into the **Secret** instead of the plaintext ConfigMap,
