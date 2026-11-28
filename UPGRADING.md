@@ -198,6 +198,76 @@ Secret holds no `OPENFGA_*` values.
 calls `/healthz` on the component's web port and liveness/startup check that the port is open.
 Previously these probes pointed at the wrong port and crash-looped the pods.
 
+### openobserve 1.2.0 / openobserve-standalone 1.2.0 — credentials generated per install
+
+The charts no longer ship shared credentials. `values.yaml` has no default root email or password,
+tracing header, Dex client secret, Postgres or pgAdmin password, or LDAP bind password. Credentials
+you leave empty are generated once per install, and no upgrade changes them.
+
+**How it works.** A hook Job, `<fullname>-secret-generator`, runs before every install, upgrade and
+Argo CD sync (Helm `pre-install,pre-upgrade`, Argo CD `PreSync`). It creates the Secret
+`<fullname>-generated`, plus `<fullname>-postgres-generated` for the bundled Postgres, only if it
+is missing. After that it only adds keys that are missing. It never changes or deletes a value. It
+behaves the same with `helm install/upgrade`, `helm template | kubectl apply` and Argo CD, because
+it does not rely on `lookup`. Pods read the generated values through `env`. A value you set in
+`values.yaml`, `externalSecret`, `auth.existingRootUserSecret` or `extraEnv` always wins.
+
+| Generated when empty | openobserve | openobserve-standalone |
+|---|---|---|
+| Root email (`root-<random>@openobserve.local`) and password (32 characters) | ✓ (not with `externalSecret`) | ✓ (not with `existingRootUserSecret`) |
+| Report-server user (same as root) | ✓ | – |
+| `ZO_TRACING_HEADER_VALUE` (Basic auth from the root pair) | ✓ | ✓ |
+| `ZO_INTERNAL_GRPC_TOKEN` | ✓ (new installs only) | ✓ (new installs only) |
+| `ZO_EXT_AUTH_SALT` (new `auth.ZO_EXT_AUTH_SALT`) | ✓ (new installs only) | ✓ (new installs only) |
+| Dex client secret (passed to Dex with `secretEnv`) | ✓ | – |
+| Bundled Postgres password and DSNs, pgAdmin password | ✓ | – |
+| MCP login for o2ai | – | uses the effective root user |
+
+**Existing releases: nothing changes unless you opt in.** On the first upgrade the Job sees that the
+release already exists, because the chart ConfigMap is more than 2 minutes older than the Job. It
+copies the values the release uses today (root user, Dex client secret, Postgres password) into
+`<fullname>-generated`, so OpenObserve, Dex, OpenFGA and Postgres keep the same credentials. It
+does not generate a gRPC token or a salt for an existing release, because the server keeps the
+ones it stored. A changed salt would break presigned URLs and ext-token logins. If detection is
+wrong for your setup, set `secretGenerator.existingRelease` to `"true"` or `"false"`.
+
+What you will notice on that first upgrade:
+
+- Pods restart once, because their spec changes (new `env` and `envFrom` entries).
+- If the release still uses a published default (`Complexpass#123`, `example-app-secret`,
+  `Batman123`, ...), `helm upgrade` prints a WARNING with rotation steps. It never prints the value.
+- The chart Secret drops the root user, tracing header and gRPC token keys. Helm and Argo CD
+  leave the old keys in the live Secret's `data`; the explicit `env` entries override them.
+- With the bundled Postgres, the CloudNativePG role now reads `<fullname>-postgres-generated`
+  (same password). Helm removes the old `<fullname>-openobservepguser` Secret.
+- pgAdmin gets a new random `PGADMIN_DEFAULT_PASSWORD`. pgAdmin reads it only on its first start,
+  so an existing pgAdmin keeps its login.
+- The Dex LDAP connector example now reads `bindPW: $LDAP_BIND_PW` from Dex's environment. If you
+  used the example connector with its old literal password, pass `LDAP_BIND_PW` through
+  `enterprise.dex.extraEnv`.
+
+**New installs.**
+
+- Read the root credentials with the commands that `helm install` prints:
+  `kubectl get secret <fullname>-generated -o jsonpath='{.data.ZO_ROOT_USER_PASSWORD}' | base64 -d`.
+- A `helm install` that explicitly sets a published default fails. `helm template` and Argo CD
+  cannot see the cluster, so for them it is only a NOTES warning.
+- Pods wait (`CreateContainerConfigError`) until the Job has created the Secret. If you install with
+  `--no-hooks`, or Argo CD skips hooks, run the Job yourself or set every credential.
+
+**`helm uninstall` keeps the generated Secrets.** They are not part of the release, so a
+reinstall with the same name gets the same credentials. Delete them only together with the data
+they belong to.
+
+**Opting out.** With `secretGenerator.enabled: false` there is no Job, and the render fails unless
+the root user, Postgres password, pgAdmin password and Dex client secret are set (or come from
+`externalSecret`).
+
+**Hook Job requirements.** It runs `alpine/kubectl` (`secretGenerator.image`) as a non-root user
+with a read-only root filesystem. A namespaced Role lets it `get` the release's own Secrets,
+ConfigMap and Job, `patch` the generated Secrets, and `create` Secrets. RBAC cannot limit
+`create` by name. The Role, its ServiceAccount and the Job are deleted once the Job succeeds.
+
 ## Application upgrades
 
 For OpenObserve application upgrades (the `appVersion` / image tag), always consult the
