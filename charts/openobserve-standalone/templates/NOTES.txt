@@ -23,5 +23,70 @@ WARNING: config.ZO_GRPC_TIMEOUT is deprecated, please rename to config.ZO_GRPC_C
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "openobserve.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
   echo http://$SERVICE_IP:{{ .Values.service.port }}
 {{- else if contains "ClusterIP" .Values.service.type }}
-  kubectl --namespace {{ .Release.Namespace }} port-forward svc/openobserve-router 5080:5080
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "openobserve.fullname" . }} {{ .Values.service.http_port }}:{{ .Values.service.http_port }}
+{{- end }}
+{{- $g := include "openobserve.generatedKeys" . | fromJson }}
+{{- $gen := include "openobserve.generatedSecretName" . }}
+{{- $ns := .Release.Namespace }}
+{{- if .Release.IsInstall }}
+
+2. Root user credentials:
+{{- if .Values.auth.existingRootUserSecret.name }}
+  They are in your Secret "{{ .Values.auth.existingRootUserSecret.name }}".
+{{- else }}
+{{- if $g.rootEmail }}
+  kubectl get secret --namespace {{ $ns }} {{ $gen }} -o jsonpath='{.data.ZO_ROOT_USER_EMAIL}' | base64 -d; echo
+{{- else }}
+  Email: the auth.ZO_ROOT_USER_EMAIL you set.
+{{- end }}
+{{- if $g.rootPassword }}
+  kubectl get secret --namespace {{ $ns }} {{ $gen }} -o jsonpath='{.data.ZO_ROOT_USER_PASSWORD}' | base64 -d; echo
+{{- else }}
+  Password: the auth.ZO_ROOT_USER_PASSWORD you set.
+{{- end }}
+{{- end }}
+{{- if or $g.rootEmail $g.rootPassword }}
+
+  Store the password in a password manager, then log in once to confirm it works.
+  The root user is created only on first start: changing this Secret later does not change the password.
+{{- end }}
+{{- $list := list }}
+{{- if $g.tracing }}{{ $list = append $list "ZO_TRACING_HEADER_VALUE" }}{{ end }}
+{{- if $g.grpcToken }}{{ $list = append $list "ZO_INTERNAL_GRPC_TOKEN" }}{{ end }}
+{{- if $g.salt }}{{ $list = append $list "ZO_EXT_AUTH_SALT" }}{{ end }}
+{{- if $list }}
+
+3. Also generated once and kept on upgrade, in Secret "{{ $gen }}": {{ join ", " $list }}.
+{{- end }}
+{{- if $g.any }}
+   This Secret is not part of the release: "helm uninstall" keeps it. Delete it yourself only
+   together with the data (PVC) it belongs to.
+{{- end }}
+{{- end }}
+{{- /* Warn when an effective value is still a published default. Values are compared, never printed. */}}
+{{- $found := include "openobserve.userPublishedDefaults" . | fromJsonArray }}
+{{- if .Release.IsUpgrade }}
+{{- $d := include "openobserve.publishedDefaults" . | fromJson }}
+{{- range $secretName := list $gen (include "openobserve.fullname" .) }}
+{{- $data := (lookup "v1" "Secret" $ns $secretName).data | default dict }}
+{{- range $key := list "ZO_ROOT_USER_PASSWORD" "ZO_TRACING_HEADER_VALUE" "ZO_EXT_AUTH_SALT" }}
+{{- with index $data $key }}
+{{- if has (b64dec .) (index $d $key) }}
+{{- $found = append $found (printf "%s in Secret %s" $key $secretName) }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if $found }}
+
+WARNING: these values are still published defaults from older chart versions, known to anyone:
+{{- range uniq $found }}
+  - {{ . }}
+{{- end }}
+  Rotate them:
+  1. Root password: change it on the running server first (UI: profile > change password, or the
+     users API), then set the same value in auth.ZO_ROOT_USER_PASSWORD or in Secret {{ $gen }}.
+     The root user is created only once, so a new Secret value alone does not change it.
+  2. Salt or gRPC token: changing them logs out presigned and ext-token sessions; plan a window.
 {{- end }}
