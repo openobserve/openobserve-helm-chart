@@ -63,20 +63,25 @@ spec:
                 secretKeyRef:
                   name: {{ include "openobserve.fullname" . }}
                   key: O2_AI_API_KEY
-            {{- if .Values.auth.O2_MCP_USERNAME }}
+            {{- /* o2ai logs in to OpenObserve's MCP endpoint. Without auth.O2_MCP_* it uses the effective root user. */}}
             - name: O2_MCP_USERNAME
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.auth.O2_MCP_USERNAME }}
                   name: {{ include "openobserve.fullname" . }}
                   key: O2_MCP_USERNAME
-            {{- end }}
-            {{- if .Values.auth.O2_MCP_PASSWORD }}
+                  {{- else }}
+                  {{- include "openobserve.rootUserRef" (dict "ctx" . "field" "email") | nindent 18 }}
+                  {{- end }}
             - name: O2_MCP_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.auth.O2_MCP_PASSWORD }}
                   name: {{ include "openobserve.fullname" . }}
                   key: O2_MCP_PASSWORD
-            {{- end }}
+                  {{- else }}
+                  {{- include "openobserve.rootUserRef" (dict "ctx" . "field" "password") | nindent 18 }}
+                  {{- end }}
             {{- if .Values.auth.O2_AI_INTERNAL_SECRET }}
             - name: O2_INTERNAL_API_SECRET
               valueFrom:

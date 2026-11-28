@@ -63,7 +63,7 @@ enterprise:
 
 auth:
   O2_AI_API_KEY: "your-api-key-here"  # Your AI provider API key
-  O2_MCP_USERNAME: "root@example.com"  # MCP authentication (optional)
+  O2_MCP_USERNAME: "mcp-user@your-domain.com"  # MCP authentication (optional)
   O2_MCP_PASSWORD: "your-password"  # MCP authentication (optional)
 ```
 

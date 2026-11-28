@@ -37,6 +37,7 @@ spec:
                   name: {{ include "openobserve.openfgaDatastoreSecretName" . }}
                   key: OPENFGA_DATASTORE_URI
             {{- end }}
+            {{- with include "openobserve.openfgaGeneratedDatastoreEnv" . }}{{ . | nindent 12 }}{{ end }}
           {{- /* OpenFGA reads only OPENFGA_* variables. The external Secret may set OPENFGA_DATASTORE_URI; */}}
           {{- /* the chart's own Secret has none, so OpenFGA doesn't load it and never sees the app's credentials. */}}
           {{- if .Values.externalSecret.enabled }}
@@ -82,6 +83,7 @@ spec:
                   name: {{ include "openobserve.openfgaDatastoreSecretName" . }}
                   key: OPENFGA_DATASTORE_URI
             {{- end }}
+            {{- with include "openobserve.openfgaGeneratedDatastoreEnv" . }}{{ . | nindent 12 }}{{ end }}
             - name: OPENFGA_LOG_FORMAT
               value: json
           {{- /* OpenFGA reads only OPENFGA_* variables. The external Secret may set OPENFGA_DATASTORE_URI; */}}

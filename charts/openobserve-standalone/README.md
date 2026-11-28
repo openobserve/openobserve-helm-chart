@@ -58,8 +58,9 @@ enterprise:
 
 auth:
   O2_AI_API_KEY: "your-api-key-here"  # Your AI provider API key
-  O2_MCP_USERNAME: "root@example.com"  # MCP authentication (optional)
-  O2_MCP_PASSWORD: "your-password"  # MCP authentication (optional)
+  # MCP authentication (optional). Empty: o2ai uses the effective root email and password.
+  O2_MCP_USERNAME: ""
+  O2_MCP_PASSWORD: ""
 ```
 
 **Note**: In standalone mode, O2 AI always runs with a single replica.

@@ -18,7 +18,7 @@ spec:
         - pg_read_all_data
         - pg_write_all_data
       passwordSecret:
-        name: {{ include "openobserve.fullname" . }}-openobservepguser
+        name: {{ if .Values.postgres.spec.password }}{{ include "openobserve.fullname" . }}-openobservepguser{{ else }}{{ include "openobserve.postgresGeneratedSecretName" . }}{{ end }}
   instances: {{ .Values.postgres.spec.instances}}
   storage: {{ .Values.postgres.spec.storage | toYaml | nindent 4 }}
   postgresql: {{ .Values.postgres.spec.postgresql | toYaml | nindent 4 }}

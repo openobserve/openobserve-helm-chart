@@ -89,21 +89,25 @@ headless:
 auth:
   # Either specify root user credentials here, or use an existing secret.
 
-  # OpenObserve root user email
-  ZO_ROOT_USER_EMAIL: "root@example.com"
-  # OpenObserve root user password
-  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  # Empty values are generated once per install and kept on upgrade (see secretGenerator).
+  # OpenObserve root user email. Empty: root-<random>@openobserve.local
+  ZO_ROOT_USER_EMAIL: ""
+  # OpenObserve root user password. Empty: 32 random characters
+  ZO_ROOT_USER_PASSWORD: ""
   ZO_ROOT_USER_TOKEN: ""
   # AI API key for o2ai (required if enterprise.o2ai.enabled=true)
   O2_AI_API_KEY: "" # OpenAI, Anthropic, Gemini, or other provider API key
-  # MCP authentication for o2ai (optional)
-  O2_MCP_USERNAME: "root@example.com" # MCP authentication username
-  O2_MCP_PASSWORD: "Complexpass#123" # MCP authentication password
+  # MCP authentication for o2ai (optional). Empty: o2ai uses the effective root email and password.
+  O2_MCP_USERNAME: ""
+  O2_MCP_PASSWORD: ""
   # Shared secret between OpenObserve and o2ai (optional, opt-in). When set, o2ai gets it as O2_INTERNAL_API_SECRET
   # and rejects sre-rca calls without a matching x-o2-internal-secret header; OpenObserve gets it as O2_AI_INTERNAL_SECRET
   # and sends that header. Requires an OpenObserve image that sends the header. Generate with: openssl rand -hex 32
   O2_AI_INTERNAL_SECRET: ""
   ZO_REPORT_SERVER_SECRET: "" # Shared by OpenObserve and the report server; empty means the chart generates one and keeps it across upgrades
+  # Salt for presigned URLs and ext-token logins, 16 to 48 bytes. Empty: generated on a new install;
+  # an existing release keeps the salt its server stored.
+  ZO_EXT_AUTH_SALT: ""
 
   existingRootUserSecret:
     # Existing secret with OpenObserve root user credentials.
@@ -125,6 +129,38 @@ auth:
   # is stored in the Secret, not the ConfigMap. Takes precedence over
   # config.ZO_META_POSTGRES_DSN if both are set.
   ZO_META_POSTGRES_DSN: ""
+
+# Generates per-install credentials for every one left empty: root email and password (unless
+# auth.existingRootUserSecret), config.ZO_TRACING_HEADER_VALUE, config.ZO_INTERNAL_GRPC_TOKEN and
+# auth.ZO_EXT_AUTH_SALT. A hook Job (Helm pre-install/pre-upgrade, Argo CD PreSync) creates the Secret
+# <fullname>-generated only if missing and afterwards only adds missing keys: no upgrade or sync
+# changes a generated value. "helm uninstall" keeps the Secret. Works the same with helm
+# install/upgrade, helm template + kubectl apply, and Argo CD. On an existing release the Job copies
+# the values the release already uses, so nothing changes.
+# Read a value: kubectl get secret <fullname>-generated -o jsonpath='{.data.ZO_ROOT_USER_PASSWORD}' | base64 -d
+# Disabled: set the root user yourself; the render fails if it is missing.
+secretGenerator:
+  enabled: true
+  # "" (auto): the release is existing when the chart ConfigMap was created over 2 minutes before the
+  # Job. An existing release keeps its values; the gRPC token and salt are never generated for it.
+  # Set "true" or "false" only if auto-detection is wrong for you (for example a "kubectl apply"
+  # install that was retried much later: "false").
+  existingRelease: ""
+  image:
+    repository: alpine/kubectl # needs kubectl, sh, tr, head and base64
+    tag: "1.37.1"
+    pullPolicy: IfNotPresent
+  backoffLimit: 3
+  activeDeadlineSeconds: 300
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+  podLabels: {}
+  nodeSelector: {}
+  tolerations: []
 
 # https://openobserve.ai/docs/environment-variables/
 config:
@@ -207,7 +243,7 @@ config:
   ZO_TRACING_SEARCH_ENABLED: "false"
   ZO_SEARCH_INSPECTOR_ENABLED: "false"
   ZO_TRACING_HEADER_KEY: "Authorization"
-  ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
+  ZO_TRACING_HEADER_VALUE: "" # empty: Basic auth from the effective root email and password
   OTEL_OTLP_HTTP_ENDPOINT: ""
   ZO_TELEMETRY: "true"
   ZO_TELEMETRY_HEARTBEAT: "1800"

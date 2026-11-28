@@ -1,4 +1,5 @@
 {{- if and .Values.enterprise.enabled .Values.enterprise.dex.enabled }}
+{{- $g := include "openobserve.generatedKeys" . | fromJson }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -91,9 +92,21 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
+            {{- /* With externalSecret, Dex reads O2_DEX_CLIENT_SECRET like the OpenObserve pods do: generated first, external Secret wins. */}}
+            {{- if and .Values.externalSecret.enabled $g.dexClientSecret }}
+            {{- with include "openobserve.generatedSecretEnvFrom" . }}{{ . | nindent 12 }}{{ end }}
+            {{- end }}
             - secretRef:
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
+            {{- if and (not .Values.externalSecret.enabled) $g.dexClientSecret }}
+            {{- /* The Dex config reads the client secret from this variable (staticClients[0].secretEnv). */}}
+            - name: O2_DEX_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.generatedSecretName" . }}
+                  key: O2_DEX_CLIENT_SECRET
+            {{- end }}
             {{- with .Values.enterprise.dex.extraEnv }}
             {{- toYaml . |  nindent 12 }}
             {{- end }}

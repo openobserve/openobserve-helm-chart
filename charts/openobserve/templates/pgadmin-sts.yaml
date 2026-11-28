@@ -33,9 +33,16 @@ spec:
           image: "{{ .Values.postgres.pgadmin.image.repository }}:{{ .Values.postgres.pgadmin.image.tag }}"
           env:
             - name: PGADMIN_DEFAULT_EMAIL
-              value: {{ .Values.postgres.pgadmin.PGADMIN_DEFAULT_EMAIL }}
+              value: {{ .Values.postgres.pgadmin.PGADMIN_DEFAULT_EMAIL | quote }}
             - name: PGADMIN_DEFAULT_PASSWORD
-              value: {{ .Values.postgres.pgadmin.PGADMIN_DEFAULT_PASSWORD }}
+              {{- if .Values.postgres.pgadmin.PGADMIN_DEFAULT_PASSWORD }}
+              value: {{ .Values.postgres.pgadmin.PGADMIN_DEFAULT_PASSWORD | quote }}
+              {{- else }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openobserve.generatedSecretName" . }}
+                  key: PGADMIN_DEFAULT_PASSWORD
+              {{- end }}
           imagePullPolicy: Always
           ports:
             - containerPort: 80

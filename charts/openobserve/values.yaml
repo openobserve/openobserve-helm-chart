@@ -197,8 +197,8 @@ externalSecret:
 #   name: super-secret
 # type: Opaque
 # stringData:
-#   ZO_ROOT_USER_EMAIL: "root@example.com"
-#   ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+#   ZO_ROOT_USER_EMAIL: "" # your root user email
+#   ZO_ROOT_USER_PASSWORD: "" # a long random password
 #   ZO_ROOT_USER_TOKEN: ""
 
 #   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
@@ -207,16 +207,17 @@ externalSecret:
 
 #   AZURE_STORAGE_ACCOUNT_KEY: ""
 #   AZURE_STORAGE_ACCOUNT_NAME: ""
-#   ZO_META_POSTGRES_DSN: "postgres://openobserve:Batman123@o2-openobserve-postgres-rw:5432/app"
-#   OPENFGA_DATASTORE_URI: "postgres://openobserve:Batman123@o2-openobserve-postgres-rw:5432/app"
+#   ZO_META_POSTGRES_DSN: "postgres://openobserve:<password>@o2-openobserve-postgres-rw:5432/app"
+#   OPENFGA_DATASTORE_URI: "postgres://openobserve:<password>@o2-openobserve-postgres-rw:5432/app"
 #   ZO_META_POSTGRES_RO_DSN: ""
 #   ZO_TRACING_HEADER_KEY: "Authorization"
-#   ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
+#   ZO_TRACING_HEADER_VALUE: "" # "Basic " + base64("<email>:<password>")
 #   ZO_RUM_CLIENT_TOKEN: ""
 #   ZO_REPORT_USER_EMAIL: "" # Check details at https://github.com/openobserve/o2_report_server
 #   ZO_REPORT_USER_PASSWORD: ""
-#   ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
-#   ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
+#   ZO_SMTP_USER_NAME: ""
+#   ZO_SMTP_PASSWORD: ""
+#   ZO_EXT_AUTH_SALT: "" # 16-48 random bytes; with externalSecret the chart generates none
 #   O2_AI_INTERNAL_SECRET: "" # Optional; when present it is injected into both OpenObserve and o2ai (see auth.O2_AI_INTERNAL_SECRET)
 #   O2_MASTER_ENCRYPTION_KEY: "" # Optional; encrypts stored secrets at rest (see enterprise.parameters.ZO_MASTER_ENCRYPTION_KEY)
 #   # With externalSecret the chart also keeps the values below in its ConfigMap. Values set here win over it.
@@ -230,9 +231,11 @@ externalSecret:
 #   ZO_NATS_PASSWORD: "" # Only for an external NATS
 
 # Credentials for authentication. Will be stored in a k8s secret
+# Values left empty that secretGenerator covers (root email and password, tracing header, ext auth
+# salt, plus config.ZO_INTERNAL_GRPC_TOKEN) are generated once per install and kept; see secretGenerator.
 auth:
-  ZO_ROOT_USER_EMAIL: "root@example.com"
-  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  ZO_ROOT_USER_EMAIL: "" # empty: generated as root-<random>@openobserve.local on install
+  ZO_ROOT_USER_PASSWORD: "" # empty: generated (32 characters) on install
   ZO_ROOT_USER_TOKEN: ""
 
   # do not need to set this if enabled minio is being used. settings will be picked from minio section. Also IRSA is preferred if on EKS. Set the Service account section with the correct IAM role ARN. Refer https://zinc.dev/docs/guide/ha_deployment/#amazon-eks-s3
@@ -244,13 +247,16 @@ auth:
   ZO_META_POSTGRES_DSN: "postgres://userid:password@host:5432/dbname"
   ZO_META_POSTGRES_RO_DSN: ""
   ZO_TRACING_HEADER_KEY: "Authorization"
-  ZO_TRACING_HEADER_VALUE: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
+  ZO_TRACING_HEADER_VALUE: "" # empty: Basic auth from the effective root email and password
   ZO_RUM_CLIENT_TOKEN: ""
   ZO_REPORT_USER_EMAIL: "" # Check details at https://github.com/openobserve/o2_report_server
   ZO_REPORT_USER_PASSWORD: ""
   ZO_REPORT_SERVER_SECRET: "" # Shared by OpenObserve and the report server; empty means the chart generates one and keeps it across upgrades
-  ZO_SMTP_USER_NAME: "ABAAQQQQFFFFF" # Replace with your own SMTP username
-  ZO_SMTP_PASSWORD: "+fjlahsguykevfkajvjk#jsbj43$bjkjbkk" # Replace with your own SMTP password
+  ZO_SMTP_USER_NAME: "" # your SMTP username
+  ZO_SMTP_PASSWORD: "" # your SMTP password
+  # Salt for presigned URLs and ext-token logins, 16 to 48 bytes, the same on every node.
+  # Empty: generated on a new install. An existing release keeps the salt its server stored.
+  ZO_EXT_AUTH_SALT: ""
   O2_AI_API_KEY: "" # AI API key for o2ai
   O2_MCP_USERNAME: "" # MCP authentication username for o2ai (optional)
   O2_MCP_PASSWORD: "" # MCP authentication password for o2ai (optional)
@@ -258,6 +264,38 @@ auth:
   # and rejects sre-rca calls without a matching x-o2-internal-secret header; OpenObserve gets it as O2_AI_INTERNAL_SECRET
   # and sends that header. Requires an OpenObserve image that sends the header. Generate with: openssl rand -hex 32
   O2_AI_INTERNAL_SECRET: ""
+
+# Generates per-install credentials for every credential above that is left empty, plus
+# config.ZO_INTERNAL_GRPC_TOKEN, the Dex client secret and the bundled Postgres and pgAdmin passwords.
+# A hook Job (Helm pre-install/pre-upgrade, Argo CD PreSync) creates the Secret <fullname>-generated
+# (and <fullname>-postgres-generated) only if missing and afterwards only adds missing keys: no
+# upgrade or sync changes a generated value. "helm uninstall" keeps both Secrets.
+# Works the same with helm install/upgrade, helm template + kubectl apply, and Argo CD.
+# On an existing release the Job copies the values the release already uses, so nothing changes.
+# Read a value: kubectl get secret <fullname>-generated -o jsonpath='{.data.ZO_ROOT_USER_PASSWORD}' | base64 -d
+# Disabled: set every credential yourself (or use externalSecret); the render fails if one is missing.
+secretGenerator:
+  enabled: true
+  # "" (auto): the release is existing when the chart ConfigMap was created over 2 minutes before the
+  # Job. An existing release keeps its values; the gRPC token and salt are never generated for it.
+  # Set "true" or "false" only if auto-detection is wrong for you (for example a "kubectl apply"
+  # install that was retried much later: "false").
+  existingRelease: ""
+  image:
+    repository: alpine/kubectl # needs kubectl, sh, tr, head and base64
+    tag: "1.37.1"
+    pullPolicy: IfNotPresent
+  backoffLimit: 3
+  activeDeadlineSeconds: 300
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+  podLabels: {}
+  nodeSelector: {}
+  tolerations: []
 
 config:
   ZO_APP_NAME: "openobserve"
@@ -906,9 +944,9 @@ postgres:
         memory: 250Mi
         cpu: 100m
     PGADMIN_DEFAULT_EMAIL: hello@openobserve.ai
-    PGADMIN_DEFAULT_PASSWORD: Batman123
+    PGADMIN_DEFAULT_PASSWORD: "" # empty: generated (see secretGenerator)
   spec:
-    password: Batman123 # password # username is hardcoded to openobserve, db is hardcoded to app
+    password: "" # empty: generated (see secretGenerator). Username is hardcoded to openobserve, db is hardcoded to app
     enableSuperuserAccess: true # if true then superuser access will be enabled. You can get the password from appropriate secret once the postgres is deployed
     instances: 2 # creates a primary and a replica. replica will become primary if the primary fails
     affinity: # see details https://cloudnative-pg.io/docs/1.30/scheduling/
@@ -1034,7 +1072,9 @@ enterprise:
           redirectURIs:
             - https://openobserve.example.com/config/redirect
           name: o2-client
-          secret: ZXhhbXBsZS1hcHAtc2VjcmV0 # This should be base64 encoded value of client secret.Gets mapped to O2_DEX_CLIENT_SECRET
+          # Client secret, shared with OpenObserve as O2_DEX_CLIENT_SECRET. Empty: generated (see
+          # secretGenerator) and passed to Dex with secretEnv, so it is not written into the Dex config.
+          secret: ""
       oauth2:
         responseTypes:
           - code
@@ -1065,7 +1105,9 @@ enterprise:
             host: openldap:389
             insecureNoSSL: true
             bindDN: cn=admin,dc=o2,dc=ai
-            bindPW: Z54H7w5WQUARsLKaumM967iX62msTEno
+            # Dex reads values starting with "$" from its environment. Pass LDAP_BIND_PW with
+            # enterprise.dex.extraEnv (valueFrom.secretKeyRef), never as a literal here.
+            bindPW: $LDAP_BIND_PW
             usernamePrompt: Email Address
             userSearch:
               baseDN: ou=users,dc=o2,dc=ai

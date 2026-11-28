@@ -99,6 +99,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}
+            {{- with include "openobserve.generatedSecretEnvFrom" . }}{{ . | nindent 12 }}{{ end }}
             - secretRef:
                 name: {{ include "openobserve.fullname" . }}
           env:
@@ -118,6 +119,9 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.auth.existingRootUserSecret.name }}
                   key: {{ .Values.auth.existingRootUserSecret.passwordKey }}
+            {{- end }}
+            {{- with include "openobserve.generatedEnv" . }}
+            {{- . | nindent 12 }}
             {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . |  nindent 12 }}
