@@ -155,12 +155,31 @@ external Secret via envFrom; otherwise nothing sets it, as before.
 {{- define "openobserve.openfgaDatastoreURI" -}}
 {{- if not .Values.externalSecret.enabled -}}
 {{- if .Values.postgres.enabled -}}
+{{- /* Without postgres.spec.password the URI is built in the pod (openobserve.openfgaGeneratedDatastoreEnv). */ -}}
+{{- if .Values.postgres.spec.password -}}
 postgres://openobserve:{{ .Values.postgres.spec.password }}@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable
+{{- end -}}
 {{- else if .Values.auth.ZO_META_POSTGRES_DSN -}}
 {{ .Values.auth.ZO_META_POSTGRES_DSN }}
 {{- else if .Values.config.ZO_META_POSTGRES_DSN -}}
 {{ .Values.config.ZO_META_POSTGRES_DSN }}
 {{- end -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+OpenFGA datastore env when the bundled Postgres uses the generated password: the URI is built in the
+pod from the password in <fullname>-postgres-generated, so the password never appears in a template.
+*/}}
+{{- define "openobserve.openfgaGeneratedDatastoreEnv" -}}
+{{- if and (not .Values.externalSecret.enabled) (include "openobserve.generatedKeys" . | fromJson).postgres -}}
+- name: O2_POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "openobserve.postgresGeneratedSecretName" . }}
+      key: password
+- name: OPENFGA_DATASTORE_URI
+  value: "postgres://openobserve:$(O2_POSTGRES_PASSWORD)@{{ include "openobserve.fullname" . }}-postgres-rw.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5432/app?sslmode=disable"
 {{- end -}}
 {{- end }}
 

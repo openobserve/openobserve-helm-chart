@@ -244,6 +244,7 @@ spec:
                 name: {{ include "openobserve.fullname" . }}
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}-ingester
+            {{- with include "openobserve.generatedSecretEnvFrom" . }}{{ . | nindent 12 }}{{ end }}
             - secretRef:
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
@@ -257,7 +258,7 @@ spec:
             - name: K8S_CONTAINER_NAME
               value: "{{ .Chart.Name }}-ingester"
             {{- include "openobserve.k8sMetaEnv" . | nindent 12 }}
-            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.ingester.extraEnv) }}
+            {{- with include "openobserve.mergeEnv" (list (include "openobserve.generatedEnv" . | fromYamlArray) .Values.extraEnv .Values.ingester.extraEnv) }}
             {{- . | nindent 12 }}
             {{- end }}
           {{- if .Values.ingester.persistence.enabled }}

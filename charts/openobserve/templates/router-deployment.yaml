@@ -111,12 +111,13 @@ spec:
                 name: {{ include "openobserve.fullname" . }}
             - configMapRef:
                 name: {{ include "openobserve.fullname" . }}-router
+            {{- with include "openobserve.generatedSecretEnvFrom" . }}{{ . | nindent 12 }}{{ end }}
             - secretRef:
                 name: {{ if .Values.externalSecret.enabled }}{{ .Values.externalSecret.name }}{{ else }}{{ include "openobserve.fullname" . }}{{ end }}
           env:
             - name: ZO_NODE_ROLE
               value: "router"
-            {{- with include "openobserve.mergeEnv" (list .Values.extraEnv .Values.router.extraEnv) }}
+            {{- with include "openobserve.mergeEnv" (list (include "openobserve.generatedEnv" . | fromYamlArray) .Values.extraEnv .Values.router.extraEnv) }}
             {{- . | nindent 12 }}
             {{- end }}
             
